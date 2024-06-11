@@ -1,0 +1,196 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Comment {
+  content: String!
+  createdAt: DateTime!
+  dislikes: Float!
+  id: Float!
+  likes: Float!
+  nickname: String!
+  password: String!
+  replies: [CommentReply!]!
+  updatedAt: DateTime!
+  video: Video!
+}
+
+type CommentReply {
+  comment: Comment!
+  content: String!
+  createdAt: DateTime!
+  dislikes: Float!
+  id: Float!
+  likes: Float!
+  nickname: String!
+  password: String!
+  updatedAt: DateTime!
+}
+
+type CoreOutput {
+  error: String
+  ok: Boolean!
+}
+
+input CreateAccountInput {
+  email: String!
+  password: String!
+  role: UserRole!
+}
+
+type CreateAccountOutput {
+  error: String
+  ok: Boolean!
+}
+
+input CreateCommentInput {
+  content: String!
+  nickname: String!
+  password: String!
+}
+
+type CreateCommentOutput {
+  commentId: Float!
+  error: String
+  ok: Boolean!
+}
+
+input CreateReplyInput {
+  content: String!
+  nickname: String!
+  password: String!
+}
+
+type CreateReplyOutput {
+  error: String
+  ok: Boolean!
+  replyId: Float!
+}
+
+input CreateVideoInput {
+  videoUrl: String!
+}
+
+type CreateVideoOutput {
+  error: String
+  ok: Boolean!
+  videoId: Float
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeleteCommentInput {
+  password: String
+}
+
+type DeleteCommentOutput {
+  error: String
+  ok: Boolean!
+}
+
+input EditCommentInput {
+  content: String
+  password: String
+}
+
+type EditCommentOutput {
+  error: String
+  ok: Boolean!
+}
+
+input EditProfileInput {
+  email: String
+  password: String
+}
+
+type EditProfileOutput {
+  error: String
+  ok: Boolean!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type LoginOutput {
+  error: String
+  ok: Boolean!
+  token: String
+}
+
+type Mutation {
+  checkCommentPassword(commentId: Float!, password: String!): CoreOutput!
+  checkReplyPassword(password: String!, replyId: Float!): CoreOutput!
+  createAccount(input: CreateAccountInput!): CreateAccountOutput!
+  createComment(input: CreateCommentInput!, videoId: Float!): CreateCommentOutput!
+  createReply(commentId: Float!, input: CreateReplyInput!): CreateReplyOutput!
+  createVideo(input: CreateVideoInput!): CreateVideoOutput!
+  deleteComment(commentId: Float!, input: DeleteCommentInput!): DeleteCommentOutput!
+  deleteReply(input: DeleteCommentInput!, replyId: Float!): DeleteCommentOutput!
+  dislikeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
+  dislikeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
+  dislikeVideo(isIncrement: Boolean!, videoId: Float!): CoreOutput!
+  editComment(commentId: Float!, input: EditCommentInput!): EditCommentOutput!
+  editReply(input: EditCommentInput!, replyId: Float!): EditCommentOutput!
+  likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
+  likeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
+  likeVideo(isIncrement: Boolean!, videoId: Float!): CoreOutput!
+  login(input: LoginInput!): LoginOutput!
+  verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
+}
+
+type Query {
+  editProfile(input: EditProfileInput!): EditProfileOutput!
+  getAllVideos: [Video!]!
+  getCommentsByVideoId(sortingType: String!, videoId: Float!): [Comment!]!
+  getRepliesByCommentId(commentId: Float!): [CommentReply!]!
+  getVideoDetailById(videoId: Float!): Video!
+  healthCheck: CoreOutput!
+  me: User!
+  userProfile(userId: Float!): UserProfileOutput!
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: Float!
+  password: String!
+  role: UserRole!
+  updatedAt: DateTime!
+  verified: Boolean!
+}
+
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
+enum UserRole {
+  Client
+  Delivery
+  Owner
+}
+
+input VerifyEmailInput {
+  code: String!
+}
+
+type VerifyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
+type Video {
+  comments: [Comment!]!
+  createdAt: DateTime!
+  dislikes: Float!
+  id: Float!
+  likes: Float!
+  updatedAt: DateTime!
+  videoUrl: String!
+}
