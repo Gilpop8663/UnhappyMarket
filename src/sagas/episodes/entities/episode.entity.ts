@@ -44,7 +44,7 @@ export class Episode extends CoreEntity {
   authorComment: string;
 
   @Field(() => [Like])
-  @OneToMany(() => Like, (like) => like.likeableId, { cascade: true })
+  @OneToMany(() => Like, (like) => like.episode, { cascade: true })
   likes: Like[];
 
   @Column({ default: 0 })

@@ -6,11 +6,13 @@ import { AppModule } from 'src/app.module';
 import { User } from 'src/users/entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Saga } from 'src/sagas/entities/saga.entity';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 let app: INestApplication;
 let dataSource: DataSource;
 let usersRepository: Repository<User>;
 let sagasRepository: Repository<Saga>;
+let episodesRepository: Repository<Episode>;
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -26,28 +28,11 @@ beforeAll(async () => {
   sagasRepository = moduleFixture.get<Repository<Saga>>(
     getRepositoryToken(Saga),
   );
+  episodesRepository = moduleFixture.get<Repository<Episode>>(
+    getRepositoryToken(Episode),
+  );
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
-
-  await request(app.getHttpServer())
-    .post(GRAPHQL_ENDPOINT)
-    .send({
-      query: /* GraphQL */ `
-        mutation {
-          createAccount(
-            input: {
-              email: "usett@naver.com"
-              nickname: "개미"
-              password: "asdfasdf1234"
-              userId: "antdesin"
-            }
-          ) {
-            ok
-            error
-          }
-        }
-      `,
-    });
 });
 
 afterAll(async () => {
@@ -55,4 +40,10 @@ afterAll(async () => {
   await dataSource.destroy();
 });
 
-export { app, dataSource, usersRepository, sagasRepository };
+export {
+  app,
+  dataSource,
+  usersRepository,
+  sagasRepository,
+  episodesRepository,
+};

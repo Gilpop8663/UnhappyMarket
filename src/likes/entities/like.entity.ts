@@ -3,6 +3,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 export enum LikeableType {
   SAGA = 'saga',
@@ -28,4 +29,8 @@ export class Like extends CoreEntity {
   @Column({ type: 'enum', enum: LikeableType })
   @Field(() => LikeableType)
   likeableType: LikeableType;
+
+  @ManyToOne(() => Episode, (episode) => episode.likes, { nullable: true })
+  @Field(() => Episode, { nullable: true })
+  episode?: Episode;
 }

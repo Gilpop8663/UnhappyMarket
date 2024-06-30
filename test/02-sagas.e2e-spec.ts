@@ -4,17 +4,16 @@ import { app, sagasRepository, usersRepository } from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
-test.todo('시리즈를 생성한다.');
-
 let userId: number;
 
 describe('시리즈를 생성한다.', () => {
   beforeAll(async () => {
     const [user] = await usersRepository.find();
+
     userId = user.id;
   });
 
-  test('시리즈를 생성한다.', () => {
+  test('시리즈를 생성한다.', async () => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -279,5 +278,3 @@ describe('시리즈 목록을 불러온다', () => {
       });
   });
 });
-
-test.todo('시리즈 목록을 불러온다.');

@@ -93,15 +93,16 @@ export class EpisodesService {
   }
 
   async getEpisodeList(sagaId: number) {
-    return this.episodeRepository.find({
+    return await this.episodeRepository.find({
       where: { saga: { id: sagaId } },
+      relations: ['likes'],
     });
   }
 
   async getEpisodeDetail(episodeId: number): Promise<GetEpisodeDetailOutput> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['saga'],
+      relations: ['saga', 'likes'],
     });
 
     const previousEpisode = await this.episodeRepository.findOne({

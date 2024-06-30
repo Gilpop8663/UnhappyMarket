@@ -9,6 +9,11 @@ import {
   GetEpisodeDetailInput,
   GetEpisodeDetailOutput,
 } from './dtos/get-episode-detail.dto';
+import { EditEpisodeInput, EditEpisodeOutput } from './dtos/edit-episode.dto';
+import {
+  DeleteEpisodeInput,
+  DeleteEpisodeOutput,
+} from './dtos/delete-episode.dto';
 
 @Resolver()
 export class EpisodesResolver {
@@ -17,6 +22,16 @@ export class EpisodesResolver {
   @Mutation(() => CreateEpisodeOutput)
   createEpisode(@Args('input') createEpisodeInput: CreateEpisodeInput) {
     return this.episodeService.createEpisode(createEpisodeInput);
+  }
+
+  @Mutation(() => EditEpisodeOutput)
+  editEpisode(@Args('input') editEpisodeInput: EditEpisodeInput) {
+    return this.episodeService.editEpisode(editEpisodeInput);
+  }
+
+  @Mutation(() => DeleteEpisodeOutput)
+  deleteEpisode(@Args('input') deleteEpisodeInput: DeleteEpisodeInput) {
+    return this.episodeService.deleteEpisode(deleteEpisodeInput);
   }
 
   @Query(() => [Episode])

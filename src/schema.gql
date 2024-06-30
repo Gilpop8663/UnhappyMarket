@@ -96,6 +96,15 @@ type DeleteCommentOutput {
   ok: Boolean!
 }
 
+input DeleteEpisodeInput {
+  episodeId: Float!
+}
+
+type DeleteEpisodeOutput {
+  error: String
+  ok: Boolean!
+}
+
 input DeleteSagaInput {
   sagaId: Float!
 }
@@ -111,6 +120,18 @@ input EditCommentInput {
 }
 
 type EditCommentOutput {
+  error: String
+  ok: Boolean!
+}
+
+input EditEpisodeInput {
+  authorComment: String!
+  content: String!
+  episodeId: Float!
+  title: String!
+}
+
+type EditEpisodeOutput {
   error: String
   ok: Boolean!
 }
@@ -163,6 +184,7 @@ type GetEpisodeDetailOutput {
 
 type Like {
   createdAt: DateTime!
+  episode: Episode
   id: Float!
   likeableId: Float!
   likeableType: LikeableType!
@@ -194,11 +216,13 @@ type Mutation {
   createReply(commentId: Float!, input: CreateReplyInput!): CreateReplyOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
   deleteComment(commentId: Float!, input: DeleteCommentInput!): DeleteCommentOutput!
+  deleteEpisode(input: DeleteEpisodeInput!): DeleteEpisodeOutput!
   deleteReply(input: DeleteCommentInput!, replyId: Float!): DeleteCommentOutput!
   deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!
   dislikeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
   dislikeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
   editComment(commentId: Float!, input: EditCommentInput!): EditCommentOutput!
+  editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editReply(input: EditCommentInput!, replyId: Float!): EditCommentOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
   likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
