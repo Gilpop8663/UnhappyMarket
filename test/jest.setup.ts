@@ -5,10 +5,12 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import { User } from 'src/users/entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Saga } from 'src/sagas/entities/saga.entity';
 
 let app: INestApplication;
 let dataSource: DataSource;
 let usersRepository: Repository<User>;
+let sagasRepository: Repository<Saga>;
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -20,6 +22,9 @@ beforeAll(async () => {
   app = moduleFixture.createNestApplication();
   usersRepository = moduleFixture.get<Repository<User>>(
     getRepositoryToken(User),
+  );
+  sagasRepository = moduleFixture.get<Repository<Saga>>(
+    getRepositoryToken(Saga),
   );
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
@@ -50,4 +55,4 @@ afterAll(async () => {
   await dataSource.destroy();
 });
 
-export { app, dataSource, usersRepository };
+export { app, dataSource, usersRepository, sagasRepository };
