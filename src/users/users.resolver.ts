@@ -12,6 +12,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -51,5 +52,10 @@ export class UsersResolver {
   @Mutation(() => VerifyEmailOutput)
   verifyEmail(@Args('input') { code }: VerifyEmailInput) {
     return this.usersService.verifyEmail(code);
+  }
+
+  @Mutation(() => CoreOutput)
+  verifyPhone(@Args('input') { code }: VerifyEmailInput) {
+    return this.usersService.verifyPhone(code);
   }
 }

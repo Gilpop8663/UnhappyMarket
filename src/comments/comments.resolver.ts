@@ -1,13 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CommentSortingType, CommentsService } from './comments.service';
-import { CreateVideoInput, CreateVideoOutput } from './dtos/create-video.dto';
-import { Video } from './entities/video.entity';
-import {
-  CreateCommentInput,
-  CreateCommentOutput,
-} from './dtos/create-comment.dto';
+import { CommentsService } from './comments.service';
 import { CommentReply } from './entities/comment-reply.entity';
-import { Comment } from './entities/comment.entity';
 import { EditCommentInput, EditCommentOutput } from './dtos/edit-comment.dto';
 import {
   DeleteCommentInput,
@@ -19,19 +12,6 @@ import { CreateReplyInput, CreateReplyOutput } from './dtos/create-reply.dto';
 @Resolver()
 export class CommentsResolver {
   constructor(private readonly commentService: CommentsService) {}
-
-  @Mutation(() => CreateVideoOutput)
-  createVideo(@Args('input') createVideoInput: CreateVideoInput) {
-    return this.commentService.createVideo(createVideoInput);
-  }
-
-  @Mutation(() => CreateCommentOutput)
-  createComment(
-    @Args('videoId') videoId: number,
-    @Args('input') createCommentInput: CreateCommentInput,
-  ) {
-    return this.commentService.createComment(videoId, createCommentInput);
-  }
 
   @Mutation(() => CreateReplyOutput)
   createReply(
@@ -71,22 +51,6 @@ export class CommentsResolver {
     @Args('input') deleteCommentInput: DeleteCommentInput,
   ) {
     return this.commentService.deleteReply(replyId, deleteCommentInput);
-  }
-
-  @Mutation(() => CoreOutput)
-  likeVideo(
-    @Args('videoId') videoId: number,
-    @Args('isIncrement') isIncrement: boolean,
-  ) {
-    return this.commentService.likeVideo(videoId, isIncrement);
-  }
-
-  @Mutation(() => CoreOutput)
-  dislikeVideo(
-    @Args('videoId') videoId: number,
-    @Args('isIncrement') isIncrement: boolean,
-  ) {
-    return this.commentService.dislikeVideo(videoId, isIncrement);
   }
 
   @Mutation(() => CoreOutput)
@@ -135,24 +99,6 @@ export class CommentsResolver {
     @Args('password') password: string,
   ) {
     return this.commentService.checkReplyPassword(replyId, password);
-  }
-
-  @Query(() => [Video])
-  getAllVideos() {
-    return this.commentService.getAllVideos();
-  }
-
-  @Query(() => Video)
-  getVideoDetailById(@Args('videoId') videoId: number) {
-    return this.commentService.getVideoDetailById(videoId);
-  }
-
-  @Query(() => [Comment])
-  getCommentsByVideoId(
-    @Args('videoId') videoId: number,
-    @Args('sortingType') sortingType: CommentSortingType,
-  ) {
-    return this.commentService.getCommentsByVideoId(videoId, sortingType);
   }
 
   @Query(() => [CommentReply])

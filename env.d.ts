@@ -12,5 +12,7 @@ declare module NodeJS {
     MAILGUN_FROM_EMAIL: string;
     PORT: number;
     DATABASE_URL: string;
+    SOLAPI_API_KEY: string;
+    SOLAPI_API_SECRET_KEY: string;
   }
 }

@@ -18,16 +18,34 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { CommentsModule } from './comments/comments.module';
-import { Video } from './comments/entities/video.entity';
 import { Comment } from './comments/entities/comment.entity';
 import { CommentReply } from './comments/entities/comment-reply.entity';
+import { SagasModule } from './sagas/sagas.module';
+import { Saga } from './sagas/entities/saga.entity';
+import { Episode } from './sagas/episodes/entities/episode.entity';
+import { LikesModule } from './likes/likes.module';
+import { Like } from './likes/entities/like.entity';
+
+const getEnvFilePath = () => {
+  if (process.env.NODE_ENV === 'dev') {
+    return '.env.dev';
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    return '.env';
+  }
+
+  if (process.env.NODE_ENV === 'test') {
+    return '.env.test';
+  }
+};
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       ignoreEnvFile: process.env.NODE_ENV === 'production',
-      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env',
+      envFilePath: getEnvFilePath(),
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid('dev', 'production', 'test')
@@ -51,8 +69,16 @@ import { CommentReply } from './comments/entities/comment-reply.entity';
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE_NAME,
           }),
-      entities: [User, Verification, Video, Comment, CommentReply],
-      logging: true,
+      entities: [
+        User,
+        Verification,
+        Comment,
+        CommentReply,
+        Saga,
+        Episode,
+        Like,
+      ],
+      logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -70,6 +96,8 @@ import { CommentReply } from './comments/entities/comment-reply.entity';
     }),
     AuthModule,
     CommentsModule,
+    SagasModule,
+    LikesModule,
   ],
   controllers: [],
   providers: [],

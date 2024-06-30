@@ -1,8 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CommentReply } from './comment-reply.entity';
 import { CommentCore } from './comment-core.entity';
-import { Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Video } from './video.entity';
+import { Entity, OneToMany } from 'typeorm';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -12,7 +11,7 @@ export class Comment extends CommentCore {
   @OneToMany(() => CommentReply, (reply) => reply.comment)
   replies: CommentReply[];
 
-  @Field(() => Video)
-  @ManyToOne(() => Video, (video) => video.comments, { onDelete: 'CASCADE' })
-  video: Video;
+  // @Field(() => Post)
+  // @ManyToOne(() => Post, (post) => post.comments, { onDelete: 'CASCADE' })
+  // post: Post;
 }

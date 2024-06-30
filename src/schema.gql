@@ -12,7 +12,6 @@ type Comment {
   password: String!
   replies: [CommentReply!]!
   updatedAt: DateTime!
-  video: Video!
 }
 
 type CommentReply {
@@ -34,8 +33,9 @@ type CoreOutput {
 
 input CreateAccountInput {
   email: String!
+  nickname: String!
   password: String!
-  role: UserRole!
+  userId: String!
 }
 
 type CreateAccountOutput {
@@ -43,14 +43,15 @@ type CreateAccountOutput {
   ok: Boolean!
 }
 
-input CreateCommentInput {
+input CreateEpisodeInput {
+  authorComment: String!
   content: String!
-  nickname: String!
-  password: String!
+  sagaId: Float!
+  title: String!
 }
 
-type CreateCommentOutput {
-  commentId: Float!
+type CreateEpisodeOutput {
+  episodeId: Float
   error: String
   ok: Boolean!
 }
@@ -67,14 +68,18 @@ type CreateReplyOutput {
   replyId: Float!
 }
 
-input CreateVideoInput {
-  videoUrl: String!
+input CreateSagaInput {
+  category: SagaCategory!
+  description: String!
+  thumbnailUrl: String!
+  title: String!
+  userId: Float!
 }
 
-type CreateVideoOutput {
+type CreateSagaOutput {
   error: String
   ok: Boolean!
-  videoId: Float
+  sagaId: Float
 }
 
 """
@@ -87,6 +92,15 @@ input DeleteCommentInput {
 }
 
 type DeleteCommentOutput {
+  error: String
+  ok: Boolean!
+}
+
+input DeleteSagaInput {
+  sagaId: Float!
+}
+
+type DeleteSagaOutput {
   error: String
   ok: Boolean!
 }
@@ -111,9 +125,59 @@ type EditProfileOutput {
   ok: Boolean!
 }
 
+input EditSagaInput {
+  description: String!
+  sagaId: Float!
+  thumbnailUrl: String!
+  title: String!
+}
+
+type EditSagaOutput {
+  error: String
+  ok: Boolean!
+}
+
+type Episode {
+  authorComment: String!
+  content: String!
+  createdAt: DateTime!
+  id: Float!
+  interests: Float!
+  likes: [Like!]!
+  saga: Saga!
+  title: String!
+  updatedAt: DateTime!
+}
+
+input GetEpisodeDetailInput {
+  episodeId: Float!
+}
+
+type GetEpisodeDetailOutput {
+  episode: Episode!
+  error: String
+  nextEpisode: Episode
+  ok: Boolean!
+  previousEpisode: Episode
+}
+
+type Like {
+  createdAt: DateTime!
+  id: Float!
+  likeableId: Float!
+  likeableType: LikeableType!
+  updatedAt: DateTime!
+  user: User!
+}
+
+enum LikeableType {
+  EPISODE
+  SAGA
+}
+
 input LoginInput {
-  email: String!
   password: String!
+  userId: String!
 }
 
 type LoginOutput {
@@ -126,41 +190,66 @@ type Mutation {
   checkCommentPassword(commentId: Float!, password: String!): CoreOutput!
   checkReplyPassword(password: String!, replyId: Float!): CoreOutput!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
-  createComment(input: CreateCommentInput!, videoId: Float!): CreateCommentOutput!
+  createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
   createReply(commentId: Float!, input: CreateReplyInput!): CreateReplyOutput!
-  createVideo(input: CreateVideoInput!): CreateVideoOutput!
+  createSaga(input: CreateSagaInput!): CreateSagaOutput!
   deleteComment(commentId: Float!, input: DeleteCommentInput!): DeleteCommentOutput!
   deleteReply(input: DeleteCommentInput!, replyId: Float!): DeleteCommentOutput!
+  deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!
   dislikeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
   dislikeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
-  dislikeVideo(isIncrement: Boolean!, videoId: Float!): CoreOutput!
   editComment(commentId: Float!, input: EditCommentInput!): EditCommentOutput!
   editReply(input: EditCommentInput!, replyId: Float!): EditCommentOutput!
+  editSaga(input: EditSagaInput!): EditSagaOutput!
   likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
   likeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
-  likeVideo(isIncrement: Boolean!, videoId: Float!): CoreOutput!
   login(input: LoginInput!): LoginOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
+  verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }
 
 type Query {
   editProfile(input: EditProfileInput!): EditProfileOutput!
-  getAllVideos: [Video!]!
-  getCommentsByVideoId(sortingType: String!, videoId: Float!): [Comment!]!
+  getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
+  getEpisodeList(sagaId: Float!): [Episode!]!
   getRepliesByCommentId(commentId: Float!): [CommentReply!]!
-  getVideoDetailById(videoId: Float!): Video!
+  getSagaList: [Saga!]!
   healthCheck: CoreOutput!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
+}
+
+type Saga {
+  author: User!
+  category: SagaCategory!
+  createdAt: DateTime!
+  description: String!
+  episodes: [Episode!]!
+  id: Float!
+  interests: Float!
+  isCompleted: Boolean!
+  likes: [Like!]!
+  thumbnailUrl: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+enum SagaCategory {
+  Challenge
+  Series
 }
 
 type User {
   createdAt: DateTime!
   email: String!
   id: Float!
+  likes: [Like!]!
+  nickname: String!
   password: String!
-  role: UserRole!
+  point: Float!
+  sagas: [Saga!]!
   updatedAt: DateTime!
+  userId: String!
   verified: Boolean!
 }
 
@@ -170,12 +259,6 @@ type UserProfileOutput {
   user: User
 }
 
-enum UserRole {
-  Client
-  Delivery
-  Owner
-}
-
 input VerifyEmailInput {
   code: String!
 }
@@ -183,14 +266,4 @@ input VerifyEmailInput {
 type VerifyEmailOutput {
   error: String
   ok: Boolean!
-}
-
-type Video {
-  comments: [Comment!]!
-  createdAt: DateTime!
-  dislikes: Float!
-  id: Float!
-  likes: Float!
-  updatedAt: DateTime!
-  videoUrl: String!
 }

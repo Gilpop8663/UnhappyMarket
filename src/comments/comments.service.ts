@@ -3,8 +3,6 @@ import { Comment } from './entities/comment.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentInput } from './dtos/create-comment.dto';
-import { Video } from './entities/video.entity';
-import { CreateVideoInput } from './dtos/create-video.dto';
 import { CommentReply } from './entities/comment-reply.entity';
 import { EditCommentInput } from './dtos/edit-comment.dto';
 import { DeleteCommentInput } from './dtos/delete-comment.dto';
@@ -20,50 +18,48 @@ export class CommentsService {
     private commentRepository: Repository<Comment>,
     @InjectRepository(CommentReply)
     private commentReplyRepository: Repository<CommentReply>,
-    @InjectRepository(Video)
-    private videoRepository: Repository<Video>,
   ) {}
 
-  async getAllVideos() {
-    return this.videoRepository.find({
-      relations: ['comments'],
-      order: { likes: 'DESC', dislikes: 'DESC' },
-    });
-  }
+  // async getAllVideos() {
+  //   return this.videoRepository.find({
+  //     relations: ['comments'],
+  //     order: { likes: 'DESC', dislikes: 'DESC' },
+  //   });
+  // }
 
-  async getVideoDetailById(videoId: number) {
-    const video = await this.videoRepository.findOne({
-      where: { id: videoId },
-    });
+  // async getVideoDetailById(videoId: number) {
+  //   const video = await this.videoRepository.findOne({
+  //     where: { id: videoId },
+  //   });
 
-    if (!video) {
-      return { ok: false, error: '비디오가 존재하지 않습니다.' };
-    }
+  //   if (!video) {
+  //     return { ok: false, error: '비디오가 존재하지 않습니다.' };
+  //   }
 
-    return video;
-  }
+  //   return video;
+  // }
 
-  async getCommentsByVideoId(videoId: number, sortingType: CommentSortingType) {
-    let order = {};
+  // async getCommentsByVideoId(videoId: number, sortingType: CommentSortingType) {
+  //   let order = {};
 
-    if (sortingType === CommentSortingType.NEWEST) {
-      order = { comments: { createdAt: { direction: 'DESC' } } };
-    } else {
-      order = { comments: { likes: { direction: 'DESC' } } };
-    }
+  //   if (sortingType === CommentSortingType.NEWEST) {
+  //     order = { comments: { createdAt: { direction: 'DESC' } } };
+  //   } else {
+  //     order = { comments: { likes: { direction: 'DESC' } } };
+  //   }
 
-    const video = await this.videoRepository.findOne({
-      where: { id: videoId },
-      relations: ['comments', 'comments.replies'],
-      order,
-    });
+  //   const video = await this.videoRepository.findOne({
+  //     where: { id: videoId },
+  //     relations: ['comments', 'comments.replies'],
+  //     order,
+  //   });
 
-    if (!video) {
-      return { ok: false, error: '비디오가 존재하지 않습니다.' };
-    }
+  //   if (!video) {
+  //     return { ok: false, error: '비디오가 존재하지 않습니다.' };
+  //   }
 
-    return video.comments;
-  }
+  //   return video.comments;
+  // }
 
   async getRepliesByCommentId(commentId: number) {
     const comment = await this.commentRepository.findOne({
@@ -78,60 +74,60 @@ export class CommentsService {
     return comment.replies;
   }
 
-  async createComment(videoId: number, commentData: CreateCommentInput) {
-    try {
-      const video = await this.videoRepository.findOne({
-        where: { id: videoId },
-      });
+  // async createComment(videoId: number, commentData: CreateCommentInput) {
+  //   try {
+  //     const video = await this.videoRepository.findOne({
+  //       where: { id: videoId },
+  //     });
 
-      if (!video) {
-        return { ok: false, error: '비디오를 찾을 수 없습니다' };
-      }
+  //     if (!video) {
+  //       return { ok: false, error: '비디오를 찾을 수 없습니다' };
+  //     }
 
-      const newComment = this.commentRepository.create({
-        ...commentData,
-        video,
-      });
+  //     const newComment = this.commentRepository.create({
+  //       ...commentData,
+  //       video,
+  //     });
 
-      await this.commentRepository.save(newComment);
+  //     await this.commentRepository.save(newComment);
 
-      return { ok: true, commentId: newComment.id };
-    } catch (error) {
-      return { ok: false, error: '댓글 생성에 실패했습니다.' };
-    }
-  }
+  //     return { ok: true, commentId: newComment.id };
+  //   } catch (error) {
+  //     return { ok: false, error: '댓글 생성에 실패했습니다.' };
+  //   }
+  // }
 
-  async createVideo(videoData: CreateVideoInput) {
-    try {
-      const extractVideoId = (url: string) => {
-        const pattern =
-          /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = url.match(pattern);
-        return match ? match[1] : null;
-      };
+  // async createVideo(videoData: CreateVideoInput) {
+  //   try {
+  //     const extractVideoId = (url: string) => {
+  //       const pattern =
+  //         /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  //       const match = url.match(pattern);
+  //       return match ? match[1] : null;
+  //     };
 
-      const videoUrl = extractVideoId(videoData.videoUrl);
+  //     const videoUrl = extractVideoId(videoData.videoUrl);
 
-      if (!videoData || !videoUrl) {
-        return { ok: false, error: '유효하지 않은 URL입니다.' };
-      }
+  //     if (!videoData || !videoUrl) {
+  //       return { ok: false, error: '유효하지 않은 URL입니다.' };
+  //     }
 
-      const video = await this.videoRepository.findOne({ where: { videoUrl } });
+  //     const video = await this.videoRepository.findOne({ where: { videoUrl } });
 
-      if (video) {
-        return { ok: true, videoId: video.id };
-      }
+  //     if (video) {
+  //       return { ok: true, videoId: video.id };
+  //     }
 
-      const newVideo = this.videoRepository.create({ videoUrl });
+  //     const newVideo = this.videoRepository.create({ videoUrl });
 
-      await this.videoRepository.save(newVideo);
+  //     await this.videoRepository.save(newVideo);
 
-      return { ok: false, videoId: newVideo.id };
-    } catch (error) {
-      console.error(error);
-      return { ok: false, error: '비디오 생성에 실패했습니다.' };
-    }
-  }
+  //     return { ok: false, videoId: newVideo.id };
+  //   } catch (error) {
+  //     console.error(error);
+  //     return { ok: false, error: '비디오 생성에 실패했습니다.' };
+  //   }
+  // }
 
   async createReply(commentId: number, replyData: CreateCommentInput) {
     try {
@@ -305,57 +301,57 @@ export class CommentsService {
     }
   }
 
-  async likeVideo(videoId: number, isIncrement: boolean) {
-    try {
-      const video = await this.videoRepository.findOne({
-        where: { id: videoId },
-      });
+  // async likeVideo(videoId: number, isIncrement: boolean) {
+  //   try {
+  //     const video = await this.videoRepository.findOne({
+  //       where: { id: videoId },
+  //     });
 
-      if (!video) {
-        return { ok: false, error: '비디오가 존재하지 않습니다.' };
-      }
+  //     if (!video) {
+  //       return { ok: false, error: '비디오가 존재하지 않습니다.' };
+  //     }
 
-      const newLikes = isIncrement ? video.likes + 1 : video.likes - 1;
+  //     const newLikes = isIncrement ? video.likes + 1 : video.likes - 1;
 
-      if (newLikes < 0) {
-        return { ok: false, error: '좋아요 수는 0보다 작을 수 없습니다.' };
-      }
+  //     if (newLikes < 0) {
+  //       return { ok: false, error: '좋아요 수는 0보다 작을 수 없습니다.' };
+  //     }
 
-      await this.videoRepository.update(videoId, {
-        likes: newLikes,
-      });
+  //     await this.videoRepository.update(videoId, {
+  //       likes: newLikes,
+  //     });
 
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error: '좋아요 상태 변경에 실패했습니다.' };
-    }
-  }
+  //     return { ok: true };
+  //   } catch (error) {
+  //     return { ok: false, error: '좋아요 상태 변경에 실패했습니다.' };
+  //   }
+  // }
 
-  async dislikeVideo(videoId: number, isIncrement: boolean) {
-    try {
-      const video = await this.videoRepository.findOne({
-        where: { id: videoId },
-      });
+  // async dislikeVideo(videoId: number, isIncrement: boolean) {
+  //   try {
+  //     const video = await this.videoRepository.findOne({
+  //       where: { id: videoId },
+  //     });
 
-      if (!video) {
-        return { ok: false, error: '비디오가 존재하지 않습니다.' };
-      }
+  //     if (!video) {
+  //       return { ok: false, error: '비디오가 존재하지 않습니다.' };
+  //     }
 
-      const newDislikes = isIncrement ? video.dislikes + 1 : video.dislikes - 1;
+  //     const newDislikes = isIncrement ? video.dislikes + 1 : video.dislikes - 1;
 
-      if (newDislikes < 0) {
-        return { ok: false, error: '싫어요 수는 0보다 작을 수 없습니다.' };
-      }
+  //     if (newDislikes < 0) {
+  //       return { ok: false, error: '싫어요 수는 0보다 작을 수 없습니다.' };
+  //     }
 
-      await this.videoRepository.update(videoId, {
-        dislikes: newDislikes,
-      });
+  //     await this.videoRepository.update(videoId, {
+  //       dislikes: newDislikes,
+  //     });
 
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error: '싫어요에 실패했습니다.' };
-    }
-  }
+  //     return { ok: true };
+  //   } catch (error) {
+  //     return { ok: false, error: '싫어요에 실패했습니다.' };
+  //   }
+  // }
 
   async likeComment(commentId: number, isIncrement: boolean) {
     try {
