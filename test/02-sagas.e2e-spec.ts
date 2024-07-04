@@ -278,3 +278,132 @@ describe('시리즈 목록을 불러온다', () => {
       });
   });
 });
+
+test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소된다.', async () => {
+  const [initialSaga] = await sagasRepository.find();
+  const [initialUser] = await usersRepository.find();
+
+  const setSagaLike = async (sagaId: number, userId: number) => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setSagaLike(input: { sagaId: ${sagaId}, userId: ${userId} }) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setSagaLike },
+          },
+        } = res;
+
+        expect(setSagaLike.ok).toBe(true);
+        expect(setSagaLike.error).toBe(null);
+      });
+  };
+
+  const getSaga = async (sagaId: number) => {
+    return sagasRepository.findOne({
+      where: { id: sagaId },
+      relations: ['likes'],
+    });
+  };
+
+  const getUser = async () => {
+    return usersRepository.findOne({
+      where: { id: initialUser.id },
+      relations: ['likes'],
+    });
+  };
+
+  // 좋아요 등록
+  await setSagaLike(initialSaga.id, initialUser.id);
+
+  // 좋아요 등록 후 확인
+  const sagaAfterFirstLike = await getSaga(initialSaga.id);
+  const userAfterFirstLike = await getUser();
+
+  expect(sagaAfterFirstLike.likes.length).toBe(1);
+  expect(userAfterFirstLike.likes.length).toBe(1);
+
+  // 좋아요 취소
+  await setSagaLike(initialSaga.id, initialUser.id);
+
+  // 좋아요 취소 후 확인
+  const sagaAfterSecondLike = await getSaga(initialSaga.id);
+  const userAfterSecondLike = await getUser();
+
+  expect(sagaAfterSecondLike.likes.length).toBe(0);
+  expect(userAfterSecondLike.likes.length).toBe(0);
+});
+
+test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
+  const [initialSaga] = await sagasRepository.find();
+  const [initialUser] = await usersRepository.find();
+
+  const setSagaInterest = async (sagaId: number, userId: number) => {
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setSagaInterest(input: { sagaId: ${sagaId}, userId: ${userId} }) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setSagaInterest },
+          },
+        } = res;
+        expect(setSagaInterest.ok).toBe(true);
+        expect(setSagaInterest.error).toBe(null);
+      });
+  };
+
+  const getSaga = async (sagaId: number) => {
+    return sagasRepository.findOne({
+      where: { id: sagaId },
+      relations: ['interests'],
+    });
+  };
+
+  const getUser = async () => {
+    return usersRepository.findOne({
+      where: { id: initialUser.id },
+      relations: ['interests'],
+    });
+  };
+
+  // 관심 등록
+  await setSagaInterest(initialSaga.id, initialUser.id);
+
+  // 관심 등록 후 확인
+  const sagaAfterFirstInterest = await getSaga(initialSaga.id);
+  const userAfterFirstInterest = await getUser();
+
+  expect(sagaAfterFirstInterest.interests.length).toBe(1);
+  expect(userAfterFirstInterest.interests.length).toBe(1);
+
+  // 관심 취소
+  await setSagaInterest(initialSaga.id, initialUser.id);
+
+  // 관심 취소 후 확인
+  const sagaAfterSecondInterest = await getSaga(initialSaga.id);
+  const userAfterSecondInterest = await getUser();
+
+  expect(sagaAfterSecondInterest.interests.length).toBe(0);
+  expect(userAfterSecondInterest.interests.length).toBe(0);
+});
