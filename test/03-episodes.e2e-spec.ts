@@ -176,7 +176,9 @@ describe('회차 목록을 불러온다.', () => {
               authorComment
               createdAt
               updatedAt
-              interests
+              interests{
+                  id
+                }
               likes{
                 id
               }
@@ -231,7 +233,9 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
-                interests
+                interests{
+                  id
+                }
                 likes {
                   id
                 }
@@ -289,7 +293,9 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
-                interests
+                interests{
+                  id
+                }
                 likes {
                   id
                 }
@@ -341,7 +347,9 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
-                interests
+                interests{
+                  id
+                }
                 likes {
                   id
                 }
@@ -406,7 +414,9 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
-                interests
+                interests{
+                  id
+                }
                 likes {
                   id
                 }
@@ -452,7 +462,7 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
         query: /* GraphQL */ `
             mutation {
               setEpisodeLike(input: { episodeId: ${episodeId} }) {
-             
+
               }
             }
           `,

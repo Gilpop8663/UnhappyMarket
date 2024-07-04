@@ -163,7 +163,7 @@ type Episode {
   content: String!
   createdAt: DateTime!
   id: Float!
-  interests: Float!
+  interests: [Interest!]!
   likes: [Like!]!
   saga: Saga!
   title: String!
@@ -180,6 +180,21 @@ type GetEpisodeDetailOutput {
   nextEpisode: Episode
   ok: Boolean!
   previousEpisode: Episode
+}
+
+type Interest {
+  createdAt: DateTime!
+  episode: Episode
+  id: Float!
+  interestableId: Float!
+  interestableType: InterestableType!
+  updatedAt: DateTime!
+  user: User!
+}
+
+enum InterestableType {
+  EPISODE
+  SAGA
 }
 
 type Like {
@@ -250,7 +265,7 @@ type Saga {
   description: String!
   episodes: [Episode!]!
   id: Float!
-  interests: Float!
+  interests: [Interest!]!
   isCompleted: Boolean!
   likes: [Like!]!
   thumbnailUrl: String!
@@ -267,6 +282,7 @@ type User {
   createdAt: DateTime!
   email: String!
   id: Float!
+  interests: [Interest!]!
   likes: [Like!]!
   nickname: String!
   password: String!

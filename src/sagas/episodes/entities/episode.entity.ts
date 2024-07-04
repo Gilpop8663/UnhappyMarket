@@ -4,8 +4,9 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { IsInt, IsString, Length } from 'class-validator';
+import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -47,10 +48,9 @@ export class Episode extends CoreEntity {
   @OneToMany(() => Like, (like) => like.episode, { cascade: true })
   likes: Like[];
 
-  @Column({ default: 0 })
-  @Field(() => Number)
-  @IsInt()
-  interests: number;
+  @Field(() => [Interest])
+  @OneToMany(() => Interest, (interest) => interest.episode, { cascade: true })
+  interests: Interest[];
 
   // @Field(() => [Comment])
   // @OneToMany(() => Comment, (comment) => comment.post, {

@@ -25,6 +25,8 @@ import { Saga } from './sagas/entities/saga.entity';
 import { Episode } from './sagas/episodes/entities/episode.entity';
 import { LikesModule } from './likes/likes.module';
 import { Like } from './likes/entities/like.entity';
+import { InterestsModule } from './interests/interests.module';
+import { Interest } from './interests/entities/interest.entity';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -77,6 +79,7 @@ const getEnvFilePath = () => {
         Saga,
         Episode,
         Like,
+        Interest,
       ],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
@@ -98,6 +101,7 @@ const getEnvFilePath = () => {
     CommentsModule,
     SagasModule,
     LikesModule,
+    InterestsModule,
   ],
   controllers: [],
   providers: [],

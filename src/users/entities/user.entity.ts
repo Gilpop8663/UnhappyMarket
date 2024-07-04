@@ -13,6 +13,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsAlpha, IsEmail, IsNumber, Length } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Interest } from 'src/interests/entities/interest.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -56,6 +57,10 @@ export class User extends CoreEntity {
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user)
   likes: Like[];
+
+  @Field(() => [Interest])
+  @OneToMany(() => Interest, (interest) => interest.user)
+  interests: Interest[];
 
   @BeforeInsert()
   @BeforeUpdate()

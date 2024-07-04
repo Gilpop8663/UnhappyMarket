@@ -6,10 +6,11 @@ import {
 } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { IsEnum, IsInt, IsString, Length } from 'class-validator';
+import { IsEnum, IsString, Length } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Episode } from '../episodes/entities/episode.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Interest } from 'src/interests/entities/interest.entity';
 
 enum SagaCategory {
   Series,
@@ -52,10 +53,11 @@ export class Saga extends CoreEntity {
   @OneToMany(() => Like, (like) => like.likeableId, { cascade: true })
   likes: Like[];
 
-  @Column({ default: 0 })
-  @Field(() => Number)
-  @IsInt()
-  interests: number;
+  @Field(() => [Interest])
+  @OneToMany(() => Interest, (interest) => interest.interestableId, {
+    cascade: true,
+  })
+  interests: Interest[];
 
   @Column({ default: false })
   @Field(() => Boolean)
