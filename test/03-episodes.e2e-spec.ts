@@ -526,13 +526,13 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
   const [initialEpisode] = await episodesRepository.find();
   const [initialUser] = await usersRepository.find();
 
-  const setEpisodeInterest = async (episodeId: number) => {
+  const setEpisodeInterest = async (episodeId: number, userId: number) => {
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           mutation {
-            setEpisodeInterest(input: { episodeId: ${episodeId} }) {
+            setEpisodeInterest(input: { episodeId: ${episodeId}, userId: ${userId} }) {
               ok
               error
             }
@@ -566,7 +566,7 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
   };
 
   // 관심 등록
-  await setEpisodeInterest(initialEpisode.id);
+  await setEpisodeInterest(initialEpisode.id, initialUser.id);
 
   // 관심 등록 후 확인
   const episodeAfterFirstInterest = await getEpisode(initialEpisode.id);
@@ -576,7 +576,7 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
   expect(userAfterFirstInterest.interests.length).toBe(1);
 
   // 관심 취소
-  await setEpisodeInterest(initialEpisode.id);
+  await setEpisodeInterest(initialEpisode.id, initialUser.id);
 
   // 관심 취소 후 확인
   const episodeAfterSecondInterest = await getEpisode(initialEpisode.id);

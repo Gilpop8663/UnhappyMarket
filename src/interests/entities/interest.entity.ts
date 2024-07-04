@@ -1,22 +1,22 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { InputType, registerEnumType } from '@nestjs/graphql';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
+import { IsEnum } from 'class-validator';
 
 export enum InterestableType {
-  SAGA,
-  EPISODE,
+  Saga,
+  Episode,
 }
 
 registerEnumType(InterestableType, {
   name: 'InterestableType',
 });
-
+@InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'interestableType' } })
 export class Interest extends CoreEntity {
   @ManyToOne(() => User, (user) => user.interests, { onDelete: 'CASCADE' })
   @Field(() => User)
@@ -28,6 +28,7 @@ export class Interest extends CoreEntity {
 
   @Column({ type: 'enum', enum: InterestableType })
   @Field(() => InterestableType)
+  @IsEnum(InterestableType)
   interestableType: InterestableType;
 
   @ManyToOne(() => Episode, (episode) => episode.interests, { nullable: true })

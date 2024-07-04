@@ -19,12 +19,18 @@ import {
   LikeEpisodeInput,
   LikeEpisodeOutput,
 } from 'src/likes/dtos/like-episode.dto';
+import {
+  InterestEpisodeInput,
+  InterestEpisodeOutput,
+} from 'src/interests/dtos/interest-episode.dto';
+import { InterestsService } from 'src/interests/interests.service';
 
 @Resolver()
 export class EpisodesResolver {
   constructor(
     private readonly episodeService: EpisodesService,
     private readonly likeService: LikesService,
+    private readonly interestService: InterestsService,
   ) {}
 
   @Mutation(() => CreateEpisodeOutput)
@@ -45,6 +51,13 @@ export class EpisodesResolver {
   @Mutation(() => LikeEpisodeOutput)
   setEpisodeLike(@Args('input') likeEpisodeInput: LikeEpisodeInput) {
     return this.likeService.likeEpisode(likeEpisodeInput);
+  }
+
+  @Mutation(() => InterestEpisodeOutput)
+  setEpisodeInterest(
+    @Args('input') interestEpisodeInput: InterestEpisodeInput,
+  ) {
+    return this.interestService.interestEpisode(interestEpisodeInput);
   }
 
   @Query(() => [Episode])

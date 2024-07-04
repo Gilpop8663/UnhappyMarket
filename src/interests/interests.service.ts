@@ -16,12 +16,17 @@ import {
   InterestEpisodeInput,
   InterestEpisodeOutput,
 } from './dtos/interest-episode.dto';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 @Injectable()
 export class InterestsService {
   constructor(
     @InjectRepository(Interest)
     private readonly interestsRepository: Repository<Interest>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Episode)
+    private readonly episodeRepository: Repository<Episode>,
   ) {}
 
   private async toggleInterest({
@@ -38,11 +43,20 @@ export class InterestsService {
       return { ok: true };
     }
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    const episode = await this.episodeRepository.findOne({
+      where: { id: interestableId },
+    });
+
     const newInterest = this.interestsRepository.create({
-      user: { id: userId } as User,
+      user,
       interestableId,
       interestableType,
+      episode:
+        interestableType === InterestableType['Episode'] ? episode : null,
     });
+
     await this.interestsRepository.save(newInterest);
 
     return { ok: true };
@@ -56,7 +70,7 @@ export class InterestsService {
       return this.toggleInterest({
         userId,
         interestableId: sagaId,
-        interestableType: InterestableType.SAGA,
+        interestableType: InterestableType.Saga,
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '시리즈 관심 작업에 실패했습니다.');
@@ -71,7 +85,7 @@ export class InterestsService {
       return this.toggleInterest({
         userId,
         interestableId: episodeId,
-        interestableType: InterestableType.EPISODE,
+        interestableType: InterestableType.Episode,
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '회차 관심 작업에 실패했습니다.');
