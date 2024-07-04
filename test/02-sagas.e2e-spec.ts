@@ -393,7 +393,7 @@ test('시리즈 관심 있어요를 누른다. 다시 한번 누르면 관심이
     });
 
     return user.interests.filter(
-      (item) => item.interestableType === InterestableType['Episode'],
+      (item) => item.interestableType === InterestableType['Saga'],
     ).length;
   };
 

@@ -17,6 +17,7 @@ import {
   InterestEpisodeOutput,
 } from './dtos/interest-episode.dto';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
+import { Saga } from 'src/sagas/entities/saga.entity';
 
 @Injectable()
 export class InterestsService {
@@ -27,6 +28,8 @@ export class InterestsService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Episode)
     private readonly episodeRepository: Repository<Episode>,
+    @InjectRepository(Saga)
+    private readonly sagaRepository: Repository<Saga>,
   ) {}
 
   private async toggleInterest({
@@ -49,12 +52,17 @@ export class InterestsService {
       where: { id: interestableId },
     });
 
+    const saga = await this.sagaRepository.findOne({
+      where: { id: interestableId },
+    });
+
     const newInterest = this.interestsRepository.create({
       user,
       interestableId,
       interestableType,
       episode:
         interestableType === InterestableType['Episode'] ? episode : null,
+      saga: interestableType === InterestableType['Saga'] ? saga : null,
     });
 
     await this.interestsRepository.save(newInterest);
