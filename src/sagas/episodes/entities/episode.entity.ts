@@ -1,22 +1,10 @@
-import {
-  Field,
-  InputType,
-  ObjectType,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-
-enum SagaCategory {
-  Series,
-  Challenge,
-}
-
-registerEnumType(SagaCategory, { name: 'SagaCategory' });
 
 @InputType({ isAbstract: true })
 @ObjectType()

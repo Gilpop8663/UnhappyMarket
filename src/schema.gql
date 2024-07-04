@@ -207,9 +207,19 @@ type Like {
   user: User!
 }
 
+input LikeEpisodeInput {
+  episodeId: Float!
+  userId: Float!
+}
+
+type LikeEpisodeOutput {
+  error: String
+  ok: Boolean!
+}
+
 enum LikeableType {
-  EPISODE
-  SAGA
+  Episode
+  Saga
 }
 
 input LoginInput {
@@ -243,6 +253,7 @@ type Mutation {
   likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
   likeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
   login(input: LoginInput!): LoginOutput!
+  setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }

@@ -14,10 +14,18 @@ import {
   DeleteEpisodeInput,
   DeleteEpisodeOutput,
 } from './dtos/delete-episode.dto';
+import { LikesService } from 'src/likes/likes.service';
+import {
+  LikeEpisodeInput,
+  LikeEpisodeOutput,
+} from 'src/likes/dtos/like-episode.dto';
 
 @Resolver()
 export class EpisodesResolver {
-  constructor(private readonly episodeService: EpisodesService) {}
+  constructor(
+    private readonly episodeService: EpisodesService,
+    private readonly likeService: LikesService,
+  ) {}
 
   @Mutation(() => CreateEpisodeOutput)
   createEpisode(@Args('input') createEpisodeInput: CreateEpisodeInput) {
@@ -32,6 +40,11 @@ export class EpisodesResolver {
   @Mutation(() => DeleteEpisodeOutput)
   deleteEpisode(@Args('input') deleteEpisodeInput: DeleteEpisodeInput) {
     return this.episodeService.deleteEpisode(deleteEpisodeInput);
+  }
+
+  @Mutation(() => LikeEpisodeOutput)
+  setEpisodeLike(@Args('input') likeEpisodeInput: LikeEpisodeInput) {
+    return this.likeService.likeEpisode(likeEpisodeInput);
   }
 
   @Query(() => [Episode])

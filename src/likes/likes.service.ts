@@ -8,12 +8,17 @@ import { ToggleLikeInput, ToggleLikeOutput } from './dtos/toggle-like.dto';
 import { LikeSagaInput, LikeSagaOutput } from './dtos/like-saga.dto';
 import { logErrorAndReturnFalse } from 'src/utils';
 import { LikeEpisodeInput, LikeEpisodeOutput } from './dtos/like-episode.dto';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 @Injectable()
 export class LikesService {
   constructor(
     @InjectRepository(Like)
     private readonly likesRepository: Repository<Like>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Episode)
+    private readonly episodeRepository: Repository<Episode>,
   ) {}
 
   private async toggleLike({
@@ -30,11 +35,19 @@ export class LikesService {
       return { ok: true };
     }
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    const episode = await this.episodeRepository.findOne({
+      where: { id: likeableId },
+    });
+
     const newLike = this.likesRepository.create({
-      user: { id: userId } as User,
+      user,
       likeableId,
       likeableType,
+      episode: likeableType === LikeableType['Episode'] ? episode : null,
     });
+
     await this.likesRepository.save(newLike);
 
     return { ok: true };
@@ -45,7 +58,7 @@ export class LikesService {
       return this.toggleLike({
         userId,
         likeableId: sagaId,
-        likeableType: LikeableType.SAGA,
+        likeableType: LikeableType.Saga,
       });
     } catch (error) {
       return logErrorAndReturnFalse(
@@ -63,7 +76,7 @@ export class LikesService {
       return this.toggleLike({
         userId,
         likeableId: episodeId,
-        likeableType: LikeableType.EPISODE,
+        likeableType: LikeableType.Episode,
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '회차 좋아요 작업에 실패했습니다.');

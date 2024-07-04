@@ -1,6 +1,11 @@
 import * as request from 'supertest';
 
-import { app, episodesRepository, sagasRepository } from './jest.setup';
+import {
+  app,
+  episodesRepository,
+  sagasRepository,
+  usersRepository,
+} from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -454,18 +459,20 @@ describe('회차 상세 정보를 불러온다.', () => {
 
 test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소된다.', async () => {
   const [initialEpisode] = await episodesRepository.find();
+  const [initialUser] = await usersRepository.find();
 
-  const setEpisodeLike = async (episodeId: number) => {
+  const setEpisodeLike = async (episodeId: number, userId: number) => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
-            mutation {
-              setEpisodeLike(input: { episodeId: ${episodeId} }) {
-
-              }
+          mutation {
+            setEpisodeLike(input: { episodeId: ${episodeId}, userId: ${userId} }) {
+              ok
+              error
             }
-          `,
+          }
+        `,
       })
       .expect(200)
       .expect((res) => {
@@ -480,33 +487,44 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
       });
   };
 
+  const getEpisode = async (episodeId: number) => {
+    return episodesRepository.findOne({
+      where: { id: episodeId },
+      relations: ['likes'],
+    });
+  };
+
+  const getUser = async () => {
+    return usersRepository.findOne({
+      where: { id: initialUser.id },
+      relations: ['likes'],
+    });
+  };
+
   // 좋아요 등록
-  await setEpisodeLike(initialEpisode.id);
+  await setEpisodeLike(initialEpisode.id, initialUser.id);
 
   // 좋아요 등록 후 확인
-  const episodeAfterFirstLike = await episodesRepository.findOne({
-    where: { id: initialEpisode.id },
-  });
+  const episodeAfterFirstLike = await getEpisode(initialEpisode.id);
+  const userAfterFirstLike = await getUser();
 
-  const likesCountAfterFirstLike = episodeAfterFirstLike.likes.length;
-
-  expect(likesCountAfterFirstLike).toBe(1);
+  expect(episodeAfterFirstLike.likes.length).toBe(1);
+  expect(userAfterFirstLike.likes.length).toBe(1);
 
   // 좋아요 취소
-  await setEpisodeLike(initialEpisode.id);
+  await setEpisodeLike(initialEpisode.id, initialUser.id);
 
   // 좋아요 취소 후 확인
-  const episodeAfterSecondLike = await episodesRepository.findOne({
-    where: { id: initialEpisode.id },
-  });
+  const episodeAfterSecondLike = await getEpisode(initialEpisode.id);
+  const userAfterSecondLike = await getUser();
 
-  const likesCountAfterSecondLike = episodeAfterSecondLike.likes.length;
-
-  expect(likesCountAfterSecondLike).toBe(0);
+  expect(episodeAfterSecondLike.likes.length).toBe(0);
+  expect(userAfterSecondLike.likes.length).toBe(0);
 });
 
 test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
   const [initialEpisode] = await episodesRepository.find();
+  const [initialUser] = await usersRepository.find();
 
   const setEpisodeInterest = async (episodeId: number) => {
     await request(app.getHttpServer())
@@ -533,24 +551,37 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
       });
   };
 
+  const getEpisode = async (episodeId: number) => {
+    return episodesRepository.findOne({
+      where: { id: episodeId },
+      relations: ['interests'],
+    });
+  };
+
+  const getUser = async () => {
+    return usersRepository.findOne({
+      where: { id: initialUser.id },
+      relations: ['interests'],
+    });
+  };
+
   // 관심 등록
   await setEpisodeInterest(initialEpisode.id);
 
   // 관심 등록 후 확인
-  const interestedEpisode = await episodesRepository.findOne({
-    where: { id: initialEpisode.id },
-  });
-  const interestsAfterInterest = interestedEpisode.interests.length;
-  expect(interestsAfterInterest).toBe(1);
+  const episodeAfterFirstInterest = await getEpisode(initialEpisode.id);
+  const userAfterFirstInterest = await getUser();
+
+  expect(episodeAfterFirstInterest.interests.length).toBe(1);
+  expect(userAfterFirstInterest.interests.length).toBe(1);
 
   // 관심 취소
   await setEpisodeInterest(initialEpisode.id);
 
   // 관심 취소 후 확인
-  const disinterestedEpisode = await episodesRepository.findOne({
-    where: { id: initialEpisode.id },
-  });
-  const interestsAfterDisinterest = disinterestedEpisode.interests.length;
+  const episodeAfterSecondInterest = await getEpisode(initialEpisode.id);
+  const userAfterSecondInterest = await getUser();
 
-  expect(interestsAfterDisinterest).toBe(0);
+  expect(episodeAfterSecondInterest.interests.length).toBe(0);
+  expect(userAfterSecondInterest.interests.length).toBe(0);
 });

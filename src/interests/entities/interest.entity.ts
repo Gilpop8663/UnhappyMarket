@@ -6,8 +6,8 @@ import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 export enum InterestableType {
-  SAGA = 'saga',
-  EPISODE = 'episode',
+  SAGA,
+  EPISODE,
 }
 
 registerEnumType(InterestableType, {
