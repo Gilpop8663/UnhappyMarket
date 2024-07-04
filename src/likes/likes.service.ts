@@ -9,6 +9,7 @@ import { LikeSagaInput, LikeSagaOutput } from './dtos/like-saga.dto';
 import { logErrorAndReturnFalse } from 'src/utils';
 import { LikeEpisodeInput, LikeEpisodeOutput } from './dtos/like-episode.dto';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
+import { Saga } from 'src/sagas/entities/saga.entity';
 
 @Injectable()
 export class LikesService {
@@ -19,6 +20,8 @@ export class LikesService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Episode)
     private readonly episodeRepository: Repository<Episode>,
+    @InjectRepository(Saga)
+    private readonly sagaRepository: Repository<Saga>,
   ) {}
 
   private async toggleLike({
@@ -41,11 +44,16 @@ export class LikesService {
       where: { id: likeableId },
     });
 
+    const saga = await this.sagaRepository.findOne({
+      where: { id: likeableId },
+    });
+
     const newLike = this.likesRepository.create({
       user,
       likeableId,
       likeableType,
       episode: likeableType === LikeableType['Episode'] ? episode : null,
+      saga: likeableType === LikeableType['Saga'] ? saga : null,
     });
 
     await this.likesRepository.save(newLike);

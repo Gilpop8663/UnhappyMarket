@@ -6,6 +6,8 @@ import {
   sagasRepository,
   usersRepository,
 } from './jest.setup';
+import { InterestableType } from 'src/interests/entities/interest.entity';
+import { LikeableType } from 'src/likes/entities/like.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -494,11 +496,15 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
     });
   };
 
-  const getUser = async () => {
-    return usersRepository.findOne({
+  const getUserLikeLength = async () => {
+    const user = await usersRepository.findOne({
       where: { id: initialUser.id },
       relations: ['likes'],
     });
+
+    return user.likes.filter(
+      (item) => item.likeableType === LikeableType['Episode'],
+    ).length;
   };
 
   // 좋아요 등록
@@ -506,20 +512,20 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
 
   // 좋아요 등록 후 확인
   const episodeAfterFirstLike = await getEpisode(initialEpisode.id);
-  const userAfterFirstLike = await getUser();
+  const userAfterFirstLike = await getUserLikeLength();
 
   expect(episodeAfterFirstLike.likes.length).toBe(1);
-  expect(userAfterFirstLike.likes.length).toBe(1);
+  expect(userAfterFirstLike).toBe(1);
 
   // 좋아요 취소
   await setEpisodeLike(initialEpisode.id, initialUser.id);
 
   // 좋아요 취소 후 확인
   const episodeAfterSecondLike = await getEpisode(initialEpisode.id);
-  const userAfterSecondLike = await getUser();
+  const userAfterSecondLike = await getUserLikeLength();
 
   expect(episodeAfterSecondLike.likes.length).toBe(0);
-  expect(userAfterSecondLike.likes.length).toBe(0);
+  expect(userAfterSecondLike).toBe(0);
 });
 
 test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
@@ -558,11 +564,15 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
     });
   };
 
-  const getUser = async () => {
-    return usersRepository.findOne({
+  const getUserInterestLength = async () => {
+    const user = await usersRepository.findOne({
       where: { id: initialUser.id },
       relations: ['interests'],
     });
+
+    return user.interests.filter(
+      (item) => item.interestableType === InterestableType['Episode'],
+    ).length;
   };
 
   // 관심 등록
@@ -570,18 +580,18 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
 
   // 관심 등록 후 확인
   const episodeAfterFirstInterest = await getEpisode(initialEpisode.id);
-  const userAfterFirstInterest = await getUser();
+  const userAfterFirstInterest = await getUserInterestLength();
 
   expect(episodeAfterFirstInterest.interests.length).toBe(1);
-  expect(userAfterFirstInterest.interests.length).toBe(1);
+  expect(userAfterFirstInterest).toBe(1);
 
   // 관심 취소
   await setEpisodeInterest(initialEpisode.id, initialUser.id);
 
   // 관심 취소 후 확인
   const episodeAfterSecondInterest = await getEpisode(initialEpisode.id);
-  const userAfterSecondInterest = await getUser();
+  const userAfterSecondInterest = await getUserInterestLength();
 
   expect(episodeAfterSecondInterest.interests.length).toBe(0);
-  expect(userAfterSecondInterest.interests.length).toBe(0);
+  expect(userAfterSecondInterest).toBe(0);
 });

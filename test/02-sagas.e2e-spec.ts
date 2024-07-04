@@ -1,6 +1,8 @@
 import * as request from 'supertest';
 
 import { app, sagasRepository, usersRepository } from './jest.setup';
+import { LikeableType } from 'src/likes/entities/like.entity';
+import { InterestableType } from 'src/interests/entities/interest.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -279,7 +281,7 @@ describe('시리즈 목록을 불러온다', () => {
   });
 });
 
-test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소된다.', async () => {
+test('시리즈 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소된다.', async () => {
   const [initialSaga] = await sagasRepository.find();
   const [initialUser] = await usersRepository.find();
 
@@ -316,11 +318,15 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
     });
   };
 
-  const getUser = async () => {
-    return usersRepository.findOne({
+  const getUserLikeLength = async () => {
+    const user = await usersRepository.findOne({
       where: { id: initialUser.id },
       relations: ['likes'],
     });
+
+    return user.likes.filter(
+      (item) => item.likeableType === LikeableType['Saga'],
+    ).length;
   };
 
   // 좋아요 등록
@@ -328,23 +334,23 @@ test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소
 
   // 좋아요 등록 후 확인
   const sagaAfterFirstLike = await getSaga(initialSaga.id);
-  const userAfterFirstLike = await getUser();
+  const userAfterFirstLike = await getUserLikeLength();
 
   expect(sagaAfterFirstLike.likes.length).toBe(1);
-  expect(userAfterFirstLike.likes.length).toBe(1);
+  expect(userAfterFirstLike).toBe(1);
 
   // 좋아요 취소
   await setSagaLike(initialSaga.id, initialUser.id);
 
   // 좋아요 취소 후 확인
   const sagaAfterSecondLike = await getSaga(initialSaga.id);
-  const userAfterSecondLike = await getUser();
+  const userAfterSecondLike = await getUserLikeLength();
 
   expect(sagaAfterSecondLike.likes.length).toBe(0);
-  expect(userAfterSecondLike.likes.length).toBe(0);
+  expect(userAfterSecondLike).toBe(0);
 });
 
-test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
+test('시리즈 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
   const [initialSaga] = await sagasRepository.find();
   const [initialUser] = await usersRepository.find();
 
@@ -380,11 +386,15 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
     });
   };
 
-  const getUser = async () => {
-    return usersRepository.findOne({
+  const getUserInterestLength = async () => {
+    const user = await usersRepository.findOne({
       where: { id: initialUser.id },
       relations: ['interests'],
     });
+
+    return user.interests.filter(
+      (item) => item.interestableType === InterestableType['Episode'],
+    ).length;
   };
 
   // 관심 등록
@@ -392,18 +402,18 @@ test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 �
 
   // 관심 등록 후 확인
   const sagaAfterFirstInterest = await getSaga(initialSaga.id);
-  const userAfterFirstInterest = await getUser();
+  const userAfterFirstInterest = await getUserInterestLength();
 
   expect(sagaAfterFirstInterest.interests.length).toBe(1);
-  expect(userAfterFirstInterest.interests.length).toBe(1);
+  expect(userAfterFirstInterest).toBe(1);
 
   // 관심 취소
   await setSagaInterest(initialSaga.id, initialUser.id);
 
   // 관심 취소 후 확인
   const sagaAfterSecondInterest = await getSaga(initialSaga.id);
-  const userAfterSecondInterest = await getUser();
+  const userAfterSecondInterest = await getUserInterestLength();
 
   expect(sagaAfterSecondInterest.interests.length).toBe(0);
-  expect(userAfterSecondInterest.interests.length).toBe(0);
+  expect(userAfterSecondInterest).toBe(0);
 });

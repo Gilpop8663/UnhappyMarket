@@ -62,6 +62,8 @@ export class SagasService {
   }
 
   async getSagaList() {
-    return this.sagaRepository.find({ relations: ['author'] });
+    return this.sagaRepository.find({
+      relations: ['author', 'likes', 'interests'],
+    });
   }
 }

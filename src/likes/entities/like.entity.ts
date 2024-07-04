@@ -5,6 +5,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { IsEnum } from 'class-validator';
+import { Saga } from 'src/sagas/entities/saga.entity';
 
 export enum LikeableType {
   Saga,
@@ -35,4 +36,8 @@ export class Like extends CoreEntity {
   @ManyToOne(() => Episode, (episode) => episode.likes, { nullable: true })
   @Field(() => Episode, { nullable: true })
   episode?: Episode;
+
+  @ManyToOne(() => Saga, (saga) => saga.likes, { nullable: true })
+  @Field(() => Saga, { nullable: true })
+  saga?: Saga;
 }

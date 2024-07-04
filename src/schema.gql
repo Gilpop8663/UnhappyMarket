@@ -188,6 +188,7 @@ type Interest {
   id: Float!
   interestableId: Float!
   interestableType: InterestableType!
+  saga: Saga
   updatedAt: DateTime!
   user: User!
 }
@@ -198,6 +199,16 @@ input InterestEpisodeInput {
 }
 
 type InterestEpisodeOutput {
+  error: String
+  ok: Boolean!
+}
+
+input InterestSagaInput {
+  sagaId: Float!
+  userId: Float!
+}
+
+type InterestSagaOutput {
   error: String
   ok: Boolean!
 }
@@ -213,6 +224,7 @@ type Like {
   id: Float!
   likeableId: Float!
   likeableType: LikeableType!
+  saga: Saga
   updatedAt: DateTime!
   user: User!
 }
@@ -223,6 +235,16 @@ input LikeEpisodeInput {
 }
 
 type LikeEpisodeOutput {
+  error: String
+  ok: Boolean!
+}
+
+input LikeSagaInput {
+  sagaId: Float!
+  userId: Float!
+}
+
+type LikeSagaOutput {
   error: String
   ok: Boolean!
 }
@@ -265,6 +287,8 @@ type Mutation {
   login(input: LoginInput!): LoginOutput!
   setEpisodeInterest(input: InterestEpisodeInput!): InterestEpisodeOutput!
   setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!
+  setSagaInterest(input: InterestSagaInput!): InterestSagaOutput!
+  setSagaLike(input: LikeSagaInput!): LikeSagaOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }

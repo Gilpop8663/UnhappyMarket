@@ -50,11 +50,11 @@ export class Saga extends CoreEntity {
   category: SagaCategory;
 
   @Field(() => [Like])
-  @OneToMany(() => Like, (like) => like.likeableId, { cascade: true })
+  @OneToMany(() => Like, (like) => like.saga, { cascade: true })
   likes: Like[];
 
   @Field(() => [Interest])
-  @OneToMany(() => Interest, (interest) => interest.interestableId, {
+  @OneToMany(() => Interest, (interest) => interest.saga, {
     cascade: true,
   })
   interests: Interest[];
