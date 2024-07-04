@@ -441,3 +441,106 @@ describe('회차 상세 정보를 불러온다.', () => {
       });
   });
 });
+
+test('회차 좋아요를 누른다. 다시 한번 누르면 좋아요가 취소된다.', async () => {
+  const [initialEpisode] = await episodesRepository.find();
+
+  const setEpisodeLike = async (episodeId: number) => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+            mutation {
+              setEpisodeLike(input: { episodeId: ${episodeId} }) {
+             
+              }
+            }
+          `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setEpisodeLike },
+          },
+        } = res;
+
+        expect(setEpisodeLike.ok).toBe(true);
+        expect(setEpisodeLike.error).toBe(null);
+      });
+  };
+
+  // 좋아요 등록
+  await setEpisodeLike(initialEpisode.id);
+
+  // 좋아요 등록 후 확인
+  const episodeAfterFirstLike = await episodesRepository.findOne({
+    where: { id: initialEpisode.id },
+  });
+
+  const likesCountAfterFirstLike = episodeAfterFirstLike.likes.length;
+
+  expect(likesCountAfterFirstLike).toBe(1);
+
+  // 좋아요 취소
+  await setEpisodeLike(initialEpisode.id);
+
+  // 좋아요 취소 후 확인
+  const episodeAfterSecondLike = await episodesRepository.findOne({
+    where: { id: initialEpisode.id },
+  });
+
+  const likesCountAfterSecondLike = episodeAfterSecondLike.likes.length;
+
+  expect(likesCountAfterSecondLike).toBe(0);
+});
+
+test('회차 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
+  const [initialEpisode] = await episodesRepository.find();
+
+  const setEpisodeInterest = async (episodeId: number) => {
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setEpisodeInterest(input: { episodeId: ${episodeId} }) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setEpisodeInterest },
+          },
+        } = res;
+        expect(setEpisodeInterest.ok).toBe(true);
+        expect(setEpisodeInterest.error).toBe(null);
+      });
+  };
+
+  // 관심 등록
+  await setEpisodeInterest(initialEpisode.id);
+
+  // 관심 등록 후 확인
+  const interestedEpisode = await episodesRepository.findOne({
+    where: { id: initialEpisode.id },
+  });
+  const interestsAfterInterest = interestedEpisode.interests.length;
+  expect(interestsAfterInterest).toBe(1);
+
+  // 관심 취소
+  await setEpisodeInterest(initialEpisode.id);
+
+  // 관심 취소 후 확인
+  const disinterestedEpisode = await episodesRepository.findOne({
+    where: { id: initialEpisode.id },
+  });
+  const interestsAfterDisinterest = disinterestedEpisode.interests.length;
+
+  expect(interestsAfterDisinterest).toBe(0);
+});
