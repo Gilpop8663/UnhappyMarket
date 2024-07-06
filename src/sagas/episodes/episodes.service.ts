@@ -13,6 +13,11 @@ import {
   DeleteEpisodeInput,
   DeleteEpisodeOutput,
 } from './dtos/delete-episode.dto';
+import { logErrorAndReturnFalse } from 'src/utils';
+import {
+  IncreaseEpisodeViewCountInput,
+  IncreaseEpisodeViewCountOutput,
+} from './dtos/increase-episode-view-count.dto';
 
 @Injectable()
 export class EpisodesService {
@@ -89,6 +94,22 @@ export class EpisodesService {
       return { ok: true };
     } catch (error) {
       return { ok: false, error: '회차 삭제에 실패했습니다.' };
+    }
+  }
+
+  async increaseEpisodeViewCount({
+    episodeId,
+  }: IncreaseEpisodeViewCountInput): Promise<IncreaseEpisodeViewCountOutput> {
+    try {
+      const episode = await this.episodeRepository.findOne({
+        where: { id: episodeId },
+      });
+
+      await this.episodeRepository.update(episodeId, {
+        views: episode.views + 1,
+      });
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
     }
   }
 

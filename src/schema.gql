@@ -168,6 +168,7 @@ type Episode {
   saga: Saga!
   title: String!
   updatedAt: DateTime!
+  views: Float!
 }
 
 input GetEpisodeDetailInput {
@@ -180,6 +181,15 @@ type GetEpisodeDetailOutput {
   nextEpisode: Episode
   ok: Boolean!
   previousEpisode: Episode
+}
+
+input IncreaseEpisodeViewCountInput {
+  episodeId: Float!
+}
+
+type IncreaseEpisodeViewCountOutput {
+  error: String
+  ok: Boolean!
 }
 
 type Interest {
@@ -282,6 +292,7 @@ type Mutation {
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editReply(input: EditCommentInput!, replyId: Float!): EditCommentOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
+  increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
   likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
   likeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
   login(input: LoginInput!): LoginOutput!

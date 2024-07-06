@@ -24,6 +24,11 @@ import {
   InterestEpisodeOutput,
 } from 'src/interests/dtos/interest-episode.dto';
 import { InterestsService } from 'src/interests/interests.service';
+import {
+  IncreaseEpisodeViewCountInput,
+  IncreaseEpisodeViewCountOutput,
+} from './dtos/increase-episode-view-count.dto';
+import { Res } from '@nestjs/common';
 
 @Resolver()
 export class EpisodesResolver {
@@ -58,6 +63,15 @@ export class EpisodesResolver {
     @Args('input') interestEpisodeInput: InterestEpisodeInput,
   ) {
     return this.interestService.interestEpisode(interestEpisodeInput);
+  }
+
+  @Mutation(() => IncreaseEpisodeViewCountOutput)
+  increaseEpisodeViewCount(
+    @Args('input') increaseEpisodeViewCountInput: IncreaseEpisodeViewCountInput,
+  ) {
+    return this.episodeService.increaseEpisodeViewCount(
+      increaseEpisodeViewCountInput,
+    );
   }
 
   @Query(() => [Episode])

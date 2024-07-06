@@ -40,6 +40,10 @@ export class Episode extends CoreEntity {
   @OneToMany(() => Interest, (interest) => interest.episode, { cascade: true })
   interests: Interest[];
 
+  @Column({ default: 0 })
+  @Field(() => Number)
+  views: number;
+
   // @Field(() => [Comment])
   // @OneToMany(() => Comment, (comment) => comment.post, {
   //   onDelete: 'CASCADE',
