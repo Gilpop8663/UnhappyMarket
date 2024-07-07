@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentInput } from './dtos/create-comment.dto';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
@@ -31,19 +31,6 @@ export class CommentsService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-
-  // async getRepliesByCommentId(commentId: number) {
-  //   const comment = await this.commentRepository.findOne({
-  //     where: { id: commentId },
-  //     relations: ['replies'],
-  //   });
-
-  //   if (!comment) {
-  //     return { ok: false, error: '댓글이 존재하지 않습니다.' };
-  //   }
-
-  //   return comment.replies;
-  // }
 
   async createComment(commentData: CreateCommentInput) {
     try {
@@ -117,7 +104,7 @@ export class CommentsService {
     try {
       if (category === CommentCategory['Episode']) {
         const commentList = await this.commentRepository.find({
-          where: { category, episode: { id: episodeId } },
+          where: { category, episode: { id: episodeId }, parent: IsNull() },
           relations: ['user', 'replies', 'parent', 'likes', 'dislikes'],
         });
 
@@ -160,212 +147,4 @@ export class CommentsService {
       return { ok: false, error: '답글 생성에 실패했습니다.' };
     }
   }
-
-  // async editReply(replyId: number, { password, content }: EditCommentInput) {
-  //   try {
-  //     const reply = await this.commentReplyRepository.findOne({
-  //       where: { id: replyId },
-  //       select: ['password'],
-  //     });
-
-  //     if (!reply) {
-  //       return { ok: false, error: '답글이 존재하지 않습니다.' };
-  //     }
-
-  //     const isPasswordCorrect = await reply.checkPassword(password);
-
-  //     if (!isPasswordCorrect) {
-  //       return { ok: false, error: '비밀번호가 맞지 않습니다.' };
-  //     }
-
-  //     await this.commentReplyRepository.update(replyId, { content });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '답글 수정에 실패했습니다.' };
-  //   }
-  // }
-
-  // async deleteReply(replyId: number, { password }: DeleteCommentInput) {
-  //   try {
-  //     const reply = await this.commentReplyRepository.findOne({
-  //       where: { id: replyId },
-  //       select: ['password'],
-  //     });
-
-  //     if (!reply) {
-  //       return { ok: false, error: '답글이 존재하지 않습니다.' };
-  //     }
-
-  //     const isPasswordCorrect = await reply.checkPassword(password);
-
-  //     if (!isPasswordCorrect) {
-  //       return { ok: false, error: '비밀번호가 맞지 않습니다.' };
-  //     }
-
-  //     await this.commentReplyRepository.delete(replyId);
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '답글 삭제에 실패했습니다.' };
-  //   }
-  // }
-
-  // async likeVideo(videoId: number, isIncrement: boolean) {
-  //   try {
-  //     const video = await this.videoRepository.findOne({
-  //       where: { id: videoId },
-  //     });
-
-  //     if (!video) {
-  //       return { ok: false, error: '비디오가 존재하지 않습니다.' };
-  //     }
-
-  //     const newLikes = isIncrement ? video.likes + 1 : video.likes - 1;
-
-  //     if (newLikes < 0) {
-  //       return { ok: false, error: '좋아요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.videoRepository.update(videoId, {
-  //       likes: newLikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '좋아요 상태 변경에 실패했습니다.' };
-  //   }
-  // }
-
-  // async dislikeVideo(videoId: number, isIncrement: boolean) {
-  //   try {
-  //     const video = await this.videoRepository.findOne({
-  //       where: { id: videoId },
-  //     });
-
-  //     if (!video) {
-  //       return { ok: false, error: '비디오가 존재하지 않습니다.' };
-  //     }
-
-  //     const newDislikes = isIncrement ? video.dislikes + 1 : video.dislikes - 1;
-
-  //     if (newDislikes < 0) {
-  //       return { ok: false, error: '싫어요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.videoRepository.update(videoId, {
-  //       dislikes: newDislikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '싫어요에 실패했습니다.' };
-  //   }
-  // }
-
-  // async likeComment(commentId: number, isIncrement: boolean) {
-  //   try {
-  //     const comment = await this.commentRepository.findOne({
-  //       where: { id: commentId },
-  //     });
-
-  //     if (!comment) {
-  //       return { ok: false, error: '댓글이 존재하지 않습니다.' };
-  //     }
-
-  //     const newLikes = isIncrement ? comment.likes + 1 : comment.likes - 1;
-
-  //     if (newLikes < 0) {
-  //       return { ok: false, error: '좋아요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.commentRepository.update(commentId, {
-  //       likes: newLikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '좋아요에 실패했습니다.' };
-  //   }
-  // }
-
-  // async dislikeComment(commentId: number, isIncrement: boolean) {
-  //   try {
-  //     const comment = await this.commentRepository.findOne({
-  //       where: { id: commentId },
-  //     });
-
-  //     if (!comment) {
-  //       return { ok: false, error: '댓글이 존재하지 않습니다.' };
-  //     }
-
-  //     const newDislikes = isIncrement
-  //       ? comment.dislikes + 1
-  //       : comment.dislikes - 1;
-
-  //     if (newDislikes < 0) {
-  //       return { ok: false, error: '싫어요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.commentRepository.update(commentId, {
-  //       dislikes: newDislikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '싫어요에 실패했습니다.' };
-  //   }
-  // }
-
-  // async dislikeReply(replyId: number, isIncrement: boolean) {
-  //   try {
-  //     const reply = await this.commentReplyRepository.findOne({
-  //       where: { id: replyId },
-  //     });
-
-  //     if (!reply) {
-  //       return { ok: false, error: '답글이 존재하지 않습니다.' };
-  //     }
-
-  //     const newDislikes = isIncrement ? reply.dislikes + 1 : reply.dislikes - 1;
-
-  //     if (newDislikes < 0) {
-  //       return { ok: false, error: '싫어요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.commentReplyRepository.update(replyId, {
-  //       dislikes: newDislikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '싫어요에 실패했습니다.' };
-  //   }
-  // }
-
-  // async likeReply(replyId: number, isIncrement: boolean) {
-  //   try {
-  //     const reply = await this.commentReplyRepository.findOne({
-  //       where: { id: replyId },
-  //     });
-
-  //     if (!reply) {
-  //       return { ok: false, error: '답글이 존재하지 않습니다.' };
-  //     }
-
-  //     const newLikes = isIncrement ? reply.likes + 1 : reply.likes - 1;
-
-  //     if (newLikes < 0) {
-  //       return { ok: false, error: '좋아요 수는 0보다 작을 수 없습니다.' };
-  //     }
-
-  //     await this.commentReplyRepository.update(replyId, {
-  //       likes: newLikes,
-  //     });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '좋아요에 실패했습니다.' };
-  //   }
-  // }
 }
