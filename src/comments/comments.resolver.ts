@@ -14,10 +14,18 @@ import {
   DeleteCommentInput,
   DeleteCommentOutput,
 } from './dtos/delete-comment.dto';
+import {
+  LikeCommentInput,
+  LikeCommentOutput,
+} from 'src/likes/dtos/like-comemnt.dto';
+import { LikesService } from 'src/likes/likes.service';
 
 @Resolver()
 export class CommentsResolver {
-  constructor(private readonly commentService: CommentsService) {}
+  constructor(
+    private readonly commentService: CommentsService,
+    private readonly likeService: LikesService,
+  ) {}
 
   @Mutation(() => CreateCommentOutput)
   createComment(@Args('input') createCommentInput: CreateCommentInput) {
@@ -32,6 +40,11 @@ export class CommentsResolver {
   @Mutation(() => DeleteCommentOutput)
   deleteComment(@Args('input') input: DeleteCommentInput) {
     return this.commentService.deleteComment(input);
+  }
+
+  @Mutation(() => LikeCommentOutput)
+  setCommentLike(@Args('input') input: LikeCommentInput) {
+    return this.likeService.likeComment(input);
   }
 
   @Query(() => GetCommentListOutput)

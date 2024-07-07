@@ -23,7 +23,7 @@ describe('LikesService', () => {
     it('should like if not already liked', async () => {
       const userId = 1;
       const likeableId = 2;
-      const likeableType = LikeableType.SAGA;
+      const likeableType = LikeableType.Saga;
 
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
       jest.spyOn(repository, 'create').mockReturnValue({ id: 1 } as any);
@@ -50,7 +50,7 @@ describe('LikesService', () => {
     it('should unlike if already liked', async () => {
       const userId = 1;
       const likeableId = 2;
-      const likeableType = LikeableType.SAGA;
+      const likeableType = LikeableType.Saga;
       const existingLike = { id: 1 };
 
       jest.spyOn(repository, 'findOne').mockResolvedValue(existingLike as any);

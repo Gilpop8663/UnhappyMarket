@@ -114,7 +114,7 @@ export class CommentsService {
       if (category === CommentCategory['Episode']) {
         const commentList = await this.commentRepository.find({
           where: { category, episode: { id: episodeId } },
-          relations: ['user', 'replies', 'parent'],
+          relations: ['user', 'replies', 'parent', 'likes'],
         });
 
         return { data: commentList, ok: true };

@@ -6,10 +6,12 @@ import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { IsEnum } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 export enum LikeableType {
   Saga,
   Episode,
+  Comment,
 }
 
 registerEnumType(LikeableType, {
@@ -40,4 +42,8 @@ export class Like extends CoreEntity {
   @ManyToOne(() => Saga, (saga) => saga.likes, { nullable: true })
   @Field(() => Saga, { nullable: true })
   saga?: Saga;
+
+  @ManyToOne(() => Comment, (comment) => comment.likes, { nullable: true })
+  @Field(() => Comment, { nullable: true })
+  comment?: Comment;
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/graphql';
 import { IsString, MaxLength, MinLength, IsInt, IsEnum } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { Like } from 'src/likes/entities/like.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -32,10 +33,9 @@ export class Comment extends CoreEntity {
   @IsString()
   content: string;
 
-  @Column({ default: 0 })
-  @Field(() => Number)
-  @IsInt()
-  likes: number;
+  @Field(() => [Like])
+  @OneToMany(() => Like, (like) => like.comment, { cascade: true })
+  likes: Like[];
 
   @Column({ default: 0 })
   @Field(() => Number)

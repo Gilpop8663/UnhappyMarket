@@ -4,7 +4,11 @@ export const logErrorAndReturnFalse = (
   error: any,
   errorMessage: string,
 ): CoreOutput => {
-  console.error(error);
+  try {
+    console.error(error);
 
-  return { ok: false, error: errorMessage };
+    return { ok: false, error: errorMessage };
+  } catch (error) {
+    console.error(error);
+  }
 };

@@ -9,7 +9,7 @@ type Comment {
   dislikes: Float!
   episode: Episode!
   id: Float!
-  likes: Float!
+  likes: [Like!]!
   parent: Comment
   replies: [Comment!]
   updatedAt: DateTime!
@@ -239,6 +239,7 @@ enum InterestableType {
 }
 
 type Like {
+  comment: Comment
   createdAt: DateTime!
   episode: Episode
   id: Float!
@@ -247,6 +248,16 @@ type Like {
   saga: Saga
   updatedAt: DateTime!
   user: User!
+}
+
+input LikeCommentInput {
+  commentId: Float!
+  userId: Float!
+}
+
+type LikeCommentOutput {
+  error: String
+  ok: Boolean!
 }
 
 input LikeEpisodeInput {
@@ -270,6 +281,7 @@ type LikeSagaOutput {
 }
 
 enum LikeableType {
+  Comment
   Episode
   Saga
 }
@@ -298,6 +310,7 @@ type Mutation {
   editSaga(input: EditSagaInput!): EditSagaOutput!
   increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
   login(input: LoginInput!): LoginOutput!
+  setCommentLike(input: LikeCommentInput!): LikeCommentOutput!
   setEpisodeInterest(input: InterestEpisodeInput!): InterestEpisodeOutput!
   setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!
   setSagaInterest(input: InterestSagaInput!): InterestSagaOutput!
