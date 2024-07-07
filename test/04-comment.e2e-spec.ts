@@ -165,20 +165,15 @@ test('회차의 댓글을 수정한다.', async () => {
 test('회차의 댓글을 삭제한다.', async () => {
   const [initialComment] = await commentRepository.find();
 
-  const editContent = '댓글 수정';
-
-  expect(initialComment.content).not.toBe(editContent);
-
-  const editComment = async () => {
+  const deleteComment = async () => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           mutation {
-            editComment(
+            deleteComment(
               input: {
                 commentId: ${initialComment.id}
-                content: "${editContent}"
               }
             ) {
               ok
@@ -191,20 +186,22 @@ test('회차의 댓글을 삭제한다.', async () => {
       .expect((res) => {
         const {
           body: {
-            data: { editComment },
+            data: { deleteComment },
           },
         } = res;
 
-        expect(editComment.ok).toBe(true);
-        expect(editComment.error).toBe(null);
+        expect(deleteComment.ok).toBe(true);
+        expect(deleteComment.error).toBe(null);
       });
   };
 
-  await editComment();
+  await deleteComment();
 
-  const [updatedComment] = await commentRepository.find();
+  const deletedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+  });
 
-  expect(updatedComment.content).toBe(editContent);
+  expect(deletedComment).toBeNull();
 });
 
 test.todo('회차의 댓글을 삭제한다.');

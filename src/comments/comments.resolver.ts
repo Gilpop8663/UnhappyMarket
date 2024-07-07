@@ -25,6 +25,11 @@ export class CommentsResolver {
     return this.commentService.editComment(input);
   }
 
+  @Mutation(() => EditCommentOutput)
+  deleteComment(@Args('input') input: EditCommentInput) {
+    return this.commentService.editComment(input);
+  }
+
   @Query(() => GetCommentListOutput)
   getCommentList(@Args('input') input: GetCommentListInput) {
     return this.commentService.getCommentList(input);

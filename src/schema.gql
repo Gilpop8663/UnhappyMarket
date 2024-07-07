@@ -281,6 +281,7 @@ type Mutation {
   createComment(input: CreateCommentInput!): CreateCommentOutput!
   createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
+  deleteComment(input: EditCommentInput!): EditCommentOutput!
   deleteEpisode(input: DeleteEpisodeInput!): DeleteEpisodeOutput!
   deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!
   editComment(input: EditCommentInput!): EditCommentOutput!
