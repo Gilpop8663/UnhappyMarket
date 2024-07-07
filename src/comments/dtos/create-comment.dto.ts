@@ -4,10 +4,15 @@ import { Comment } from '../entities/comment.entity';
 
 @InputType()
 export class CreateCommentInput extends PickType(Comment, [
-  'nickname',
-  'password',
   'content',
-]) {}
+  'category',
+]) {
+  @Field(() => Number)
+  userId: number;
+
+  @Field(() => Number)
+  episodeId: number;
+}
 
 @ObjectType()
 export class CreateCommentOutput extends CoreOutput {

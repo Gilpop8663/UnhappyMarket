@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
@@ -44,9 +45,9 @@ export class Episode extends CoreEntity {
   @Field(() => Number)
   views: number;
 
-  // @Field(() => [Comment])
-  // @OneToMany(() => Comment, (comment) => comment.post, {
-  //   onDelete: 'CASCADE',
-  // })
-  // comments: Comment[];
+  @Field(() => [Comment])
+  @OneToMany(() => Comment, (comment) => comment.episode, {
+    onDelete: 'CASCADE',
+  })
+  comments: Comment[];
 }

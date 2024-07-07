@@ -28,7 +28,6 @@ import {
   IncreaseEpisodeViewCountInput,
   IncreaseEpisodeViewCountOutput,
 } from './dtos/increase-episode-view-count.dto';
-import { Res } from '@nestjs/common';
 
 @Resolver()
 export class EpisodesResolver {

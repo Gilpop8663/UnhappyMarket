@@ -3,11 +3,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Comment } from '../entities/comment.entity';
 
 @InputType()
-export class CreateReplyInput extends PickType(Comment, [
-  'nickname',
-  'password',
-  'content',
-]) {}
+export class CreateReplyInput extends PickType(Comment, ['content']) {}
 
 @ObjectType()
 export class CreateReplyOutput extends CoreOutput {

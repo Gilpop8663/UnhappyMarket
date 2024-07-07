@@ -3,27 +3,24 @@
 # ------------------------------------------------------
 
 type Comment {
+  category: CommentCategory!
   content: String!
   createdAt: DateTime!
   dislikes: Float!
+  episode: Episode!
   id: Float!
   likes: Float!
-  nickname: String!
-  password: String!
-  replies: [CommentReply!]!
+  parent: Comment
+  replies: [Comment!]
   updatedAt: DateTime!
+  user: User!
 }
 
-type CommentReply {
-  comment: Comment!
-  content: String!
-  createdAt: DateTime!
-  dislikes: Float!
-  id: Float!
-  likes: Float!
-  nickname: String!
-  password: String!
-  updatedAt: DateTime!
+"""댓글의 종류"""
+enum CommentCategory {
+  Challenge
+  Series
+  SmallTalk
 }
 
 type CoreOutput {
@@ -43,6 +40,19 @@ type CreateAccountOutput {
   ok: Boolean!
 }
 
+input CreateCommentInput {
+  category: CommentCategory!
+  content: String!
+  episodeId: Float!
+  userId: Float!
+}
+
+type CreateCommentOutput {
+  commentId: Float!
+  error: String
+  ok: Boolean!
+}
+
 input CreateEpisodeInput {
   authorComment: String!
   content: String!
@@ -54,18 +64,6 @@ type CreateEpisodeOutput {
   episodeId: Float
   error: String
   ok: Boolean!
-}
-
-input CreateReplyInput {
-  content: String!
-  nickname: String!
-  password: String!
-}
-
-type CreateReplyOutput {
-  error: String
-  ok: Boolean!
-  replyId: Float!
 }
 
 input CreateSagaInput {
@@ -87,15 +85,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-input DeleteCommentInput {
-  password: String
-}
-
-type DeleteCommentOutput {
-  error: String
-  ok: Boolean!
-}
-
 input DeleteEpisodeInput {
   episodeId: Float!
 }
@@ -110,16 +99,6 @@ input DeleteSagaInput {
 }
 
 type DeleteSagaOutput {
-  error: String
-  ok: Boolean!
-}
-
-input EditCommentInput {
-  content: String
-  password: String
-}
-
-type EditCommentOutput {
   error: String
   ok: Boolean!
 }
@@ -160,6 +139,7 @@ type EditSagaOutput {
 
 type Episode {
   authorComment: String!
+  comments: [Comment!]!
   content: String!
   createdAt: DateTime!
   id: Float!
@@ -276,25 +256,15 @@ type LoginOutput {
 }
 
 type Mutation {
-  checkCommentPassword(commentId: Float!, password: String!): CoreOutput!
-  checkReplyPassword(password: String!, replyId: Float!): CoreOutput!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
+  createComment(input: CreateCommentInput!): CreateCommentOutput!
   createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
-  createReply(commentId: Float!, input: CreateReplyInput!): CreateReplyOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
-  deleteComment(commentId: Float!, input: DeleteCommentInput!): DeleteCommentOutput!
   deleteEpisode(input: DeleteEpisodeInput!): DeleteEpisodeOutput!
-  deleteReply(input: DeleteCommentInput!, replyId: Float!): DeleteCommentOutput!
   deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!
-  dislikeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
-  dislikeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
-  editComment(commentId: Float!, input: EditCommentInput!): EditCommentOutput!
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
-  editReply(input: EditCommentInput!, replyId: Float!): EditCommentOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
   increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
-  likeComment(commentId: Float!, isIncrement: Boolean!): CoreOutput!
-  likeReply(isIncrement: Boolean!, replyId: Float!): CoreOutput!
   login(input: LoginInput!): LoginOutput!
   setEpisodeInterest(input: InterestEpisodeInput!): InterestEpisodeOutput!
   setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!
@@ -308,7 +278,6 @@ type Query {
   editProfile(input: EditProfileInput!): EditProfileOutput!
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
   getEpisodeList(sagaId: Float!): [Episode!]!
-  getRepliesByCommentId(commentId: Float!): [CommentReply!]!
   getSagaList: [Saga!]!
   healthCheck: CoreOutput!
   me: User!
@@ -336,6 +305,7 @@ enum SagaCategory {
 }
 
 type User {
+  comments: [Comment!]!
   createdAt: DateTime!
   email: String!
   id: Float!

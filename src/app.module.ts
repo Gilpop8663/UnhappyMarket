@@ -18,8 +18,6 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { CommentsModule } from './comments/comments.module';
-import { Comment } from './comments/entities/comment.entity';
-import { CommentReply } from './comments/entities/comment-reply.entity';
 import { SagasModule } from './sagas/sagas.module';
 import { Saga } from './sagas/entities/saga.entity';
 import { Episode } from './sagas/episodes/entities/episode.entity';
@@ -27,6 +25,7 @@ import { LikesModule } from './likes/likes.module';
 import { Like } from './likes/entities/like.entity';
 import { InterestsModule } from './interests/interests.module';
 import { Interest } from './interests/entities/interest.entity';
+import { Comment } from './comments/entities/comment.entity';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -71,16 +70,7 @@ const getEnvFilePath = () => {
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE_NAME,
           }),
-      entities: [
-        User,
-        Verification,
-        Comment,
-        CommentReply,
-        Saga,
-        Episode,
-        Like,
-        Interest,
-      ],
+      entities: [User, Verification, Comment, Saga, Episode, Like, Interest],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
     }),

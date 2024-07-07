@@ -14,6 +14,7 @@ import { IsAlpha, IsEmail, IsNumber, Length } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -61,6 +62,10 @@ export class User extends CoreEntity {
   @Field(() => [Interest])
   @OneToMany(() => Interest, (interest) => interest.user)
   interests: Interest[];
+
+  @Field(() => [Comment])
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 
   @BeforeInsert()
   @BeforeUpdate()

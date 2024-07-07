@@ -4,7 +4,7 @@ import { Comment } from '../entities/comment.entity';
 
 @InputType()
 export class EditCommentInput extends PartialType(
-  PickType(Comment, ['password', 'content']),
+  PickType(Comment, ['content']),
 ) {}
 
 @ObjectType()
