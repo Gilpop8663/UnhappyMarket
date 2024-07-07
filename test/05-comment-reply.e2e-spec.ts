@@ -16,9 +16,7 @@ test('답글을 생성한다.', async () => {
             mutation {
               createCommentReply(
                 input: {
-                  category: Episode
                   content: "답글 생성"
-                  episodeId: ${initialComment.episode.id}
                   commentId: ${initialComment.id}
                   userId: ${initialUser.id}
                 }
@@ -40,7 +38,7 @@ test('답글을 생성한다.', async () => {
 
         expect(createCommentReply.ok).toBe(true);
         expect(createCommentReply.error).toBe(null);
-        expect(createCommentReply.commentId).toBe(expect.any(Number));
+        expect(createCommentReply.commentId).toEqual(expect.any(Number));
       });
   };
 

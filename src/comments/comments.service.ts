@@ -12,6 +12,10 @@ import {
 } from './dtos/get-comment-list.dto';
 import { EditCommentInput } from './dtos/edit-comment.dto';
 import { DeleteCommentInput } from './dtos/delete-comment.dto';
+import {
+  CreateCommentReplyInput,
+  CreateCommentReplyOutput,
+} from './dtos/create-comment-reply.dto';
 
 export enum CommentSortingType {
   POPULAR = 'popular',
@@ -124,28 +128,38 @@ export class CommentsService {
     }
   }
 
-  // async createReply(commentId: number, replyData: CreateCommentInput) {
-  //   try {
-  //     const comment = await this.commentRepository.findOne({
-  //       where: { id: commentId },
-  //     });
+  async createCommentReply({
+    commentId,
+    content,
+    userId,
+  }: CreateCommentReplyInput): Promise<CreateCommentReplyOutput> {
+    try {
+      const comment = await this.commentRepository.findOne({
+        where: { id: commentId },
+        relations: ['episode'],
+      });
 
-  //     if (!comment) {
-  //       return { ok: false, error: '댓글이 존재하지 않습니다.' };
-  //     }
+      if (!comment) {
+        return { ok: false, error: '댓글이 존재하지 않습니다.' };
+      }
 
-  //     const newCommentReply = this.commentReplyRepository.create({
-  //       ...replyData,
-  //       comment,
-  //     });
+      const user = await this.userRepository.findOne({ where: { id: userId } });
 
-  //     await this.commentReplyRepository.save(newCommentReply);
+      const newCommentReply = this.commentRepository.create({
+        category: comment.category,
+        content,
+        episode: comment.episode,
+        user,
+        parent: comment,
+      });
 
-  //     return { ok: true, replyId: newCommentReply.id };
-  //   } catch (error) {
-  //     return { ok: false, error: '답글 생성에 실패했습니다.' };
-  //   }
-  // }
+      await this.commentRepository.save(newCommentReply);
+
+      return { ok: true, commentId: newCommentReply.id };
+    } catch (error) {
+      return { ok: false, error: '답글 생성에 실패했습니다.' };
+    }
+  }
 
   // async editReply(replyId: number, { password, content }: EditCommentInput) {
   //   try {

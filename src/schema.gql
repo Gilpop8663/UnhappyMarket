@@ -53,6 +53,18 @@ type CreateCommentOutput {
   ok: Boolean!
 }
 
+input CreateCommentReplyInput {
+  commentId: Float!
+  content: String!
+  userId: Float!
+}
+
+type CreateCommentReplyOutput {
+  commentId: Float
+  error: String
+  ok: Boolean!
+}
+
 input CreateEpisodeInput {
   authorComment: String!
   content: String!
@@ -309,6 +321,7 @@ type LoginOutput {
 type Mutation {
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   createComment(input: CreateCommentInput!): CreateCommentOutput!
+  createCommentReply(input: CreateCommentReplyInput!): CreateCommentReplyOutput!
   createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
   deleteComment(input: DeleteCommentInput!): DeleteCommentOutput!

@@ -19,6 +19,10 @@ import {
   LikeCommentOutput,
 } from 'src/likes/dtos/like-comemnt.dto';
 import { LikesService } from 'src/likes/likes.service';
+import {
+  CreateCommentReplyInput,
+  CreateCommentReplyOutput,
+} from './dtos/create-comment-reply.dto';
 
 @Resolver()
 export class CommentsResolver {
@@ -50,6 +54,11 @@ export class CommentsResolver {
   @Mutation(() => LikeCommentOutput)
   setCommentDislike(@Args('input') input: LikeCommentInput) {
     return this.likeService.dislikeComment(input);
+  }
+
+  @Mutation(() => CreateCommentReplyOutput)
+  createCommentReply(@Args('input') input: CreateCommentReplyInput) {
+    return this.commentService.createCommentReply(input);
   }
 
   @Query(() => GetCommentListOutput)
