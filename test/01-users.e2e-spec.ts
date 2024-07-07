@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { app } from './jest.setup';
+import { app, usersRepository } from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -193,5 +193,55 @@ describe('AppController (e2e)', () => {
           expect(login.token).toEqual(null);
         });
     });
+  });
+
+  test(`유저 정보를 조회했을 때 아이디, 포인트, 내이야기, 닉네임, 
+    이메일, 댓글, 관심 이야기, 좋아요를 누른 작품이나 회차를 알 수 있다.`, async () => {
+    const [initialUser] = await usersRepository.find();
+
+    const requiredKeys = [
+      'id',
+      'userId',
+      'createdAt',
+      'updatedAt',
+      'email',
+      'password',
+      'point',
+      'nickname',
+      'sagas',
+      'likes',
+      'interests',
+      'comments',
+    ];
+
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        getUserProfile(input: {  userId: ${initialUser.id} }) {
+          ok
+          error
+          user
+        }
+      }
+    `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getUserProfile },
+          },
+        } = res;
+
+        expect(getUserProfile.ok).toBe(true);
+        expect(getUserProfile.error).toBe(null);
+        expect(getUserProfile.user).toEqual(expect.any(Object));
+
+        requiredKeys.forEach((key) => {
+          expect(getUserProfile.user).toHaveProperty(key);
+        });
+      });
   });
 });

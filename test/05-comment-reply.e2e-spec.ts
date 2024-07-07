@@ -128,7 +128,3 @@ test('회차의 댓글을 조회한다. 답글인 경우 제외하고 불러온�
 
   await getCommentList();
 });
-
-test.todo('답글을 조회한다.');
-test.todo('답글을 증가시킨다.');
-test.todo('답글을 감소시킨다.');
