@@ -10,6 +10,10 @@ import {
   GetCommentListOutput,
 } from './dtos/get-comment-list.dto';
 import { EditCommentInput, EditCommentOutput } from './dtos/edit-comment.dto';
+import {
+  DeleteCommentInput,
+  DeleteCommentOutput,
+} from './dtos/delete-comment.dto';
 
 @Resolver()
 export class CommentsResolver {
@@ -25,9 +29,9 @@ export class CommentsResolver {
     return this.commentService.editComment(input);
   }
 
-  @Mutation(() => EditCommentOutput)
-  deleteComment(@Args('input') input: EditCommentInput) {
-    return this.commentService.editComment(input);
+  @Mutation(() => DeleteCommentOutput)
+  deleteComment(@Args('input') input: DeleteCommentInput) {
+    return this.commentService.deleteComment(input);
   }
 
   @Query(() => GetCommentListOutput)
