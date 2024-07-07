@@ -206,7 +206,7 @@ test('회차의 댓글을 삭제한다.', async () => {
   expect(deletedComment).toBeNull();
 });
 
-describe('댓글 좋아요를 누른다.', () => {
+describe('댓글 좋아요를 누른다. 댓글 좋아요를 누르기 전 댓글을 생성한다.', () => {
   beforeAll(async () => {
     const [initialEpisode] = await episodesRepository.find();
     const [initialUser] = await usersRepository.find();
@@ -298,7 +298,62 @@ describe('댓글 좋아요를 누른다.', () => {
   });
 });
 
-test.todo('댓글에 싫어요를 증가시킨다.');
+test('댓글에 싫어요를 증가시킨다. 다시 싫어요를 누르면 싫어요가 취소된다.', async () => {
+  const [initialComment] = await commentRepository.find({
+    relations: ['user', 'dislikes'],
+  });
+
+  expect(initialComment.dislikes.length).toBe(0);
+
+  const setCommentDislike = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setCommentDislike(
+              input: {
+                commentId: ${initialComment.id}
+                userId: ${initialComment.user.id}
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setCommentDislike },
+          },
+        } = res;
+
+        expect(setCommentDislike.ok).toBe(true);
+        expect(setCommentDislike.error).toBe(null);
+      });
+  };
+
+  await setCommentDislike();
+
+  const firstUpdatedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+    relations: ['dislikes'],
+  });
+
+  expect(firstUpdatedComment.dislikes.length).toBe(1);
+
+  await setCommentDislike();
+
+  const secondUpdatedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+    relations: ['dislikes'],
+  });
+
+  expect(secondUpdatedComment.dislikes.length).toBe(0);
+});
 
 test.todo('답글을 생성한다.');
 test.todo('답글을 수정한다.');
