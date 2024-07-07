@@ -1,8 +1,8 @@
-import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from '../entities/user.entity';
 
-@ArgsType()
+@InputType()
 export class UserProfileInput {
   @Field(() => Number)
   userId: number;

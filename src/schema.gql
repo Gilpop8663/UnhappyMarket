@@ -348,9 +348,9 @@ type Query {
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
   getEpisodeList(sagaId: Float!): [Episode!]!
   getSagaList: [Saga!]!
+  getUserProfile(input: UserProfileInput!): UserProfileOutput!
   healthCheck: CoreOutput!
   me: User!
-  userProfile(userId: Float!): UserProfileOutput!
 }
 
 type Saga {
@@ -387,6 +387,10 @@ type User {
   updatedAt: DateTime!
   userId: String!
   verified: Boolean!
+}
+
+input UserProfileInput {
+  userId: Float!
 }
 
 type UserProfileOutput {

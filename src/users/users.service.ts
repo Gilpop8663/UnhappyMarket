@@ -9,6 +9,7 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
 import { SolapiMessageService } from 'solapi';
+import { UserProfileInput } from './dtos/user-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -94,12 +95,13 @@ export class UsersService {
     }
   }
 
-  async findById(id: number) {
+  async getUserProfile({ userId }: UserProfileInput) {
     try {
       const user = await this.users.findOne({
         where: {
-          id,
+          id: userId,
         },
+        relations: ['sagas', 'interests', 'likes', 'comments'],
       });
 
       if (!user) {

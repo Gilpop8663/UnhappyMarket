@@ -36,8 +36,8 @@ export class UsersResolver {
 
   @Query(() => UserProfileOutput)
   @UseGuards(AuthGuard)
-  userProfile(@Args() userProfileInput: UserProfileInput) {
-    return this.usersService.findById(userProfileInput.userId);
+  getUserProfile(@Args('input') userProfileInput: UserProfileInput) {
+    return this.usersService.getUserProfile(userProfileInput);
   }
 
   @Query(() => EditProfileOutput)

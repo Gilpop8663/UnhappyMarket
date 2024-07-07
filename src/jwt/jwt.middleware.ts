@@ -22,7 +22,7 @@ export class JwtMiddleware implements NestMiddleware {
         return;
       }
 
-      const user = this.userService.findById(decoded['id']);
+      const user = this.userService.getUserProfile(decoded['id']);
       req['user'] = user;
     }
 
