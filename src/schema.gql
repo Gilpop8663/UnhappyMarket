@@ -6,7 +6,7 @@ type Comment {
   category: CommentCategory!
   content: String!
   createdAt: DateTime!
-  dislikes: Float!
+  dislikes: [Dislike!]!
   episode: Episode!
   id: Float!
   likes: [Like!]!
@@ -110,6 +110,15 @@ input DeleteSagaInput {
 type DeleteSagaOutput {
   error: String
   ok: Boolean!
+}
+
+type Dislike {
+  comment: Comment
+  createdAt: DateTime!
+  id: Float!
+  likeableId: Float!
+  updatedAt: DateTime!
+  user: User!
 }
 
 input EditCommentInput {
@@ -310,6 +319,7 @@ type Mutation {
   editSaga(input: EditSagaInput!): EditSagaOutput!
   increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
   login(input: LoginInput!): LoginOutput!
+  setCommentDislike(input: LikeCommentInput!): LikeCommentOutput!
   setCommentLike(input: LikeCommentInput!): LikeCommentOutput!
   setEpisodeInterest(input: InterestEpisodeInput!): InterestEpisodeOutput!
   setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!

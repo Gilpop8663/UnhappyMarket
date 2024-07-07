@@ -26,6 +26,7 @@ import { Like } from './likes/entities/like.entity';
 import { InterestsModule } from './interests/interests.module';
 import { Interest } from './interests/entities/interest.entity';
 import { Comment } from './comments/entities/comment.entity';
+import { Dislike } from './likes/entities/dislike.entity';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -70,7 +71,16 @@ const getEnvFilePath = () => {
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE_NAME,
           }),
-      entities: [User, Verification, Comment, Saga, Episode, Like, Interest],
+      entities: [
+        User,
+        Verification,
+        Comment,
+        Saga,
+        Episode,
+        Like,
+        Interest,
+        Dislike,
+      ],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
     }),

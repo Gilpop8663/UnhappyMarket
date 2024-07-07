@@ -4,8 +4,9 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { IsString, MaxLength, MinLength, IsInt, IsEnum } from 'class-validator';
+import { IsString, MaxLength, MinLength, IsEnum } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { Dislike } from 'src/likes/entities/dislike.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -37,10 +38,9 @@ export class Comment extends CoreEntity {
   @OneToMany(() => Like, (like) => like.comment, { cascade: true })
   likes: Like[];
 
-  @Column({ default: 0 })
-  @Field(() => Number)
-  @IsInt()
-  dislikes: number;
+  @Field(() => [Dislike])
+  @OneToMany(() => Dislike, (dislikes) => dislikes.comment, { cascade: true })
+  dislikes: Dislike[];
 
   @Column({
     type: 'enum',

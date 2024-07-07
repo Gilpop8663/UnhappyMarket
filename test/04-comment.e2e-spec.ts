@@ -80,7 +80,9 @@ test('회차의 댓글을 조회한다.', async () => {
                 category
                 content
                 createdAt
-                dislikes
+                dislikes{
+                  id
+                }
                 likes{
                   id
                 }
@@ -353,6 +355,88 @@ test('댓글에 싫어요를 증가시킨다. 다시 싫어요를 누르면 싫�
   });
 
   expect(secondUpdatedComment.dislikes.length).toBe(0);
+});
+
+test('댓글에 좋아요를 증가시킨다. 그리고 싫어요를 증가시킨다.', async () => {
+  const [initialComment] = await commentRepository.find({
+    relations: ['user', 'likes', 'dislikes'],
+  });
+
+  expect(initialComment.likes.length).toBe(0);
+  expect(initialComment.dislikes.length).toBe(0);
+
+  const setCommentLike = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setCommentLike(
+              input: {
+                commentId: ${initialComment.id}
+                userId: ${initialComment.user.id}
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setCommentLike },
+          },
+        } = res;
+
+        expect(setCommentLike.ok).toBe(true);
+        expect(setCommentLike.error).toBe(null);
+      });
+  };
+
+  const setCommentDislike = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setCommentDislike(
+              input: {
+                commentId: ${initialComment.id}
+                userId: ${initialComment.user.id}
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setCommentDislike },
+          },
+        } = res;
+
+        expect(setCommentDislike.ok).toBe(true);
+        expect(setCommentDislike.error).toBe(null);
+      });
+  };
+
+  await setCommentLike();
+  await setCommentDislike();
+
+  const updatedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+    relations: ['likes', 'dislikes'],
+  });
+
+  expect(updatedComment.likes.length).toBe(1);
+  expect(updatedComment.dislikes.length).toBe(1);
 });
 
 test.todo('답글을 생성한다.');

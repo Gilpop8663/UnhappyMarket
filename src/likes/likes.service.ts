@@ -1,7 +1,7 @@
 // src/likes/likes.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Like, LikeableType } from './entities/like.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ToggleLikeInput, ToggleLikeOutput } from './dtos/toggle-like.dto';
@@ -12,12 +12,19 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { LikeCommentInput, LikeCommentOutput } from './dtos/like-comemnt.dto';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Dislike } from './entities/dislike.entity';
+import {
+  ToggleDislikeInput,
+  ToggleDislikeOutput,
+} from './dtos/toggle-dislike.dto';
 
 @Injectable()
 export class LikesService {
   constructor(
     @InjectRepository(Like)
     private readonly likesRepository: Repository<Like>,
+    @InjectRepository(Dislike)
+    private readonly dislikeRepository: Repository<Dislike>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Episode)
@@ -70,6 +77,36 @@ export class LikesService {
     return { ok: true };
   }
 
+  private async toggleDislike({
+    userId,
+    likeableId,
+  }: ToggleDislikeInput): Promise<ToggleDislikeOutput> {
+    const like = await this.dislikeRepository.findOne({
+      where: { user: { id: userId }, likeableId },
+    });
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    const comment = await this.commentRepository.findOne({
+      where: { id: likeableId },
+    });
+
+    if (like) {
+      await this.dislikeRepository.delete(like.id);
+      return { ok: true };
+    }
+
+    const newLike = this.dislikeRepository.create({
+      user,
+      likeableId,
+      comment,
+    });
+
+    await this.dislikeRepository.save(newLike);
+
+    return { ok: true };
+  }
+
   async likeSaga({ userId, sagaId }: LikeSagaInput): Promise<LikeSagaOutput> {
     try {
       return this.toggleLike({
@@ -112,6 +149,20 @@ export class LikesService {
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '댓글 좋아요 작업에 실패했습니다.');
+    }
+  }
+
+  async dislikeComment({
+    userId,
+    commentId,
+  }: LikeCommentInput): Promise<LikeCommentOutput> {
+    try {
+      return this.toggleDislike({
+        userId,
+        likeableId: commentId,
+      });
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '댓글 싫어요 작업에 실패했습니다.');
     }
   }
 }

@@ -47,6 +47,11 @@ export class CommentsResolver {
     return this.likeService.likeComment(input);
   }
 
+  @Mutation(() => LikeCommentOutput)
+  setCommentDislike(@Args('input') input: LikeCommentInput) {
+    return this.likeService.dislikeComment(input);
+  }
+
   @Query(() => GetCommentListOutput)
   getCommentList(@Args('input') input: GetCommentListInput) {
     return this.commentService.getCommentList(input);
@@ -90,14 +95,6 @@ export class CommentsResolver {
   //   @Args('input') deleteCommentInput: DeleteCommentInput,
   // ) {
   //   return this.commentService.deleteReply(replyId, deleteCommentInput);
-  // }
-
-  // @Mutation(() => CoreOutput)
-  // likeComment(
-  //   @Args('commentId') commentId: number,
-  //   @Args('isIncrement') isIncrement: boolean,
-  // ) {
-  //   return this.commentService.likeComment(commentId, isIncrement);
   // }
 
   // @Mutation(() => CoreOutput)
