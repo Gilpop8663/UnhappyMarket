@@ -1,5 +1,10 @@
 import * as request from 'supertest';
-import { app, episodesRepository, usersRepository } from './jest.setup';
+import {
+  app,
+  commentRepository,
+  episodesRepository,
+  usersRepository,
+} from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -45,11 +50,8 @@ test('회차의 댓글을 생성한다.', async () => {
   await createComment();
 });
 
-test.todo('회차의 댓글을 조회한다.');
-
 test('회차의 댓글을 조회한다.', async () => {
   const [initialEpisode] = await episodesRepository.find();
-  const [initialUser] = await usersRepository.find();
 
   const requiredKeys = [
     'id',
@@ -115,7 +117,96 @@ test('회차의 댓글을 조회한다.', async () => {
   await getCommentList();
 });
 
-test.todo('회차의 댓글을 수정한다.');
+test('회차의 댓글을 수정한다.', async () => {
+  const [initialComment] = await commentRepository.find();
+
+  const editContent = '댓글 수정';
+
+  expect(initialComment.content).not.toBe(editContent);
+
+  const editComment = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            editComment(
+              input: {
+                commentId: ${initialComment.id}
+                content: "${editContent}"
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { editComment },
+          },
+        } = res;
+
+        expect(editComment.ok).toBe(true);
+        expect(editComment.error).toBe(null);
+      });
+  };
+
+  await editComment();
+
+  const [updatedComment] = await commentRepository.find();
+
+  expect(updatedComment.content).toBe(editContent);
+});
+
+test('회차의 댓글을 삭제한다.', async () => {
+  const [initialComment] = await commentRepository.find();
+
+  const editContent = '댓글 수정';
+
+  expect(initialComment.content).not.toBe(editContent);
+
+  const editComment = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            editComment(
+              input: {
+                commentId: ${initialComment.id}
+                content: "${editContent}"
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { editComment },
+          },
+        } = res;
+
+        expect(editComment.ok).toBe(true);
+        expect(editComment.error).toBe(null);
+      });
+  };
+
+  await editComment();
+
+  const [updatedComment] = await commentRepository.find();
+
+  expect(updatedComment.content).toBe(editContent);
+});
+
 test.todo('회차의 댓글을 삭제한다.');
 test.todo('댓글에 좋아요를 증가시킨다.');
 test.todo('댓글에 좋아요를 감소시킨다.');

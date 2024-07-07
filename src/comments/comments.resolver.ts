@@ -9,6 +9,7 @@ import {
   GetCommentListInput,
   GetCommentListOutput,
 } from './dtos/get-comment-list.dto';
+import { EditCommentInput, EditCommentOutput } from './dtos/edit-comment.dto';
 
 @Resolver()
 export class CommentsResolver {
@@ -17,6 +18,11 @@ export class CommentsResolver {
   @Mutation(() => CreateCommentOutput)
   createComment(@Args('input') createCommentInput: CreateCommentInput) {
     return this.commentService.createComment(createCommentInput);
+  }
+
+  @Mutation(() => EditCommentOutput)
+  editComment(@Args('input') input: EditCommentInput) {
+    return this.commentService.editComment(input);
   }
 
   @Query(() => GetCommentListOutput)

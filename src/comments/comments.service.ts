@@ -10,6 +10,7 @@ import {
   GetCommentListInput,
   GetCommentListOutput,
 } from './dtos/get-comment-list.dto';
+import { EditCommentInput } from './dtos/edit-comment.dto';
 
 export enum CommentSortingType {
   POPULAR = 'popular',
@@ -65,6 +66,24 @@ export class CommentsService {
       return { ok: true, commentId: newComment.id };
     } catch (error) {
       return { ok: false, error: '댓글 생성에 실패했습니다.' };
+    }
+  }
+
+  async editComment({ content, commentId }: EditCommentInput) {
+    try {
+      const comment = await this.commentRepository.findOne({
+        where: { id: commentId },
+      });
+
+      if (!comment) {
+        return logErrorAndReturnFalse('', '댓글이 존재하지 않습니다.');
+      }
+
+      await this.commentRepository.update(commentId, { content });
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '댓글 수정에 실패했습니다.');
     }
   }
 
@@ -152,34 +171,6 @@ export class CommentsService {
   //     return { ok: true };
   //   } catch (error) {
   //     return { ok: false, error: '답글 수정에 실패했습니다.' };
-  //   }
-  // }
-
-  // async editComment(
-  //   commentId: number,
-  //   { password, content }: EditCommentInput,
-  // ) {
-  //   try {
-  //     const comment = await this.commentRepository.findOne({
-  //       where: { id: commentId },
-  //       select: ['password'],
-  //     });
-
-  //     if (!comment) {
-  //       return { ok: false, error: '댓글이 존재하지 않습니다.' };
-  //     }
-
-  //     const isPasswordCorrect = await comment.checkPassword(password);
-
-  //     if (!isPasswordCorrect) {
-  //       return { ok: false, error: '비밀번호가 맞지 않습니다.' };
-  //     }
-
-  //     await this.commentRepository.update(commentId, { content });
-
-  //     return { ok: true };
-  //   } catch (error) {
-  //     return { ok: false, error: '댓글 수정에 실패했습니다.' };
   //   }
   // }
 
