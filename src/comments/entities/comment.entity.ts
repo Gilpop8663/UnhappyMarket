@@ -10,16 +10,17 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
-enum CommentCategory {
-  Series = 'Series',
+export enum CommentCategory {
+  Saga,
+  Episode,
   Challenge = 'Challenge',
-  SmallTalk = 'SmallTalk',
 }
 
 registerEnumType(CommentCategory, {
   name: 'CommentCategory',
   description: '댓글의 종류',
 });
+
 @InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
@@ -41,12 +42,12 @@ export class Comment extends CoreEntity {
   @IsInt()
   dislikes: number;
 
-  @Field(() => CommentCategory)
   @Column({
     type: 'enum',
     enum: CommentCategory,
-    default: CommentCategory.SmallTalk,
+    default: CommentCategory.Episode,
   })
+  @Field(() => CommentCategory)
   @IsEnum(CommentCategory)
   category: CommentCategory;
 

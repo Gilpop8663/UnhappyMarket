@@ -19,8 +19,8 @@ type Comment {
 """댓글의 종류"""
 enum CommentCategory {
   Challenge
-  Series
-  SmallTalk
+  Episode
+  Saga
 }
 
 type CoreOutput {
@@ -151,6 +151,17 @@ type Episode {
   views: Float!
 }
 
+input GetCommentListInput {
+  category: CommentCategory!
+  episodeId: Float
+}
+
+type GetCommentListOutput {
+  data: [Comment!]
+  error: String
+  ok: Boolean!
+}
+
 input GetEpisodeDetailInput {
   episodeId: Float!
 }
@@ -276,6 +287,7 @@ type Mutation {
 
 type Query {
   editProfile(input: EditProfileInput!): EditProfileOutput!
+  getCommentList(input: GetCommentListInput!): GetCommentListOutput!
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
   getEpisodeList(sagaId: Float!): [Episode!]!
   getSagaList: [Saga!]!

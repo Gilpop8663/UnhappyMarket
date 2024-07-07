@@ -4,7 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentInput } from './dtos/create-comment.dto';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Comment } from './entities/comment.entity';
+import { Comment, CommentCategory } from './entities/comment.entity';
+import { logErrorAndReturnFalse } from 'src/utils';
+import {
+  GetCommentListInput,
+  GetCommentListOutput,
+} from './dtos/get-comment-list.dto';
 
 export enum CommentSortingType {
   POPULAR = 'popular',
@@ -63,37 +68,23 @@ export class CommentsService {
     }
   }
 
-  // async createVideo(videoData: CreateVideoInput) {
-  //   try {
-  //     const extractVideoId = (url: string) => {
-  //       const pattern =
-  //         /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  //       const match = url.match(pattern);
-  //       return match ? match[1] : null;
-  //     };
+  async getCommentList({
+    category,
+    episodeId,
+  }: GetCommentListInput): Promise<GetCommentListOutput> {
+    try {
+      if (category === CommentCategory['Episode']) {
+        const commentList = await this.commentRepository.find({
+          where: { category, episode: { id: episodeId } },
+          relations: ['user', 'replies', 'parent'],
+        });
 
-  //     const videoUrl = extractVideoId(videoData.videoUrl);
-
-  //     if (!videoData || !videoUrl) {
-  //       return { ok: false, error: '유효하지 않은 URL입니다.' };
-  //     }
-
-  //     const video = await this.videoRepository.findOne({ where: { videoUrl } });
-
-  //     if (video) {
-  //       return { ok: true, videoId: video.id };
-  //     }
-
-  //     const newVideo = this.videoRepository.create({ videoUrl });
-
-  //     await this.videoRepository.save(newVideo);
-
-  //     return { ok: false, videoId: newVideo.id };
-  //   } catch (error) {
-  //     console.error(error);
-  //     return { ok: false, error: '비디오 생성에 실패했습니다.' };
-  //   }
-  // }
+        return { data: commentList, ok: true };
+      }
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '댓글 조회에 실패했습니다');
+    }
+  }
 
   // async createReply(commentId: number, replyData: CreateCommentInput) {
   //   try {
