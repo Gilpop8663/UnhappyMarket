@@ -204,9 +204,62 @@ test('회차의 댓글을 삭제한다.', async () => {
   expect(deletedComment).toBeNull();
 });
 
-test.todo('회차의 댓글을 삭제한다.');
-test.todo('댓글에 좋아요를 증가시킨다.');
-test.todo('댓글에 좋아요를 감소시킨다.');
+test('댓글에 좋아요를 증가시킨다. 다시 좋아요를 누르면 좋아요가 취소된다.', async () => {
+  const [initialComment] = await commentRepository.find({
+    relations: ['user'],
+  });
+
+  expect(initialComment.likes.length).toBe(0);
+
+  const setCommentLike = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setCommentLike(
+              input: {
+                commentId: ${initialComment.id}
+                userId: ${initialComment.user.id}
+              }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setCommentLike },
+          },
+        } = res;
+
+        expect(setCommentLike.ok).toBe(true);
+        expect(setCommentLike.error).toBe(null);
+      });
+  };
+
+  await setCommentLike();
+
+  const firstUpdatedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+  });
+
+  expect(firstUpdatedComment.likes.length).toBe(1);
+
+  await setCommentLike();
+
+  const secondUpdatedComment = await commentRepository.findOne({
+    where: { id: initialComment.id },
+  });
+
+  expect(secondUpdatedComment.likes.length).toBe(0);
+});
+
+test.todo('댓글에 싫어요를 증가시킨다.');
 
 test.todo('답글을 생성한다.');
 test.todo('답글을 수정한다.');
