@@ -438,10 +438,3 @@ test('댓글에 좋아요를 증가시킨다. 그리고 싫어요를 증가시�
   expect(updatedComment.likes.length).toBe(1);
   expect(updatedComment.dislikes.length).toBe(1);
 });
-
-test.todo('답글을 생성한다.');
-test.todo('답글을 수정한다.');
-test.todo('답글을 삭제한다.');
-test.todo('답글을 조회한다.');
-test.todo('답글을 증가시킨다.');
-test.todo('답글을 감소시킨다.');
