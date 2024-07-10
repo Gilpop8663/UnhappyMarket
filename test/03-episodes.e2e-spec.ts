@@ -169,7 +169,7 @@ describe('회차 목록을 불러온다.', () => {
                 title: "${content}"
                 content: "${content}"
                 authorComment: "${content}"
-                point:0
+                point:500
               }
             ) {
               ok
@@ -295,6 +295,150 @@ describe('회차 상세 정보를 불러온다.', () => {
         expect(getEpisodeDetail.previousEpisode).toBeNull();
         expect(getEpisodeDetail.episode.title).toBe('1');
         expect(getEpisodeDetail.nextEpisode.title).toBe('2');
+      });
+  });
+
+  test('회차 상세 정보를 불러온다. 회차가 유료라면 회원의 포인트를 차감한다.', async () => {
+    const [episode] = await episodesRepository.find();
+    const [initialUser] = await usersRepository.find();
+
+    expect(initialUser.point).toBeGreaterThanOrEqual(episode.point);
+
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          query {
+            getEpisodeDetail(input: { episodeId: ${episode.id},userId:${initialUser.id} }) {
+              ok
+              episode {
+                id
+              }
+              nextEpisode {
+                id
+                title
+              }
+              previousEpisode {
+                id
+                title
+              }
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getEpisodeDetail },
+          },
+        } = res;
+
+        expect(getEpisodeDetail.ok).toBe(true);
+      });
+  });
+
+  const editEpisode = async (episodeId: number, point: number) =>
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        editEpisode(
+          input: {
+            episodeId: ${episodeId}
+            point:${point}
+          }
+        ) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200);
+
+  test('회차 상세 정보를 불러온다. 회차가 유료이고 유저의 포인트가 부족하다면 에러 메세지를 보낸다.', async () => {
+    const [episode] = await episodesRepository.find();
+    const [initialUser] = await usersRepository.find();
+
+    await editEpisode(episode.id, initialUser.point + 100);
+
+    expect(initialUser.point).toBeLessThan(episode.point);
+
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          query {
+            getEpisodeDetail(input: { episodeId: ${episode.id} ,userId:${initialUser.id}}) {
+              ok
+              episode {
+                id
+              }
+              nextEpisode {
+                id
+                title
+              }
+              previousEpisode {
+                id
+                title
+              }
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getEpisodeDetail },
+          },
+        } = res;
+
+        expect(getEpisodeDetail.ok).toBe(false);
+        expect(getEpisodeDetail.error).toBe('포인트가 부족합니다.');
+      });
+  });
+
+  test('회차 상세 정보를 불러온다. 회차가 무료라면 포인트를 차감하지 않고, 비회원도 조회할 수 있다.', async () => {
+    const [episode] = await episodesRepository.find();
+
+    await editEpisode(episode.id, 0);
+
+    expect(episode.point).toBe(0);
+
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          query {
+            getEpisodeDetail(input: { episodeId: ${episode.id},userId:null }) {
+              ok
+              episode {
+                id
+              }
+              nextEpisode {
+                id
+                title
+              }
+              previousEpisode {
+                id
+                title
+              }
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getEpisodeDetail },
+          },
+        } = res;
+
+        expect(getEpisodeDetail.ok).toBe(true);
       });
   });
 
@@ -649,4 +793,42 @@ test('회차를 조회하면 조회수가 증가한다.', async () => {
   expect(updatedViewCount).toBe(initialViewCount + 1);
 });
 
+test('회차를 조회하면 조회수가 증가한다.', async () => {
+  const [initialEpisode] = await episodesRepository.find();
+
+  // 초기 조회수 확인
+  const initialViewCount = initialEpisode.views;
+
+  const increaseViewCount = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        increaseEpisodeViewCount(input: { episodeId: ${initialEpisode.id} }) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200);
+  };
+
+  // 회차 조회 요청
+  await increaseViewCount();
+
+  // 조회 후 조회수 확인
+  const updatedEpisode = await episodesRepository.findOne({
+    where: { id: initialEpisode.id },
+  });
+  const updatedViewCount = updatedEpisode.views;
+
+  // 조회수가 1 증가했는지 확인
+  expect(updatedViewCount).toBe(initialViewCount + 1);
+});
+
+test.todo('회차 구매할 때 회차의 포인트만큼 회원의 포인트를 차감한다.');
+test.todo('회차 구매할 때 유저의 포인트가 부족할 때 에러 메세지를 보낸다.');
+test.todo('회차의 포인트가 0이라면 유저의 정보를 보내지 않는다.');
 test.todo('조회수 중복해서 오르지 않도록 확인하기');
