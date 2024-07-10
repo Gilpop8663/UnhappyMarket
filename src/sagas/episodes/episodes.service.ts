@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Episode } from './entities/episode.entity';
 import { Saga } from '../entities/saga.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { IsNull, LessThan, MoreThan, Repository } from 'typeorm';
 import {
   CreateEpisodeInput,
   CreateEpisodeOutput,
 } from './dtos/create-episode.dto';
-import { GetEpisodeDetailOutput } from './dtos/get-episode-detail.dto';
+import {
+  GetEpisodeDetailInput,
+  GetEpisodeDetailOutput,
+} from './dtos/get-episode-detail.dto';
 import { EditEpisodeInput, EditEpisodeOutput } from './dtos/edit-episode.dto';
 import {
   DeleteEpisodeInput,
@@ -18,6 +21,7 @@ import {
   IncreaseEpisodeViewCountInput,
   IncreaseEpisodeViewCountOutput,
 } from './dtos/increase-episode-view-count.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class EpisodesService {
@@ -26,6 +30,8 @@ export class EpisodesService {
     private sagaRepository: Repository<Saga>,
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createEpisode({
@@ -124,10 +130,18 @@ export class EpisodesService {
     });
   }
 
-  async getEpisodeDetail(episodeId: number): Promise<GetEpisodeDetailOutput> {
+  async getEpisodeDetail({
+    episodeId,
+    userId,
+  }: GetEpisodeDetailInput): Promise<GetEpisodeDetailOutput> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
       relations: ['saga', 'likes', 'interests'],
+      order: { createdAt: 'ASC' },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId ?? IsNull() },
     });
 
     const previousEpisode = await this.episodeRepository.findOne({
@@ -146,6 +160,27 @@ export class EpisodesService {
         id: MoreThan(episode.id),
       },
       order: { createdAt: 'ASC' },
+    });
+
+    if (episode.point === 0) {
+      return {
+        ok: true,
+        episode,
+        previousEpisode,
+        nextEpisode,
+      };
+    }
+
+    if (!userId) {
+      return { ok: false, error: '올바른 유저 정보를 입력해주세요.' };
+    }
+
+    if (episode.point > user.point) {
+      return { ok: false, error: '포인트가 부족합니다.' };
+    }
+
+    await this.userRepository.update(userId, {
+      point: user.point - episode.point,
     });
 
     return {

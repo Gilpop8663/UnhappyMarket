@@ -145,11 +145,11 @@ type EditCommentOutput {
 }
 
 input EditEpisodeInput {
-  authorComment: String!
-  content: String!
+  authorComment: String
+  content: String
   episodeId: Float!
-  point: Float!
-  title: String!
+  point: Float
+  title: String
 }
 
 type EditEpisodeOutput {
@@ -207,10 +207,11 @@ type GetCommentListOutput {
 
 input GetEpisodeDetailInput {
   episodeId: Float!
+  userId: Float
 }
 
 type GetEpisodeDetailOutput {
-  episode: Episode!
+  episode: Episode
   error: String
   nextEpisode: Episode
   ok: Boolean!

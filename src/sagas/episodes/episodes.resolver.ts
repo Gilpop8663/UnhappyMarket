@@ -79,7 +79,7 @@ export class EpisodesResolver {
   }
 
   @Query(() => GetEpisodeDetailOutput)
-  getEpisodeDetail(@Args('input') { episodeId }: GetEpisodeDetailInput) {
-    return this.episodeService.getEpisodeDetail(episodeId);
+  getEpisodeDetail(@Args('input') input: GetEpisodeDetailInput) {
+    return this.episodeService.getEpisodeDetail(input);
   }
 }

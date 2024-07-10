@@ -8,6 +8,7 @@ import {
 } from './jest.setup';
 import { InterestableType } from 'src/interests/entities/interest.entity';
 import { LikeableType } from 'src/likes/entities/like.entity';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -239,13 +240,14 @@ describe('회차 상세 정보를 불러온다.', () => {
 
   test('회차 상세 정보를 불러온다.', async () => {
     const [episode] = await episodesRepository.find();
+    const [initialUser] = await usersRepository.find();
 
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           query {
-            getEpisodeDetail(input: { episodeId: ${episode.id} }) {
+            getEpisodeDetail(input: { episodeId: ${episode.id},userId:${initialUser.id} }) {
               ok
               episode {
                 id
@@ -304,7 +306,7 @@ describe('회차 상세 정보를 불러온다.', () => {
 
     expect(initialUser.point).toBeGreaterThanOrEqual(episode.point);
 
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
@@ -336,35 +338,45 @@ describe('회차 상세 정보를 불러온다.', () => {
 
         expect(getEpisodeDetail.ok).toBe(true);
       });
+    const updatedUser = await usersRepository.findOne({
+      where: { id: initialUser.id },
+    });
+
+    expect(updatedUser.point).toBe(initialUser.point - episode.point);
   });
 
-  const editEpisode = async (episodeId: number, point: number) =>
-    await request(app.getHttpServer())
+  const editEpisode = async (episode: Episode, point: number) => {
+    return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
-      mutation {
-        editEpisode(
-          input: {
-            episodeId: ${episodeId}
-            point:${point}
-          }
-        ) {
-          ok
-          error
+    mutation {
+      editEpisode(
+        input: {
+          episodeId: ${episode.id}
+          point:${point}
         }
+      ) {
+        ok
+        error
       }
-    `,
+    }
+  `,
       })
       .expect(200);
+  };
 
   test('회차 상세 정보를 불러온다. 회차가 유료이고 유저의 포인트가 부족하다면 에러 메세지를 보낸다.', async () => {
-    const [episode] = await episodesRepository.find();
+    const episode = await episodesRepository.findOne({ where: { id: 2 } });
     const [initialUser] = await usersRepository.find();
 
-    await editEpisode(episode.id, initialUser.point + 100);
+    await editEpisode(episode, initialUser.point + 100);
 
-    expect(initialUser.point).toBeLessThan(episode.point);
+    const updatedEpisode = await episodesRepository.findOne({
+      where: { id: episode.id },
+    });
+
+    expect(initialUser.point).toBeLessThan(updatedEpisode.point);
 
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -373,6 +385,7 @@ describe('회차 상세 정보를 불러온다.', () => {
           query {
             getEpisodeDetail(input: { episodeId: ${episode.id} ,userId:${initialUser.id}}) {
               ok
+              error
               episode {
                 id
               }
@@ -402,11 +415,15 @@ describe('회차 상세 정보를 불러온다.', () => {
   });
 
   test('회차 상세 정보를 불러온다. 회차가 무료라면 포인트를 차감하지 않고, 비회원도 조회할 수 있다.', async () => {
-    const [episode] = await episodesRepository.find();
+    const episode = await episodesRepository.findOne({ where: { id: 2 } });
 
-    await editEpisode(episode.id, 0);
+    await editEpisode(episode, 0);
 
-    expect(episode.point).toBe(0);
+    const updatedEpisode = await episodesRepository.findOne({
+      where: { id: episode.id },
+    });
+
+    expect(updatedEpisode.point).toBe(0);
 
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -443,7 +460,11 @@ describe('회차 상세 정보를 불러온다.', () => {
   });
 
   test('2번째에 위치한 회차를 불러온 뒤, 이전 회차, 다음 회차 정보를 확인한다.', async () => {
-    const [__, episode] = await episodesRepository.find();
+    const [__, episode] = await episodesRepository.find({
+      order: { createdAt: 'ASC' },
+    });
+
+    await editEpisode(episode, 0);
 
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -498,7 +519,11 @@ describe('회차 상세 정보를 불러온다.', () => {
   });
 
   test('마지막 위치한 회차를 불러온 뒤, 이전 회차, 다음 회차 정보를 확인한다.', async () => {
-    const episode = (await episodesRepository.find()).at(-1);
+    const episode = (
+      await episodesRepository.find({ order: { createdAt: 'ASC' } })
+    ).at(-1);
+
+    await editEpisode(episode, 0);
 
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -553,7 +578,11 @@ describe('회차 상세 정보를 불러온다.', () => {
   });
 
   test('3번째 위치한 회차를 불러온 뒤, 2번째를 삭제한 후 이전 회차, 다음 회차 정보를 확인한다.', async () => {
-    const [__, second, episode] = await episodesRepository.find();
+    const [__, second, episode] = await episodesRepository.find({
+      order: { createdAt: 'ASC' },
+    });
+
+    await editEpisode(episode, 0);
 
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -828,7 +857,4 @@ test('회차를 조회하면 조회수가 증가한다.', async () => {
   expect(updatedViewCount).toBe(initialViewCount + 1);
 });
 
-test.todo('회차 구매할 때 회차의 포인트만큼 회원의 포인트를 차감한다.');
-test.todo('회차 구매할 때 유저의 포인트가 부족할 때 에러 메세지를 보낸다.');
-test.todo('회차의 포인트가 0이라면 유저의 정보를 보내지 않는다.');
 test.todo('조회수 중복해서 오르지 않도록 확인하기');
