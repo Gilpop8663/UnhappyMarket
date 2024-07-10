@@ -81,6 +81,7 @@ test('회차를 수정한다.', async () => {
               title: "수정1"
               content: "수정2"
               authorComment: "수정3"
+              point:0
             }
           ) {
             ok
@@ -101,11 +102,14 @@ test('회차를 수정한다.', async () => {
       expect(editEpisode.error).toBe(null);
     });
 
-  const updatedEpisode = await episodesRepository.findOne({ where: { id: 1 } });
+  const updatedEpisode = await episodesRepository.findOne({
+    where: { id: episodeId },
+  });
 
   expect(updatedEpisode.title).toBe('수정1');
   expect(updatedEpisode.content).toBe('수정2');
   expect(updatedEpisode.authorComment).toBe('수정3');
+  expect(updatedEpisode.point).toBe(0);
 });
 
 test('회차를 삭제한다.', async () => {
@@ -114,7 +118,7 @@ test('회차를 삭제한다.', async () => {
     .send({
       query: /* GraphQL */ `
         mutation {
-          deleteEpisode(input: { episodeId: 1 }) {
+          deleteEpisode(input: { episodeId: ${episodeId} }) {
             ok
             error
           }
@@ -225,6 +229,7 @@ describe('회차 상세 정보를 불러온다.', () => {
     'title',
     'content',
     'authorComment',
+    'point',
     'createdAt',
     'updatedAt',
     'interests',
@@ -249,6 +254,7 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
+                point
                 interests{
                   id
                 }
@@ -309,6 +315,7 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
+                point
                 interests{
                   id
                 }
@@ -363,6 +370,7 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
+                point
                 interests{
                   id
                 }
@@ -430,6 +438,7 @@ describe('회차 상세 정보를 불러온다.', () => {
                 authorComment
                 createdAt
                 updatedAt
+                point
                 interests{
                   id
                 }
