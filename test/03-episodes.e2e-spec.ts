@@ -21,6 +21,8 @@ describe('회차를 생성한다.', () => {
   });
 
   test('회차를 생성한다.', async () => {
+    let episodeId: number;
+
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -31,7 +33,8 @@ describe('회차를 생성한다.', () => {
                 sagaId: ${sagaId}
                 title: "제목"
                 content: "ㅇㅇ"
-                authorComment: "ㅇㅇ"
+                authorComment: "ㅇㅇ",
+                point:300
               }
             ) {
               ok
@@ -51,14 +54,19 @@ describe('회차를 생성한다.', () => {
 
         expect(createEpisode.ok).toBe(true);
         expect(createEpisode.error).toBe(null);
-        expect(createEpisode.episodeId).toBe(1);
+        expect(createEpisode.episodeId).toEqual(expect.any(Number));
+
+        episodeId = createEpisode.episodeId;
       });
 
-    const episode = await episodesRepository.findOne({ where: { id: 1 } });
+    const episode = await episodesRepository.findOne({
+      where: { id: episodeId },
+    });
 
     expect(episode.title).toBe('제목');
     expect(episode.content).toBe('ㅇㅇ');
     expect(episode.authorComment).toBe('ㅇㅇ');
+    expect(episode.point).toBe(300);
   });
 });
 
