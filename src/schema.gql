@@ -68,6 +68,7 @@ type CreateCommentReplyOutput {
 input CreateEpisodeInput {
   authorComment: String!
   content: String!
+  point: Float!
   sagaId: Float!
   title: String!
 }
@@ -185,6 +186,7 @@ type Episode {
   id: Float!
   interests: [Interest!]!
   likes: [Like!]!
+  point: Float!
   saga: Saga!
   title: String!
   updatedAt: DateTime!

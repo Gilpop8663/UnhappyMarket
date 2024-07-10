@@ -32,6 +32,7 @@ export class EpisodesService {
     title,
     authorComment,
     content,
+    point,
     sagaId,
   }: CreateEpisodeInput): Promise<CreateEpisodeOutput> {
     try {
@@ -52,6 +53,7 @@ export class EpisodesService {
         authorComment,
         title,
         saga,
+        point,
       });
 
       await this.episodeRepository.save(episode);

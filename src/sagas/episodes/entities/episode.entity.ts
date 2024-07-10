@@ -27,6 +27,10 @@ export class Episode extends CoreEntity {
   @Length(0, 20000)
   content: string;
 
+  @Column({ default: 0 })
+  @Field(() => Number)
+  point: number;
+
   @Column()
   @Field(() => String)
   @IsString()

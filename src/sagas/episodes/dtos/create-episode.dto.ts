@@ -7,6 +7,7 @@ export class CreateEpisodeInput extends PickType(Episode, [
   'title',
   'content',
   'authorComment',
+  'point',
 ]) {
   @Field(() => Number)
   sagaId: number;

@@ -12,6 +12,7 @@ import { LikeableType } from 'src/likes/entities/like.entity';
 const GRAPHQL_ENDPOINT = '/graphql';
 
 let sagaId: number;
+let episodeId: number;
 
 describe('회차를 생성한다.', () => {
   beforeAll(async () => {
@@ -21,8 +22,6 @@ describe('회차를 생성한다.', () => {
   });
 
   test('회차를 생성한다.', async () => {
-    let episodeId: number;
-
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -78,7 +77,7 @@ test('회차를 수정한다.', async () => {
         mutation {
           editEpisode(
             input: {
-              episodeId: 1
+              episodeId: ${episodeId}
               title: "수정1"
               content: "수정2"
               authorComment: "수정3"
@@ -166,6 +165,7 @@ describe('회차 목록을 불러온다.', () => {
                 title: "${content}"
                 content: "${content}"
                 authorComment: "${content}"
+                point:0
               }
             ) {
               ok
@@ -191,6 +191,7 @@ describe('회차 목록을 불러온다.', () => {
               authorComment
               createdAt
               updatedAt
+              point
               interests{
                   id
                 }
