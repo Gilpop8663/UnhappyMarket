@@ -7,6 +7,7 @@ export class EditEpisodeInput extends PickType(Episode, [
   'title',
   'content',
   'authorComment',
+  'point',
 ]) {
   @Field(() => Number)
   episodeId: number;

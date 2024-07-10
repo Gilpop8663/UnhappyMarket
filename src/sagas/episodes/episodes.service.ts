@@ -73,12 +73,14 @@ export class EpisodesService {
     title,
     content,
     authorComment,
+    point,
   }: EditEpisodeInput): Promise<EditEpisodeOutput> {
     try {
       await this.episodeRepository.update(episodeId, {
         title,
         content,
         authorComment,
+        point,
       });
 
       return { ok: true };

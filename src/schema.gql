@@ -148,6 +148,7 @@ input EditEpisodeInput {
   authorComment: String!
   content: String!
   episodeId: Float!
+  point: Float!
   title: String!
 }
 
