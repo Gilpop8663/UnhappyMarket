@@ -410,6 +410,7 @@ type Query {
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
   getEpisodeList(sagaId: Float!): [Episode!]!
   getSagaList: [Saga!]!
+  getSmallTalkList: [SmallTalk!]!
   getUserProfile(input: UserProfileInput!): UserProfileOutput!
   healthCheck: CoreOutput!
   me: User!

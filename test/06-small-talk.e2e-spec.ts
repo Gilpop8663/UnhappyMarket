@@ -159,7 +159,7 @@ describe('회차 목록을 불러온다.', () => {
     'title',
     'content',
     'authorComment',
-    'thumbnail',
+    'thumbnailUrl',
     'author',
     'createdAt',
     'updatedAt',
@@ -183,7 +183,7 @@ describe('회차 목록을 불러온다.', () => {
                   content: "${content}"
                   thumbnailUrl: "${content}"
                   authorComment: "${content}"
-                  point: "${content}"
+                  point: ${content}
                 }
               ) {
                 ok
@@ -192,7 +192,8 @@ describe('회차 목록을 불러온다.', () => {
               }
             }
           `,
-        });
+        })
+        .expect(200);
     }
   });
 
@@ -205,7 +206,9 @@ describe('회차 목록을 불러온다.', () => {
             getSmallTalkList {
               id
               title
-              author
+              author {
+                id
+              }
               thumbnailUrl
               content
               authorComment
@@ -218,7 +221,7 @@ describe('회차 목록을 불러온다.', () => {
               likes {
                 id
               }
-              comment {
+              comments {
                 id
               }
             }

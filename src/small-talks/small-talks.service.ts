@@ -75,7 +75,7 @@ export class SmallTalksService {
 
       return { ok: true };
     } catch (error) {
-      return logErrorAndReturnFalse(error, '회차 수정에 실패했습니다.');
+      return logErrorAndReturnFalse(error, '스몰톡 수정에 실패했습니다.');
     }
   }
 
@@ -87,7 +87,19 @@ export class SmallTalksService {
 
       return { ok: true };
     } catch (error) {
-      return logErrorAndReturnFalse(error, '회차 삭제에 실패했습니다.');
+      return logErrorAndReturnFalse(error, '스몰톡 삭제에 실패했습니다.');
+    }
+  }
+
+  async getSmallTalkList() {
+    try {
+      const smallTalkList = await this.smallTalkRepository.find({
+        relations: ['interests', 'likes', 'author', 'comments'],
+      });
+
+      return smallTalkList;
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '스몰톡 목록 조회에 실패했습니다.');
     }
   }
 

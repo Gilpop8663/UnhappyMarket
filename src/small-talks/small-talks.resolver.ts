@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SmallTalksService } from './small-talks.service';
 import {
   CreateSmallTalkInput,
@@ -12,6 +12,7 @@ import {
   DeleteSmallTalkInput,
   DeleteSmallTalkOutput,
 } from './dtos/delete-small-talk.dto';
+import { SmallTalk } from './entities/small-talk.entity';
 
 @Resolver()
 export class SmallTalksResolver {
@@ -30,6 +31,11 @@ export class SmallTalksResolver {
   @Mutation(() => DeleteSmallTalkOutput)
   deleteSmallTalk(@Args('input') deleteSmallTalkInput: DeleteSmallTalkInput) {
     return this.smallTalkService.deleteSmallTalk(deleteSmallTalkInput);
+  }
+
+  @Query(() => [SmallTalk])
+  getSmallTalkList() {
+    return this.smallTalkService.getSmallTalkList();
   }
 
   //   @Mutation(() => LikeSmallTalkOutput)
@@ -52,11 +58,6 @@ export class SmallTalksResolver {
   //     return this.smallTalkService.increaseSmallTalkViewCount(
   //       increaseSmallTalkViewCountInput,
   //     );
-  //   }
-
-  //   @Query(() => [SmallTalk])
-  //   getSmallTalkList(@Args('sagaId') sagaId: number) {
-  //     return this.smallTalkService.getSmallTalkList(sagaId);
   //   }
 
   //   @Query(() => GetSmallTalkDetailOutput)
