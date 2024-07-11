@@ -13,6 +13,7 @@ export class EditSmallTalkInput extends PickType(PartialType(SmallTalk), [
   'title',
   'content',
   'authorComment',
+  'thumbnailUrl',
   'point',
 ]) {
   @Field(() => Number)

@@ -206,6 +206,20 @@ type EditSagaOutput {
   ok: Boolean!
 }
 
+input EditSmallTalkInput {
+  authorComment: String
+  content: String
+  point: Float
+  smallTalkId: Float!
+  thumbnailUrl: String
+  title: String
+}
+
+type EditSmallTalkOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Episode {
   authorComment: String!
   comments: [Comment!]!
@@ -367,6 +381,7 @@ type Mutation {
   editComment(input: EditCommentInput!): EditCommentOutput!
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
+  editSmallTalk(input: EditSmallTalkInput!): EditSmallTalkOutput!
   increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
   login(input: LoginInput!): LoginOutput!
   setCommentDislike(input: LikeCommentInput!): LikeCommentOutput!

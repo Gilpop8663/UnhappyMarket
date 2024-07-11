@@ -4,6 +4,10 @@ import {
   CreateSmallTalkInput,
   CreateSmallTalkOutput,
 } from './dtos/create-small-talk.dto';
+import {
+  EditSmallTalkInput,
+  EditSmallTalkOutput,
+} from './dtos/edit-small-talk.dto';
 
 @Resolver()
 export class SmallTalksResolver {
@@ -14,10 +18,10 @@ export class SmallTalksResolver {
     return this.smallTalkService.createSmallTalk(createSmallTalkInput);
   }
 
-  //   @Mutation(() => EditSmallTalkOutput)
-  //   editSmallTalk(@Args('input') editSmallTalkInput: EditSmallTalkInput) {
-  //     return this.smallTalkService.editSmallTalk(editSmallTalkInput);
-  //   }
+  @Mutation(() => EditSmallTalkOutput)
+  editSmallTalk(@Args('input') editSmallTalkInput: EditSmallTalkInput) {
+    return this.smallTalkService.editSmallTalk(editSmallTalkInput);
+  }
 
   //   @Mutation(() => DeleteSmallTalkOutput)
   //   deleteSmallTalk(@Args('input') deleteSmallTalkInput: DeleteSmallTalkInput) {

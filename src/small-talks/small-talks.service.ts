@@ -8,6 +8,10 @@ import {
 } from './dtos/create-small-talk.dto';
 import { logErrorAndReturnFalse } from 'src/utils';
 import { User } from 'src/users/entities/user.entity';
+import {
+  EditSmallTalkInput,
+  EditSmallTalkOutput,
+} from './dtos/edit-small-talk.dto';
 
 @Injectable()
 export class SmallTalksService {
@@ -48,26 +52,28 @@ export class SmallTalksService {
     }
   }
 
-  //   async editEpisode({
-  //     episodeId,
-  //     title,
-  //     content,
-  //     authorComment,
-  //     point,
-  //   }: EditSmallTalkInput): Promise<EditSmallTalkOutput> {
-  //     try {
-  //       await this.episodeRepository.update(episodeId, {
-  //         title,
-  //         content,
-  //         authorComment,
-  //         point,
-  //       });
+  async editSmallTalk({
+    smallTalkId,
+    title,
+    content,
+    authorComment,
+    thumbnailUrl,
+    point,
+  }: EditSmallTalkInput): Promise<EditSmallTalkOutput> {
+    try {
+      await this.smallTalkRepository.update(smallTalkId, {
+        title,
+        content,
+        authorComment,
+        thumbnailUrl,
+        point,
+      });
 
-  //       return { ok: true };
-  //     } catch (error) {
-  //       return { ok: false, error: '회차 수정에 실패했습니다.' };
-  //     }
-  //   }
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '회차 수정에 실패했습니다.');
+    }
+  }
 
   //   async deleteEpisode({
   //     episodeId,
