@@ -27,6 +27,7 @@ import { InterestsModule } from './interests/interests.module';
 import { Interest } from './interests/entities/interest.entity';
 import { Comment } from './comments/entities/comment.entity';
 import { Dislike } from './likes/entities/dislike.entity';
+import { SmallTalksModule } from './small-talks/small-talks.module';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -102,6 +103,7 @@ const getEnvFilePath = () => {
     SagasModule,
     LikesModule,
     InterestsModule,
+    SmallTalksModule,
   ],
   controllers: [],
   providers: [],

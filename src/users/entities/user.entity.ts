@@ -15,6 +15,7 @@ import { Saga } from 'src/sagas/entities/saga.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -54,6 +55,10 @@ export class User extends CoreEntity {
   @Field(() => [Saga])
   @OneToMany(() => Saga, (saga) => saga.author)
   sagas: Saga[];
+
+  @Field(() => [SmallTalk])
+  @OneToMany(() => SmallTalk, (smallTalk) => smallTalk.author)
+  smallTalks: SmallTalk[];
 
   @Field(() => [Like])
   @OneToMany(() => Like, (like) => like.user)
