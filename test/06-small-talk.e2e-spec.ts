@@ -116,3 +116,37 @@ test('스몰톡을 수정한다.', async () => {
   expect(updatedSmallTalk.point).toBe(EDITED.point);
   expect(updatedSmallTalk.thumbnailUrl).toBe(EDITED.thumbnailUrl);
 });
+
+test('스몰톡을 삭제한다.', async () => {
+  const [initialSmallTalk] = await smallTalkRepository.find();
+
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+        mutation {
+          deleteSmallTalk(input: { smallTalkId: ${initialSmallTalk.id} }) {
+            ok
+            error
+          }
+        }
+      `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { deleteSmallTalk },
+        },
+      } = res;
+
+      expect(deleteSmallTalk.ok).toBe(true);
+      expect(deleteSmallTalk.error).toBe(null);
+    });
+
+  const smallTalk = await smallTalkRepository.findOne({
+    where: { id: initialSmallTalk.id },
+  });
+
+  expect(smallTalk).toBe(null);
+});
