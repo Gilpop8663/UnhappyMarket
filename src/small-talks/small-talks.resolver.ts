@@ -17,6 +17,10 @@ import {
   GetSmallTalkDetailInput,
   GetSmallTalkDetailOutput,
 } from './dtos/get-small-talk-detail.dto';
+import {
+  IncreaseSmallTalkViewCountInput,
+  IncreaseSmallTalkViewCountOutput,
+} from './dtos/increase-small-talk-view-count.dto';
 
 @Resolver()
 export class SmallTalksResolver {
@@ -35,6 +39,16 @@ export class SmallTalksResolver {
   @Mutation(() => DeleteSmallTalkOutput)
   deleteSmallTalk(@Args('input') deleteSmallTalkInput: DeleteSmallTalkInput) {
     return this.smallTalkService.deleteSmallTalk(deleteSmallTalkInput);
+  }
+
+  @Mutation(() => IncreaseSmallTalkViewCountOutput)
+  increaseSmallTalkViewCount(
+    @Args('input')
+    increaseSmallTalkViewCountInput: IncreaseSmallTalkViewCountInput,
+  ) {
+    return this.smallTalkService.increaseSmallTalkViewCount(
+      increaseSmallTalkViewCountInput,
+    );
   }
 
   @Query(() => [SmallTalk])
@@ -57,15 +71,5 @@ export class SmallTalksResolver {
   //     @Args('input') interestSmallTalkInput: InterestSmallTalkInput,
   //   ) {
   //     return this.interestService.interestSmallTalk(interestSmallTalkInput);
-  //   }
-
-  //   @Mutation(() => IncreaseSmallTalkViewCountOutput)
-  //   increaseSmallTalkViewCount(
-  //     @Args('input')
-  //     increaseSmallTalkViewCountInput: IncreaseSmallTalkViewCountInput,
-  //   ) {
-  //     return this.smallTalkService.increaseSmallTalkViewCount(
-  //       increaseSmallTalkViewCountInput,
-  //     );
   //   }
 }

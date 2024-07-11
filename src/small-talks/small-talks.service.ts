@@ -20,6 +20,10 @@ import {
   GetSmallTalkDetailInput,
   GetSmallTalkDetailOutput,
 } from './dtos/get-small-talk-detail.dto';
+import {
+  IncreaseSmallTalkViewCountInput,
+  IncreaseSmallTalkViewCountOutput,
+} from './dtos/increase-small-talk-view-count.dto';
 
 @Injectable()
 export class SmallTalksService {
@@ -122,19 +126,19 @@ export class SmallTalksService {
     }
   }
 
-  //   async increaseEpisodeViewCount({
-  //     episodeId,
-  //   }: IncreaseSmallTalkViewCountInput): Promise<IncreaseSmallTalkViewCountOutput> {
-  //     try {
-  //       const episode = await this.episodeRepository.findOne({
-  //         where: { id: episodeId },
-  //       });
+  async increaseSmallTalkViewCount({
+    smallTalkId,
+  }: IncreaseSmallTalkViewCountInput): Promise<IncreaseSmallTalkViewCountOutput> {
+    try {
+      const smallTalk = await this.smallTalkRepository.findOne({
+        where: { id: smallTalkId },
+      });
 
-  //       await this.episodeRepository.update(episodeId, {
-  //         views: episode.views + 1,
-  //       });
-  //     } catch (error) {
-  //       return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
-  //     }
-  //   }
+      await this.smallTalkRepository.update(smallTalkId, {
+        views: smallTalk.views + 1,
+      });
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
+    }
+  }
 }

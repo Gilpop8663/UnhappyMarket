@@ -313,7 +313,7 @@ test('시리즈를 조회하면 조회수가 증가한다.', async () => {
       .send({
         query: /* GraphQL */ `
       mutation {
-        increaseSmallTalkViewCount(input: { episodeId: ${initialSmallTalk.id} }) {
+        increaseSmallTalkViewCount(input: { smallTalkId: ${initialSmallTalk.id} }) {
           ok
           error
         }
@@ -323,7 +323,7 @@ test('시리즈를 조회하면 조회수가 증가한다.', async () => {
       .expect(200);
   };
 
-  // 회차 조회 요청
+  // 스몰톡 조회 요청
   await increaseViewCount();
 
   // 조회 후 조회수 확인
