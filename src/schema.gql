@@ -328,6 +328,16 @@ type InterestSagaOutput {
   ok: Boolean!
 }
 
+input InterestSmallTalkInput {
+  smallTalkId: Float!
+  userId: Float!
+}
+
+type InterestSmallTalkOutput {
+  error: String
+  ok: Boolean!
+}
+
 enum InterestableType {
   Episode
   Saga
@@ -420,6 +430,7 @@ type Mutation {
   setEpisodeLike(input: LikeEpisodeInput!): LikeEpisodeOutput!
   setSagaInterest(input: InterestSagaInput!): InterestSagaOutput!
   setSagaLike(input: LikeSagaInput!): LikeSagaOutput!
+  setSmallTalkInterest(input: InterestSmallTalkInput!): InterestSmallTalkOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }

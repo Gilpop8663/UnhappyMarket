@@ -193,20 +193,20 @@ describe('시리즈를 수정한다', () => {
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
-          mutation {
-            editSaga(
-              input: {
-                sagaId: ${saga.id}
-                description: "수정1"
-                thumbnailUrl: "수정2"
-                title: "수정3"
+            mutation {
+              editSaga(
+                input: {
+                  sagaId: ${saga.id}
+                  description: "수정1"
+                  thumbnailUrl: "수정2"
+                  title: "수정3"
+                }
+              ) {
+                ok
+                error
               }
-            ) {
-              ok
-              error
             }
-          }
-        `,
+          `,
       })
       .expect(200)
       .expect((res) => {

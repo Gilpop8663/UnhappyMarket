@@ -18,6 +18,11 @@ import {
 } from './dtos/interest-episode.dto';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
+import {
+  InterestSmallTalkInput,
+  InterestSmallTalkOutput,
+} from './dtos/interest-small-talk.dto';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 @Injectable()
 export class InterestsService {
@@ -30,6 +35,8 @@ export class InterestsService {
     private readonly episodeRepository: Repository<Episode>,
     @InjectRepository(Saga)
     private readonly sagaRepository: Repository<Saga>,
+    @InjectRepository(SmallTalk)
+    private readonly smallTalkRepository: Repository<SmallTalk>,
   ) {}
 
   private async toggleInterest({
@@ -56,6 +63,10 @@ export class InterestsService {
       where: { id: interestableId },
     });
 
+    const smallTalk = await this.smallTalkRepository.findOne({
+      where: { id: interestableId },
+    });
+
     const newInterest = this.interestsRepository.create({
       user,
       interestableId,
@@ -63,6 +74,8 @@ export class InterestsService {
       episode:
         interestableType === InterestableType['Episode'] ? episode : null,
       saga: interestableType === InterestableType['Saga'] ? saga : null,
+      smallTalk:
+        interestableType === InterestableType['SmallTalk'] ? smallTalk : null,
     });
 
     await this.interestsRepository.save(newInterest);
@@ -97,6 +110,21 @@ export class InterestsService {
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '회차 관심 작업에 실패했습니다.');
+    }
+  }
+
+  async interestSmallTalk({
+    userId,
+    smallTalkId,
+  }: InterestSmallTalkInput): Promise<InterestSmallTalkOutput> {
+    try {
+      return this.toggleInterest({
+        userId,
+        interestableId: smallTalkId,
+        interestableType: InterestableType.SmallTalk,
+      });
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '스몰톡 관심 작업에 실패했습니다.');
     }
   }
 }

@@ -341,13 +341,13 @@ test('스몰톡 관심 있어요를 누른다. 다시 한번 누르면 관심이
   const [initialSmallTalk] = await smallTalkRepository.find();
   const [initialUser] = await usersRepository.find();
 
-  const setSmallTalkInterest = async (episodeId: number, userId: number) => {
+  const setSmallTalkInterest = async (smallTalkId: number, userId: number) => {
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           mutation {
-            setSmallTalkInterest(input: { episodeId: ${episodeId}, userId: ${userId} }) {
+            setSmallTalkInterest(input: { smallTalkId: ${smallTalkId}, userId: ${userId} }) {
               ok
               error
             }

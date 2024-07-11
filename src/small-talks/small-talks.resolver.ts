@@ -21,10 +21,18 @@ import {
   IncreaseSmallTalkViewCountInput,
   IncreaseSmallTalkViewCountOutput,
 } from './dtos/increase-small-talk-view-count.dto';
+import {
+  InterestSmallTalkInput,
+  InterestSmallTalkOutput,
+} from 'src/interests/dtos/interest-small-talk.dto';
+import { InterestsService } from 'src/interests/interests.service';
 
 @Resolver()
 export class SmallTalksResolver {
-  constructor(private readonly smallTalkService: SmallTalksService) {}
+  constructor(
+    private readonly smallTalkService: SmallTalksService,
+    private readonly interestService: InterestsService,
+  ) {}
 
   @Mutation(() => CreateSmallTalkOutput)
   createSmallTalk(@Args('input') createSmallTalkInput: CreateSmallTalkInput) {
@@ -51,6 +59,13 @@ export class SmallTalksResolver {
     );
   }
 
+  @Mutation(() => InterestSmallTalkOutput)
+  setSmallTalkInterest(
+    @Args('input') interestSmallTalkInput: InterestSmallTalkInput,
+  ) {
+    return this.interestService.interestSmallTalk(interestSmallTalkInput);
+  }
+
   @Query(() => [SmallTalk])
   getSmallTalkList() {
     return this.smallTalkService.getSmallTalkList();
@@ -64,12 +79,5 @@ export class SmallTalksResolver {
   //   @Mutation(() => LikeSmallTalkOutput)
   //   setSmallTalkLike(@Args('input') likeSmallTalkInput: LikeSmallTalkInput) {
   //     return this.likeService.likeSmallTalk(likeSmallTalkInput);
-  //   }
-
-  //   @Mutation(() => InterestSmallTalkOutput)
-  //   setSmallTalkInterest(
-  //     @Args('input') interestSmallTalkInput: InterestSmallTalkInput,
-  //   ) {
-  //     return this.interestService.interestSmallTalk(interestSmallTalkInput);
   //   }
 }
