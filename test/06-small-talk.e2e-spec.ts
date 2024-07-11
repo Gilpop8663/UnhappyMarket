@@ -1,6 +1,7 @@
 import * as request from 'supertest';
 
 import { app, smallTalkRepository, usersRepository } from './jest.setup';
+import { InterestableType } from 'src/interests/entities/interest.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -301,7 +302,7 @@ describe('회차 목록을 불러온다.', () => {
   });
 });
 
-test('시리즈를 조회하면 조회수가 증가한다.', async () => {
+test('스몰톡을 조회하면 조회수가 증가한다.', async () => {
   const [initialSmallTalk] = await smallTalkRepository.find();
 
   // 초기 조회수 확인
@@ -334,4 +335,72 @@ test('시리즈를 조회하면 조회수가 증가한다.', async () => {
 
   // 조회수가 1 증가했는지 확인
   expect(updatedViewCount).toBe(initialViewCount + 1);
+});
+
+test('스몰톡 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
+  const [initialSmallTalk] = await smallTalkRepository.find();
+  const [initialUser] = await usersRepository.find();
+
+  const setSmallTalkInterest = async (episodeId: number, userId: number) => {
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            setSmallTalkInterest(input: { episodeId: ${episodeId}, userId: ${userId} }) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { setSmallTalkInterest },
+          },
+        } = res;
+        expect(setSmallTalkInterest.ok).toBe(true);
+        expect(setSmallTalkInterest.error).toBe(null);
+      });
+  };
+
+  const getSmallTalk = async (episodeId: number) => {
+    return smallTalkRepository.findOne({
+      where: { id: episodeId },
+      relations: ['interests'],
+    });
+  };
+
+  const getUserInterestLength = async () => {
+    const user = await usersRepository.findOne({
+      where: { id: initialUser.id },
+      relations: ['interests'],
+    });
+
+    return user.interests.filter(
+      (item) => item.interestableType === InterestableType['SmallTalk'],
+    ).length;
+  };
+
+  // 관심 등록
+  await setSmallTalkInterest(initialSmallTalk.id, initialUser.id);
+
+  // 관심 등록 후 확인
+  const episodeAfterFirstInterest = await getSmallTalk(initialSmallTalk.id);
+  const userAfterFirstInterest = await getUserInterestLength();
+
+  expect(episodeAfterFirstInterest.interests.length).toBe(1);
+  expect(userAfterFirstInterest).toBe(1);
+
+  // 관심 취소
+  await setSmallTalkInterest(initialSmallTalk.id, initialUser.id);
+
+  // 관심 취소 후 확인
+  const episodeAfterSecondInterest = await getSmallTalk(initialSmallTalk.id);
+  const userAfterSecondInterest = await getUserInterestLength();
+
+  expect(episodeAfterSecondInterest.interests.length).toBe(0);
+  expect(userAfterSecondInterest).toBe(0);
 });
