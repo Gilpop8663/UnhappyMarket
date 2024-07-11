@@ -152,6 +152,15 @@ type DeleteSagaOutput {
   ok: Boolean!
 }
 
+input DeleteSmallTalkInput {
+  smallTalkId: Float!
+}
+
+type DeleteSmallTalkOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Dislike {
   comment: Comment
   createdAt: DateTime!
@@ -378,6 +387,7 @@ type Mutation {
   deleteComment(input: DeleteCommentInput!): DeleteCommentOutput!
   deleteEpisode(input: DeleteEpisodeInput!): DeleteEpisodeOutput!
   deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!
+  deleteSmallTalk(input: DeleteSmallTalkInput!): DeleteSmallTalkOutput!
   editComment(input: EditCommentInput!): EditCommentOutput!
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!

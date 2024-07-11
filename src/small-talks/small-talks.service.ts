@@ -12,6 +12,10 @@ import {
   EditSmallTalkInput,
   EditSmallTalkOutput,
 } from './dtos/edit-small-talk.dto';
+import {
+  DeleteSmallTalkInput,
+  DeleteSmallTalkOutput,
+} from './dtos/delete-small-talk.dto';
 
 @Injectable()
 export class SmallTalksService {
@@ -75,17 +79,17 @@ export class SmallTalksService {
     }
   }
 
-  //   async deleteEpisode({
-  //     episodeId,
-  //   }: DeleteSmallTalkInput): Promise<DeleteSmallTalkOutput> {
-  //     try {
-  //       await this.episodeRepository.delete(episodeId);
+  async deleteSmallTalk({
+    smallTalkId,
+  }: DeleteSmallTalkInput): Promise<DeleteSmallTalkOutput> {
+    try {
+      await this.smallTalkRepository.delete(smallTalkId);
 
-  //       return { ok: true };
-  //     } catch (error) {
-  //       return { ok: false, error: '회차 삭제에 실패했습니다.' };
-  //     }
-  //   }
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '회차 삭제에 실패했습니다.');
+    }
+  }
 
   //   async increaseEpisodeViewCount({
   //     episodeId,
