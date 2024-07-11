@@ -822,39 +822,4 @@ test('회차를 조회하면 조회수가 증가한다.', async () => {
   expect(updatedViewCount).toBe(initialViewCount + 1);
 });
 
-test('회차를 조회하면 조회수가 증가한다.', async () => {
-  const [initialEpisode] = await episodesRepository.find();
-
-  // 초기 조회수 확인
-  const initialViewCount = initialEpisode.views;
-
-  const increaseViewCount = async () => {
-    return request(app.getHttpServer())
-      .post(GRAPHQL_ENDPOINT)
-      .send({
-        query: /* GraphQL */ `
-      mutation {
-        increaseEpisodeViewCount(input: { episodeId: ${initialEpisode.id} }) {
-          ok
-          error
-        }
-      }
-    `,
-      })
-      .expect(200);
-  };
-
-  // 회차 조회 요청
-  await increaseViewCount();
-
-  // 조회 후 조회수 확인
-  const updatedEpisode = await episodesRepository.findOne({
-    where: { id: initialEpisode.id },
-  });
-  const updatedViewCount = updatedEpisode.views;
-
-  // 조회수가 1 증가했는지 확인
-  expect(updatedViewCount).toBe(initialViewCount + 1);
-});
-
 test.todo('조회수 중복해서 오르지 않도록 확인하기');

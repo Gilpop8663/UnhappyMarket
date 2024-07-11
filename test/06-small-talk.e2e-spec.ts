@@ -300,3 +300,38 @@ describe('회차 목록을 불러온다.', () => {
       });
   });
 });
+
+test('시리즈를 조회하면 조회수가 증가한다.', async () => {
+  const [initialSmallTalk] = await smallTalkRepository.find();
+
+  // 초기 조회수 확인
+  const initialViewCount = initialSmallTalk.views;
+
+  const increaseViewCount = async () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        increaseSmallTalkViewCount(input: { episodeId: ${initialSmallTalk.id} }) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200);
+  };
+
+  // 회차 조회 요청
+  await increaseViewCount();
+
+  // 조회 후 조회수 확인
+  const updatedEpisode = await smallTalkRepository.findOne({
+    where: { id: initialSmallTalk.id },
+  });
+  const updatedViewCount = updatedEpisode.views;
+
+  // 조회수가 1 증가했는지 확인
+  expect(updatedViewCount).toBe(initialViewCount + 1);
+});
