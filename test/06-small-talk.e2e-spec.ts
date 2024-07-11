@@ -474,3 +474,39 @@ test('스몰톡 좋아요를 누른다. 다시 한번 누르면 좋아요가 취
   expect(smallTalkAfterSecondLike.likes.length).toBe(0);
   expect(userAfterSecondLike).toBe(0);
 });
+
+test('스몰톡이 유료라면 회원의 포인트를 차감한다.', async () => {
+  const [smallTalk] = await smallTalkRepository.find();
+  const [initialUser] = await usersRepository.find();
+
+  expect(initialUser.point).toBeGreaterThanOrEqual(smallTalk.point);
+
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+        mutation {
+          deductUserPoints(input: { itemId: ${smallTalk.id}, userId:${initialUser.id}, pointSpent: ${smallTalk.point} }) {
+            ok
+            error
+          }
+        }
+      `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { deductUserPoints },
+        },
+      } = res;
+
+      expect(deductUserPoints.ok).toBe(true);
+    });
+
+  const updatedUser = await usersRepository.findOne({
+    where: { id: initialUser.id },
+  });
+
+  expect(updatedUser.point).toBe(initialUser.point - smallTalk.point);
+});
