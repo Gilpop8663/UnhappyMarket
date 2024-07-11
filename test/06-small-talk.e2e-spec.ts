@@ -150,3 +150,94 @@ test('스몰톡을 삭제한다.', async () => {
 
   expect(smallTalk).toBe(null);
 });
+
+describe('회차 목록을 불러온다.', () => {
+  const TEST_CONTENT_LIST = ['1', '2', '3', '4', '5'];
+
+  const requiredKeys = [
+    'id',
+    'title',
+    'content',
+    'authorComment',
+    'thumbnail',
+    'author',
+    'createdAt',
+    'updatedAt',
+    'interests',
+    'likes',
+  ];
+
+  beforeAll(async () => {
+    const [initialUser] = await usersRepository.find();
+
+    for (const content of TEST_CONTENT_LIST) {
+      await request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: /* GraphQL */ `
+            mutation {
+              createSmallTalk(
+                input: {
+                  userId: ${initialUser.id}
+                  title: "${content}"
+                  content: "${content}"
+                  thumbnailUrl: "${content}"
+                  authorComment: "${content}"
+                  point: "${content}"
+                }
+              ) {
+                ok
+                error
+                smallTalkId
+              }
+            }
+          `,
+        });
+    }
+  });
+
+  test('스몰톡 목록을 불러온다.', () => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          query {
+            getSmallTalkList {
+              id
+              title
+              author
+              thumbnailUrl
+              content
+              authorComment
+              createdAt
+              updatedAt
+              point
+              interests {
+                id
+              }
+              likes {
+                id
+              }
+              comment {
+                id
+              }
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getSmallTalkList },
+          },
+        } = res;
+
+        expect(getSmallTalkList.length).toBe(5);
+
+        requiredKeys.forEach((key) => {
+          expect(getSmallTalkList[0]).toHaveProperty(key);
+        });
+      });
+  });
+});
