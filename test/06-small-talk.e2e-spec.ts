@@ -243,4 +243,60 @@ describe('회차 목록을 불러온다.', () => {
         });
       });
   });
+
+  test('스몰톡 상세 정보를 불러온다.', async () => {
+    const [initialSmallTalk] = await smallTalkRepository.find();
+
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          query {
+            getSmallTalkDetail(input: { smallTalk: ${initialSmallTalk.id} }) {
+              ok
+              error
+              data {
+                id
+                title
+                author {
+                  id
+                }
+                thumbnailUrl
+                content
+                authorComment
+                createdAt
+                updatedAt
+                point
+                interests {
+                  id
+                }
+                likes {
+                  id
+                }
+                comments {
+                  id
+                }
+              }
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { getSmallTalkDetail },
+          },
+        } = res;
+
+        expect(getSmallTalkDetail.ok).toBe(true);
+        expect(getSmallTalkDetail.error).toBe(null);
+
+        requiredKeys.forEach((key) => {
+          expect(getSmallTalkDetail.data).toHaveProperty(key);
+        });
+
+        expect(getSmallTalkDetail.data.title).toBe(initialSmallTalk.title);
+      });
+  });
 });
