@@ -268,6 +268,16 @@ type GetEpisodeDetailOutput {
   previousEpisode: Episode
 }
 
+input GetSmallTalkDetailInput {
+  smallTalkId: Float!
+}
+
+type GetSmallTalkDetailOutput {
+  data: SmallTalk
+  error: String
+  ok: Boolean!
+}
+
 input IncreaseEpisodeViewCountInput {
   episodeId: Float!
 }
@@ -410,6 +420,7 @@ type Query {
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
   getEpisodeList(sagaId: Float!): [Episode!]!
   getSagaList: [Saga!]!
+  getSmallTalkDetail(input: GetSmallTalkDetailInput!): GetSmallTalkDetailOutput!
   getSmallTalkList: [SmallTalk!]!
   getUserProfile(input: UserProfileInput!): UserProfileOutput!
   healthCheck: CoreOutput!

@@ -16,6 +16,10 @@ import {
   DeleteSmallTalkInput,
   DeleteSmallTalkOutput,
 } from './dtos/delete-small-talk.dto';
+import {
+  GetSmallTalkDetailInput,
+  GetSmallTalkDetailOutput,
+} from './dtos/get-small-talk-detail.dto';
 
 @Injectable()
 export class SmallTalksService {
@@ -100,6 +104,21 @@ export class SmallTalksService {
       return smallTalkList;
     } catch (error) {
       return logErrorAndReturnFalse(error, '스몰톡 목록 조회에 실패했습니다.');
+    }
+  }
+
+  async getSmallTalkDetail({
+    smallTalkId,
+  }: GetSmallTalkDetailInput): Promise<GetSmallTalkDetailOutput> {
+    try {
+      const smallTalk = await this.smallTalkRepository.findOne({
+        where: { id: smallTalkId },
+        relations: ['interests', 'likes', 'author', 'comments'],
+      });
+
+      return { ok: true, data: smallTalk };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '스몰톡 상세 조회에 실패했습니다.');
     }
   }
 

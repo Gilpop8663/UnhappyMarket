@@ -252,7 +252,7 @@ describe('회차 목록을 불러온다.', () => {
       .send({
         query: /* GraphQL */ `
           query {
-            getSmallTalkDetail(input: { smallTalk: ${initialSmallTalk.id} }) {
+            getSmallTalkDetail(input: { smallTalkId: ${initialSmallTalk.id} }) {
               ok
               error
               data {

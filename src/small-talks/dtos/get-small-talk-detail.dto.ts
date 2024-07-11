@@ -6,13 +6,10 @@ import { SmallTalk } from '../entities/small-talk.entity';
 export class GetSmallTalkDetailInput {
   @Field(() => Number)
   smallTalkId: number;
-
-  @Field(() => Number, { nullable: true })
-  userId?: number;
 }
 
 @ObjectType()
 export class GetSmallTalkDetailOutput extends CoreOutput {
   @Field(() => SmallTalk, { nullable: true })
-  smallTalk?: SmallTalk;
+  data?: SmallTalk;
 }

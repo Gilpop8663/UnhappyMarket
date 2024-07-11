@@ -13,6 +13,10 @@ import {
   DeleteSmallTalkOutput,
 } from './dtos/delete-small-talk.dto';
 import { SmallTalk } from './entities/small-talk.entity';
+import {
+  GetSmallTalkDetailInput,
+  GetSmallTalkDetailOutput,
+} from './dtos/get-small-talk-detail.dto';
 
 @Resolver()
 export class SmallTalksResolver {
@@ -38,6 +42,11 @@ export class SmallTalksResolver {
     return this.smallTalkService.getSmallTalkList();
   }
 
+  @Query(() => GetSmallTalkDetailOutput)
+  getSmallTalkDetail(@Args('input') input: GetSmallTalkDetailInput) {
+    return this.smallTalkService.getSmallTalkDetail(input);
+  }
+
   //   @Mutation(() => LikeSmallTalkOutput)
   //   setSmallTalkLike(@Args('input') likeSmallTalkInput: LikeSmallTalkInput) {
   //     return this.likeService.likeSmallTalk(likeSmallTalkInput);
@@ -58,10 +67,5 @@ export class SmallTalksResolver {
   //     return this.smallTalkService.increaseSmallTalkViewCount(
   //       increaseSmallTalkViewCountInput,
   //     );
-  //   }
-
-  //   @Query(() => GetSmallTalkDetailOutput)
-  //   getSmallTalkDetail(@Args('input') input: GetSmallTalkDetailInput) {
-  //     return this.smallTalkService.getSmallTalkDetail(input);
   //   }
 }
