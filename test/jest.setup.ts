@@ -8,6 +8,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 let app: INestApplication;
 let dataSource: DataSource;
@@ -15,8 +16,7 @@ let usersRepository: Repository<User>;
 let sagasRepository: Repository<Saga>;
 let episodesRepository: Repository<Episode>;
 let commentRepository: Repository<Comment>;
-
-const GRAPHQL_ENDPOINT = '/graphql';
+let smallTalkRepository: Repository<SmallTalk>;
 
 beforeAll(async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,6 +36,9 @@ beforeAll(async () => {
   commentRepository = moduleFixture.get<Repository<Comment>>(
     getRepositoryToken(Comment),
   );
+  smallTalkRepository = moduleFixture.get<Repository<SmallTalk>>(
+    getRepositoryToken(SmallTalk),
+  );
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
 });
@@ -52,4 +55,5 @@ export {
   sagasRepository,
   episodesRepository,
   commentRepository,
+  smallTalkRepository,
 };

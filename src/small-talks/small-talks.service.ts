@@ -43,62 +43,62 @@ export class SmallTalksService {
 
       await this.smallTalkRepository.save(episode);
 
-      return { ok: true, episodeId: episode.id };
+      return { ok: true, smallTalkId: episode.id };
     } catch (error) {
       return {
         ok: false,
         error: '회차 생성에 실패했습니다.',
-        episodeId: null,
+        smallTalkId: null,
       };
     }
   }
 
-  async editEpisode({
-    episodeId,
-    title,
-    content,
-    authorComment,
-    point,
-  }: EditSmallTalkInput): Promise<EditSmallTalkOutput> {
-    try {
-      await this.episodeRepository.update(episodeId, {
-        title,
-        content,
-        authorComment,
-        point,
-      });
+  //   async editEpisode({
+  //     episodeId,
+  //     title,
+  //     content,
+  //     authorComment,
+  //     point,
+  //   }: EditSmallTalkInput): Promise<EditSmallTalkOutput> {
+  //     try {
+  //       await this.episodeRepository.update(episodeId, {
+  //         title,
+  //         content,
+  //         authorComment,
+  //         point,
+  //       });
 
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error: '회차 수정에 실패했습니다.' };
-    }
-  }
+  //       return { ok: true };
+  //     } catch (error) {
+  //       return { ok: false, error: '회차 수정에 실패했습니다.' };
+  //     }
+  //   }
 
-  async deleteEpisode({
-    episodeId,
-  }: DeleteSmallTalkInput): Promise<DeleteSmallTalkOutput> {
-    try {
-      await this.episodeRepository.delete(episodeId);
+  //   async deleteEpisode({
+  //     episodeId,
+  //   }: DeleteSmallTalkInput): Promise<DeleteSmallTalkOutput> {
+  //     try {
+  //       await this.episodeRepository.delete(episodeId);
 
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error: '회차 삭제에 실패했습니다.' };
-    }
-  }
+  //       return { ok: true };
+  //     } catch (error) {
+  //       return { ok: false, error: '회차 삭제에 실패했습니다.' };
+  //     }
+  //   }
 
-  async increaseEpisodeViewCount({
-    episodeId,
-  }: IncreaseSmallTalkViewCountInput): Promise<IncreaseSmallTalkViewCountOutput> {
-    try {
-      const episode = await this.episodeRepository.findOne({
-        where: { id: episodeId },
-      });
+  //   async increaseEpisodeViewCount({
+  //     episodeId,
+  //   }: IncreaseSmallTalkViewCountInput): Promise<IncreaseSmallTalkViewCountOutput> {
+  //     try {
+  //       const episode = await this.episodeRepository.findOne({
+  //         where: { id: episodeId },
+  //       });
 
-      await this.episodeRepository.update(episodeId, {
-        views: episode.views + 1,
-      });
-    } catch (error) {
-      return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
-    }
-  }
+  //       await this.episodeRepository.update(episodeId, {
+  //         views: episode.views + 1,
+  //       });
+  //     } catch (error) {
+  //       return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
+  //     }
+  //   }
 }

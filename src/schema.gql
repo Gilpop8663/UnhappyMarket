@@ -103,6 +103,20 @@ type CreateSagaOutput {
   sagaId: Float
 }
 
+input CreateSmallTalkInput {
+  authorComment: String!
+  content: String!
+  point: Float!
+  title: String!
+  userId: Float!
+}
+
+type CreateSmallTalkOutput {
+  error: String
+  ok: Boolean!
+  smallTalkId: Float
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -339,6 +353,7 @@ type Mutation {
   createCommentReply(input: CreateCommentReplyInput!): CreateCommentReplyOutput!
   createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
+  createSmallTalk(input: CreateSmallTalkInput!): CreateSmallTalkOutput!
   deleteComment(input: DeleteCommentInput!): DeleteCommentOutput!
   deleteEpisode(input: DeleteEpisodeInput!): DeleteEpisodeOutput!
   deleteSaga(input: DeleteSagaInput!): DeleteSagaOutput!

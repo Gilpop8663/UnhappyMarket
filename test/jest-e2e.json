@@ -15,6 +15,7 @@
     "<rootDir>/02-sagas.e2e-spec.ts",
     "<rootDir>/03-episodes.e2e-spec.ts",
     "<rootDir>/04-comment.e2e-spec.ts",
-    "<rootDir>/05-comment-reply.e2e-spec.ts"
+    "<rootDir>/05-comment-reply.e2e-spec.ts",
+    "<rootDir>/06-small-talk.e2e-spec.ts"
   ]
 }
