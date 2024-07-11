@@ -417,3 +417,91 @@ test('시리즈 관심 있어요를 누른다. 다시 한번 누르면 관심이
   expect(sagaAfterSecondInterest.interests.length).toBe(0);
   expect(userAfterSecondInterest).toBe(0);
 });
+
+test('시리즈 완결 표시를 한다.', async () => {
+  const [initialSaga] = await sagasRepository.find();
+
+  expect(initialSaga.isCompleted).toBe(false);
+
+  const completeSeries = async (sagaId: number, isComplete: boolean) => {
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            completeSeries(input: { sagaId: ${sagaId},isComplete:${isComplete}}) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { completeSeries },
+          },
+        } = res;
+        expect(completeSeries.ok).toBe(true);
+        expect(completeSeries.error).toBe(null);
+      });
+  };
+
+  completeSeries(initialSaga.id, true);
+
+  const getSaga = async (sagaId: number) => {
+    return sagasRepository.findOne({
+      where: { id: sagaId },
+      relations: ['interests'],
+    });
+  };
+
+  const sagaAfterCompleted = await getSaga(initialSaga.id);
+
+  expect(sagaAfterCompleted.isCompleted).toBe(true);
+});
+
+test('시리즈 완결 표시했던 것을 취소한다.', async () => {
+  const [initialSaga] = await sagasRepository.find();
+
+  expect(initialSaga.isCompleted).toBe(true);
+
+  const completeSeries = async (sagaId: number, isComplete: boolean) => {
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+          mutation {
+            completeSeries(input: { sagaId: ${sagaId},isComplete:${isComplete}}) {
+              ok
+              error
+            }
+          }
+        `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { completeSeries },
+          },
+        } = res;
+        expect(completeSeries.ok).toBe(true);
+        expect(completeSeries.error).toBe(null);
+      });
+  };
+
+  completeSeries(initialSaga.id, false);
+
+  const getSaga = async (sagaId: number) => {
+    return sagasRepository.findOne({
+      where: { id: sagaId },
+      relations: ['interests'],
+    });
+  };
+
+  const sagaAfterCompleted = await getSaga(initialSaga.id);
+
+  expect(sagaAfterCompleted.isCompleted).toBe(false);
+});
