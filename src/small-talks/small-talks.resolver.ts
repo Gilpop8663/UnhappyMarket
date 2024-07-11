@@ -26,12 +26,18 @@ import {
   InterestSmallTalkOutput,
 } from 'src/interests/dtos/interest-small-talk.dto';
 import { InterestsService } from 'src/interests/interests.service';
+import {
+  LikeSmallTalkInput,
+  LikeSmallTalkOutput,
+} from 'src/likes/dtos/like-small-talk.dto';
+import { LikesService } from 'src/likes/likes.service';
 
 @Resolver()
 export class SmallTalksResolver {
   constructor(
     private readonly smallTalkService: SmallTalksService,
     private readonly interestService: InterestsService,
+    private readonly likeService: LikesService,
   ) {}
 
   @Mutation(() => CreateSmallTalkOutput)
@@ -60,10 +66,13 @@ export class SmallTalksResolver {
   }
 
   @Mutation(() => InterestSmallTalkOutput)
-  setSmallTalkInterest(
-    @Args('input') interestSmallTalkInput: InterestSmallTalkInput,
-  ) {
-    return this.interestService.interestSmallTalk(interestSmallTalkInput);
+  setSmallTalkInterest(@Args('input') input: InterestSmallTalkInput) {
+    return this.interestService.interestSmallTalk(input);
+  }
+
+  @Mutation(() => LikeSmallTalkOutput)
+  setSmallTalkLike(@Args('input') input: LikeSmallTalkInput) {
+    return this.likeService.likeSmallTalk(input);
   }
 
   @Query(() => [SmallTalk])
@@ -75,9 +84,4 @@ export class SmallTalksResolver {
   getSmallTalkDetail(@Args('input') input: GetSmallTalkDetailInput) {
     return this.smallTalkService.getSmallTalkDetail(input);
   }
-
-  //   @Mutation(() => LikeSmallTalkOutput)
-  //   setSmallTalkLike(@Args('input') likeSmallTalkInput: LikeSmallTalkInput) {
-  //     return this.likeService.likeSmallTalk(likeSmallTalkInput);
-  //   }
 }

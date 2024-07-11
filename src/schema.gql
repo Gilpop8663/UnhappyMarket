@@ -387,6 +387,16 @@ type LikeSagaOutput {
   ok: Boolean!
 }
 
+input LikeSmallTalkInput {
+  smallTalkId: Float!
+  userId: Float!
+}
+
+type LikeSmallTalkOutput {
+  error: String
+  ok: Boolean!
+}
+
 enum LikeableType {
   Comment
   Episode
@@ -431,6 +441,7 @@ type Mutation {
   setSagaInterest(input: InterestSagaInput!): InterestSagaOutput!
   setSagaLike(input: LikeSagaInput!): LikeSagaOutput!
   setSmallTalkInterest(input: InterestSmallTalkInput!): InterestSmallTalkOutput!
+  setSmallTalkLike(input: LikeSmallTalkInput!): LikeSmallTalkOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }

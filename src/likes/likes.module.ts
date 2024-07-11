@@ -7,11 +7,20 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Dislike } from './entities/dislike.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Like, User, Episode, Saga, Comment, Dislike]),
+    TypeOrmModule.forFeature([
+      Like,
+      User,
+      Episode,
+      Saga,
+      Comment,
+      Dislike,
+      SmallTalk,
+    ]),
   ],
   providers: [LikesService],
   exports: [LikesService],

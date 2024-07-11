@@ -17,6 +17,11 @@ import {
   ToggleDislikeInput,
   ToggleDislikeOutput,
 } from './dtos/toggle-dislike.dto';
+import {
+  LikeSmallTalkInput,
+  LikeSmallTalkOutput,
+} from './dtos/like-small-talk.dto';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 @Injectable()
 export class LikesService {
@@ -33,6 +38,8 @@ export class LikesService {
     private readonly sagaRepository: Repository<Saga>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    @InjectRepository(SmallTalk)
+    private readonly smallTalkRepository: Repository<SmallTalk>,
   ) {}
 
   private async toggleLike({
@@ -58,6 +65,12 @@ export class LikesService {
       where: { id: likeableId },
     });
 
+    const smallTalk = await this.smallTalkRepository.findOne({
+      where: {
+        id: likeableId,
+      },
+    });
+
     if (like) {
       await this.likesRepository.delete(like.id);
       return { ok: true };
@@ -70,6 +83,7 @@ export class LikesService {
       episode: likeableType === LikeableType['Episode'] ? episode : null,
       saga: likeableType === LikeableType['Saga'] ? saga : null,
       comment: likeableType === LikeableType['Comment'] ? comment : null,
+      smallTalk: likeableType === LikeableType['SmallTalk'] ? smallTalk : null,
     });
 
     await this.likesRepository.save(newLike);
@@ -149,6 +163,24 @@ export class LikesService {
       });
     } catch (error) {
       return logErrorAndReturnFalse(error, '댓글 좋아요 작업에 실패했습니다.');
+    }
+  }
+
+  async likeSmallTalk({
+    userId,
+    smallTalkId,
+  }: LikeSmallTalkInput): Promise<LikeSmallTalkOutput> {
+    try {
+      return this.toggleLike({
+        userId,
+        likeableId: smallTalkId,
+        likeableType: LikeableType.SmallTalk,
+      });
+    } catch (error) {
+      return logErrorAndReturnFalse(
+        error,
+        '스몰톡 좋아요 작업에 실패했습니다.',
+      );
     }
   }
 
