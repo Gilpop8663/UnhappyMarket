@@ -6,6 +6,11 @@ import { CreateSagaInput, CreateSagaOutput } from './dtos/create-saga.dto';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteSagaInput } from './dtos/delete-saga.dto';
 import { EditSagaInput, EditSagaOutput } from './dtos/edit-saga.dto';
+import {
+  CompleteSagaInput,
+  CompleteSagaOutput,
+} from './dtos/complete-saga.dto';
+import { logErrorAndReturnFalse } from 'src/utils';
 
 @Injectable()
 export class SagasService {
@@ -58,6 +63,19 @@ export class SagasService {
       return { ok: true };
     } catch (error) {
       return { ok: false, error: '시리즈 수정에 실패했습니다.' };
+    }
+  }
+
+  async completeSaga({
+    sagaId,
+    isCompleted,
+  }: CompleteSagaInput): Promise<CompleteSagaOutput> {
+    try {
+      await this.sagaRepository.update(sagaId, { isCompleted });
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '시리즈 완결 작업에 실패했습니다');
     }
   }
 

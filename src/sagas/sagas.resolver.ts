@@ -11,6 +11,10 @@ import {
   InterestSagaOutput,
 } from 'src/interests/dtos/interest-saga.dto';
 import { LikeSagaInput, LikeSagaOutput } from 'src/likes/dtos/like-saga.dto';
+import {
+  CompleteSagaInput,
+  CompleteSagaOutput,
+} from './dtos/complete-saga.dto';
 
 @Resolver()
 export class SagasResolver {
@@ -43,6 +47,11 @@ export class SagasResolver {
   @Mutation(() => InterestSagaOutput)
   setSagaInterest(@Args('input') interestSagaInput: InterestSagaInput) {
     return this.interestService.interestSaga(interestSagaInput);
+  }
+
+  @Mutation(() => CompleteSagaOutput)
+  completeSaga(@Args('input') input: CompleteSagaInput) {
+    return this.sagaService.completeSaga(input);
   }
 
   @Query(() => [Saga])

@@ -423,13 +423,13 @@ test('시리즈 완결 표시를 한다.', async () => {
 
   expect(initialSaga.isCompleted).toBe(false);
 
-  const completeSeries = async (sagaId: number, isComplete: boolean) => {
+  const completeSaga = async (sagaId: number, isCompleted: boolean) => {
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           mutation {
-            completeSeries(input: { sagaId: ${sagaId},isComplete:${isComplete}}) {
+            completeSaga(input: { sagaId: ${sagaId},isCompleted:${isCompleted}}) {
               ok
               error
             }
@@ -440,15 +440,15 @@ test('시리즈 완결 표시를 한다.', async () => {
       .expect((res) => {
         const {
           body: {
-            data: { completeSeries },
+            data: { completeSaga },
           },
         } = res;
-        expect(completeSeries.ok).toBe(true);
-        expect(completeSeries.error).toBe(null);
+        expect(completeSaga.ok).toBe(true);
+        expect(completeSaga.error).toBe(null);
       });
   };
 
-  completeSeries(initialSaga.id, true);
+  await completeSaga(initialSaga.id, true);
 
   const getSaga = async (sagaId: number) => {
     return sagasRepository.findOne({
@@ -463,17 +463,19 @@ test('시리즈 완결 표시를 한다.', async () => {
 });
 
 test('시리즈 완결 표시했던 것을 취소한다.', async () => {
-  const [initialSaga] = await sagasRepository.find();
+  const initialSaga = await sagasRepository.findOne({
+    where: { isCompleted: true },
+  });
 
   expect(initialSaga.isCompleted).toBe(true);
 
-  const completeSeries = async (sagaId: number, isComplete: boolean) => {
+  const completeSaga = async (sagaId: number, isCompleted: boolean) => {
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
         query: /* GraphQL */ `
           mutation {
-            completeSeries(input: { sagaId: ${sagaId},isComplete:${isComplete}}) {
+            completeSaga(input: { sagaId: ${sagaId},isCompleted:${isCompleted}}) {
               ok
               error
             }
@@ -484,15 +486,15 @@ test('시리즈 완결 표시했던 것을 취소한다.', async () => {
       .expect((res) => {
         const {
           body: {
-            data: { completeSeries },
+            data: { completeSaga },
           },
         } = res;
-        expect(completeSeries.ok).toBe(true);
-        expect(completeSeries.error).toBe(null);
+        expect(completeSaga.ok).toBe(true);
+        expect(completeSaga.error).toBe(null);
       });
   };
 
-  completeSeries(initialSaga.id, false);
+  await completeSaga(initialSaga.id, false);
 
   const getSaga = async (sagaId: number) => {
     return sagasRepository.findOne({

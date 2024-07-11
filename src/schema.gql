@@ -23,6 +23,16 @@ enum CommentCategory {
   Saga
 }
 
+input CompleteSagaInput {
+  isCompleted: Boolean!
+  sagaId: Float!
+}
+
+type CompleteSagaOutput {
+  error: String
+  ok: Boolean!
+}
+
 type CoreOutput {
   error: String
   ok: Boolean!
@@ -323,6 +333,7 @@ type LoginOutput {
 }
 
 type Mutation {
+  completeSaga(input: CompleteSagaInput!): CompleteSagaOutput!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   createComment(input: CreateCommentInput!): CreateCommentOutput!
   createCommentReply(input: CreateCommentReplyInput!): CreateCommentReplyOutput!
