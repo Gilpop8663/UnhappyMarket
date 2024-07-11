@@ -6,10 +6,12 @@ import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { IsEnum } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 export enum InterestableType {
   Saga,
   Episode,
+  SmallTalk,
 }
 
 registerEnumType(InterestableType, {
@@ -40,4 +42,10 @@ export class Interest extends CoreEntity {
   @ManyToOne(() => Saga, (saga) => saga.interests, { nullable: true })
   @Field(() => Saga, { nullable: true })
   saga?: Saga;
+
+  @ManyToOne(() => SmallTalk, (smallTalk) => smallTalk.interests, {
+    nullable: true,
+  })
+  @Field(() => SmallTalk, { nullable: true })
+  smallTalk?: SmallTalk;
 }

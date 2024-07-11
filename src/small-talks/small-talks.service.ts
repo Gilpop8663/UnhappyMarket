@@ -6,25 +6,16 @@ import {
   CreateSmallTalkInput,
   CreateSmallTalkOutput,
 } from './dtos/create-small-talk.dto';
-import {
-  EditSmallTalkInput,
-  EditSmallTalkOutput,
-} from './dtos/edit-small-talk.dto';
-import {
-  DeleteSmallTalkInput,
-  DeleteSmallTalkOutput,
-} from './dtos/delete-small-talk.dto';
-import {
-  IncreaseSmallTalkViewCountInput,
-  IncreaseSmallTalkViewCountOutput,
-} from './dtos/increase-small-talk-view-count.dto';
 import { logErrorAndReturnFalse } from 'src/utils';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class SmallTalksService {
   constructor(
     @InjectRepository(SmallTalk)
     private smallTalkRepository: Repository<SmallTalk>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createSmallTalk({
@@ -32,24 +23,28 @@ export class SmallTalksService {
     authorComment,
     content,
     point,
+    thumbnailUrl,
+    userId,
   }: CreateSmallTalkInput): Promise<CreateSmallTalkOutput> {
     try {
-      const episode = this.smallTalkRepository.create({
+      const author = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+
+      const smallTalk = this.smallTalkRepository.create({
         content,
         authorComment,
         title,
         point,
+        thumbnailUrl,
+        author,
       });
 
-      await this.smallTalkRepository.save(episode);
+      await this.smallTalkRepository.save(smallTalk);
 
-      return { ok: true, smallTalkId: episode.id };
+      return { ok: true, smallTalkId: smallTalk.id };
     } catch (error) {
-      return {
-        ok: false,
-        error: '회차 생성에 실패했습니다.',
-        smallTalkId: null,
-      };
+      return logErrorAndReturnFalse(error, '스몰톡 생성에 실패했습니다.');
     }
   }
 

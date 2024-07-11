@@ -9,12 +9,14 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dislike } from 'src/likes/entities/dislike.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 export enum CommentCategory {
   Saga,
   Episode,
+  SmallTalk,
   Challenge = 'Challenge',
 }
 
@@ -66,7 +68,13 @@ export class Comment extends CoreEntity {
   @Field(() => [Comment], { nullable: true })
   replies: Comment[];
 
-  @Field(() => Episode)
-  @ManyToOne(() => Episode, (episode) => episode.comments)
-  episode: Episode;
+  @Field(() => Episode, { nullable: true })
+  @ManyToOne(() => Episode, (episode) => episode.comments, { nullable: true })
+  episode?: Episode;
+
+  @Field(() => SmallTalk, { nullable: true })
+  @ManyToOne(() => SmallTalk, (smallTalk) => smallTalk.comments, {
+    nullable: true,
+  })
+  smallTalk?: SmallTalk;
 }

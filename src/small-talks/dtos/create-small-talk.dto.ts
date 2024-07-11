@@ -7,6 +7,7 @@ export class CreateSmallTalkInput extends PickType(SmallTalk, [
   'title',
   'content',
   'authorComment',
+  'thumbnailUrl',
   'point',
 ]) {
   @Field(() => Number)
@@ -16,5 +17,5 @@ export class CreateSmallTalkInput extends PickType(SmallTalk, [
 @ObjectType()
 export class CreateSmallTalkOutput extends CoreOutput {
   @Field(() => Number, { nullable: true })
-  smallTalkId: number;
+  smallTalkId?: number;
 }

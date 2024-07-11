@@ -7,11 +7,12 @@ type Comment {
   content: String!
   createdAt: DateTime!
   dislikes: [Dislike!]!
-  episode: Episode!
+  episode: Episode
   id: Float!
   likes: [Like!]!
   parent: Comment
   replies: [Comment!]
+  smallTalk: SmallTalk
   updatedAt: DateTime!
   user: User!
 }
@@ -21,6 +22,7 @@ enum CommentCategory {
   Challenge
   Episode
   Saga
+  SmallTalk
 }
 
 input CompleteSagaInput {
@@ -107,6 +109,7 @@ input CreateSmallTalkInput {
   authorComment: String!
   content: String!
   point: Float!
+  thumbnailUrl: String!
   title: String!
   userId: Float!
 }
@@ -258,6 +261,7 @@ type Interest {
   interestableId: Float!
   interestableType: InterestableType!
   saga: Saga
+  smallTalk: SmallTalk
   updatedAt: DateTime!
   user: User!
 }
@@ -285,6 +289,7 @@ type InterestSagaOutput {
 enum InterestableType {
   Episode
   Saga
+  SmallTalk
 }
 
 type Like {
@@ -295,6 +300,7 @@ type Like {
   likeableId: Float!
   likeableType: LikeableType!
   saga: Saga
+  smallTalk: SmallTalk
   updatedAt: DateTime!
   user: User!
 }
@@ -333,6 +339,7 @@ enum LikeableType {
   Comment
   Episode
   Saga
+  SmallTalk
 }
 
 input LoginInput {
@@ -403,6 +410,22 @@ enum SagaCategory {
   Series
 }
 
+type SmallTalk {
+  author: User!
+  authorComment: String!
+  comments: [Comment!]!
+  content: String!
+  createdAt: DateTime!
+  id: Float!
+  interests: [Interest!]!
+  likes: [Like!]!
+  point: Float!
+  thumbnailUrl: String!
+  title: String!
+  updatedAt: DateTime!
+  views: Float!
+}
+
 type User {
   comments: [Comment!]!
   createdAt: DateTime!
@@ -414,6 +437,7 @@ type User {
   password: String!
   point: Float!
   sagas: [Saga!]!
+  smallTalks: [SmallTalk!]!
   updatedAt: DateTime!
   userId: String!
   verified: Boolean!

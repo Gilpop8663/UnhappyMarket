@@ -7,11 +7,13 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { IsEnum } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 export enum LikeableType {
   Saga,
   Episode,
   Comment,
+  SmallTalk,
 }
 
 registerEnumType(LikeableType, {
@@ -46,4 +48,10 @@ export class Like extends CoreEntity {
   @ManyToOne(() => Comment, (comment) => comment.likes, { nullable: true })
   @Field(() => Comment, { nullable: true })
   comment?: Comment;
+
+  @ManyToOne(() => SmallTalk, (smallTalk) => smallTalk.likes, {
+    nullable: true,
+  })
+  @Field(() => SmallTalk, { nullable: true })
+  smallTalk?: SmallTalk;
 }

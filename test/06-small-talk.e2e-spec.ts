@@ -19,7 +19,8 @@ test('스몰톡을 생성한다.', async () => {
                 userId: ${initialUser.id}
                 title: "제목"
                 content: "ㅇㅇ"
-                authorComment: "ㅇㅇ",
+                thumbnailUrl: "ddd"
+                authorComment: "ㅇㅇ"
                 point:300
               }
             ) {

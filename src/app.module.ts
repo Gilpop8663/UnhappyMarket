@@ -28,6 +28,7 @@ import { Interest } from './interests/entities/interest.entity';
 import { Comment } from './comments/entities/comment.entity';
 import { Dislike } from './likes/entities/dislike.entity';
 import { SmallTalksModule } from './small-talks/small-talks.module';
+import { SmallTalk } from './small-talks/entities/small-talk.entity';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -81,6 +82,7 @@ const getEnvFilePath = () => {
         Like,
         Interest,
         Dislike,
+        SmallTalk,
       ],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
