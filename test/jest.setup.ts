@@ -9,6 +9,7 @@ import { Saga } from 'src/sagas/entities/saga.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
+import { Purchase } from 'src/purchase/entities/purchase.entity';
 
 let app: INestApplication;
 let dataSource: DataSource;
@@ -17,6 +18,7 @@ let sagasRepository: Repository<Saga>;
 let episodesRepository: Repository<Episode>;
 let commentRepository: Repository<Comment>;
 let smallTalkRepository: Repository<SmallTalk>;
+let purchaseRepository: Repository<Purchase>;
 
 beforeAll(async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -39,6 +41,9 @@ beforeAll(async () => {
   smallTalkRepository = moduleFixture.get<Repository<SmallTalk>>(
     getRepositoryToken(SmallTalk),
   );
+  purchaseRepository = moduleFixture.get<Repository<Purchase>>(
+    getRepositoryToken(Purchase),
+  );
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
 });
@@ -56,4 +61,5 @@ export {
   episodesRepository,
   commentRepository,
   smallTalkRepository,
+  purchaseRepository,
 };
