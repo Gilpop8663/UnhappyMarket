@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Purchase, PurchaseCategory } from './entities/purchase.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import {
   CreatePurchaseInput,
   CreatePurchaseOutput,
@@ -31,9 +31,29 @@ export class PurchaseService {
     userId,
   }: CreatePurchaseInput): Promise<CreatePurchaseOutput> {
     try {
+      const existingPurchase = await this.purchaseRepository.findOne({
+        where: {
+          relatedItemId,
+          category,
+          user: { id: userId },
+          expiresAt: MoreThan(new Date()),
+        },
+      });
+
+      if (existingPurchase) {
+        return logErrorAndReturnFalse(
+          '',
+          '유효 기간이 남아 구매할 수 없습니다.',
+        );
+      }
+
       const user = await this.userRepository.findOne({
         where: { id: userId },
       });
+
+      if (!user) {
+        return logErrorAndReturnFalse('', '사용자를 찾을 수 없습니다.');
+      }
 
       const episode =
         category === PurchaseCategory.Episode
@@ -74,5 +94,11 @@ export class PurchaseService {
     } catch (error) {
       return logErrorAndReturnFalse(error, '구매에 실패했습니다.');
     }
+  }
+
+  isPurchaseValid(purchase: Purchase) {
+    const now = new Date();
+
+    return purchase.expiresAt > now;
   }
 }
