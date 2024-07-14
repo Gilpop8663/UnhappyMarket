@@ -16,17 +16,18 @@ import { Like } from 'src/likes/entities/like.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
+import { Purchase } from 'src/purchase/entities/purchase.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
-@Unique(['userId', 'email', 'nickname'])
+@Unique(['username', 'email', 'nickname'])
 export class User extends CoreEntity {
   @Column()
   @Field(() => String)
   @Length(2, 20)
   @IsAlpha()
-  userId: string;
+  username: string;
 
   @Column()
   @Field(() => String)
@@ -71,6 +72,10 @@ export class User extends CoreEntity {
   @Field(() => [Comment])
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @Field(() => [Purchase])
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 
   @BeforeInsert()
   @BeforeUpdate()

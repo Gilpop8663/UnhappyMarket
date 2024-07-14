@@ -21,7 +21,7 @@ export class UsersService {
   ) {}
 
   async createAccount({
-    userId,
+    username,
     email,
     password,
     nickname,
@@ -31,7 +31,9 @@ export class UsersService {
   }> {
     try {
       const existEmail = await this.users.findOne({ where: { email } });
-      const existUserId = await this.users.findOne({ where: { userId } });
+      const existUserId = await this.users.findOne({
+        where: { username },
+      });
       const existNickname = await this.users.findOne({ where: { nickname } });
 
       if (existEmail) {
@@ -46,7 +48,12 @@ export class UsersService {
         return { ok: false, error: '이미 존재하는 닉네임입니다.' };
       }
 
-      const newUser = this.users.create({ userId, email, password, nickname });
+      const newUser = this.users.create({
+        username,
+        email,
+        password,
+        nickname,
+      });
 
       const user = await this.users.save(newUser);
 
@@ -59,11 +66,11 @@ export class UsersService {
     }
   }
 
-  async login({ userId, password }: LoginInput) {
+  async login({ username, password }: LoginInput) {
     try {
       const user = await this.users.findOne({
         where: {
-          userId,
+          username,
         },
         select: ['password'],
       });

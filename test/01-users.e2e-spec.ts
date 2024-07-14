@@ -5,11 +5,45 @@ const GRAPHQL_ENDPOINT = '/graphql';
 
 describe('AppController (e2e)', () => {
   const TEST_USER = {
-    userId: 'asdfqwer',
+    username: 'asdfqwer',
     email: 'asdf1234@naver.com',
     password: '12341234',
     nickname: '우드',
   };
+
+  beforeAll(async () => {
+    const createUser = ({ email, nickname, password, username }) => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: /* GraphQL */ `
+          mutation {
+            createAccount(
+              input: { email: "${email}",
+               nickname: "${nickname}",
+                password: "${password}", 
+                username: "${username}" }
+            ) {
+              ok
+              error
+            }
+          }
+        `,
+        });
+    };
+
+    for (let index = 0; index < 5; index++) {
+      await createUser({
+        email: index,
+        nickname: index,
+        password: index,
+        username: index,
+      });
+    }
+
+    await usersRepository.update(1, { point: 0 });
+    await usersRepository.update(2, { point: 0 });
+  });
 
   describe('아이디 생성', () => {
     test('아이디를 생성한다.', () => {
@@ -22,7 +56,7 @@ describe('AppController (e2e)', () => {
                 input: { email: "${TEST_USER.email}",
                  nickname: "${TEST_USER.nickname}",
                   password: "${TEST_USER.password}", 
-                  userId: "${TEST_USER.userId}" }
+                  username: "${TEST_USER.username}" }
               ) {
                 ok
                 error
@@ -53,7 +87,7 @@ describe('AppController (e2e)', () => {
                 input: { email: "asdhh@naver.com",
                  nickname: "바람",
                   password: "${TEST_USER.password}", 
-                  userId: "${TEST_USER.userId}" }
+                  username: "${TEST_USER.username}" }
               ) {
                 ok
                 error
@@ -84,7 +118,7 @@ describe('AppController (e2e)', () => {
                 input: { email: "${TEST_USER.email}",
                  nickname: "test닉네임",
                   password: "${TEST_USER.password}", 
-                  userId: "필명" }
+                  username: "필명" }
               ) {
                 ok
                 error
@@ -115,7 +149,7 @@ describe('AppController (e2e)', () => {
                 input: { email: "ggee@naver.com",
                  nickname: "${TEST_USER.nickname}",
                   password: "${TEST_USER.password}", 
-                  userId: "getTO" }
+                  username: "getTO" }
               ) {
                 ok
                 error
@@ -144,7 +178,7 @@ describe('AppController (e2e)', () => {
         .send({
           query: /* GraphQL */ `
           mutation {
-            login(input: { password: "${TEST_USER.password}", userId: "${TEST_USER.userId}" }) {
+            login(input: { password: "${TEST_USER.password}", username: "${TEST_USER.username}" }) {
               ok
               error
               token
@@ -172,7 +206,7 @@ describe('AppController (e2e)', () => {
         .send({
           query: /* GraphQL */ `
           mutation {
-            login(input: { password: "test", userId: "${TEST_USER.userId}" }) {
+            login(input: { password: "test", username: "${TEST_USER.username}" }) {
               ok
               error
               token
@@ -203,7 +237,7 @@ describe('AppController (e2e)', () => {
 
     const requiredKeys = [
       'id',
-      'userId',
+      'username',
       'createdAt',
       'updatedAt',
       'email',

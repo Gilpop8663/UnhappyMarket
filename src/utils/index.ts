@@ -5,7 +5,11 @@ export const logErrorAndReturnFalse = (
   errorMessage: string,
 ): CoreOutput => {
   try {
-    console.error(error);
+    if (error === '') {
+      console.error(errorMessage);
+    } else {
+      console.error(error);
+    }
 
     return { ok: false, error: errorMessage };
   } catch (error) {

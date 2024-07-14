@@ -44,7 +44,7 @@ input CreateAccountInput {
   email: String!
   nickname: String!
   password: String!
-  userId: String!
+  username: String!
 }
 
 type CreateAccountOutput {
@@ -89,6 +89,18 @@ type CreateEpisodeOutput {
   episodeId: Float
   error: String
   ok: Boolean!
+}
+
+input CreatePurchaseInput {
+  category: PurchaseCategory!
+  relatedItemId: Float!
+  userId: Float!
+}
+
+type CreatePurchaseOutput {
+  error: String
+  ok: Boolean!
+  purchaseId: Float
 }
 
 input CreateSagaInput {
@@ -238,6 +250,7 @@ type Episode {
   interests: [Interest!]!
   likes: [Like!]!
   point: Float!
+  purchases: [Purchase!]!
   saga: Saga!
   title: String!
   updatedAt: DateTime!
@@ -406,7 +419,7 @@ enum LikeableType {
 
 input LoginInput {
   password: String!
-  userId: String!
+  username: String!
 }
 
 type LoginOutput {
@@ -421,6 +434,7 @@ type Mutation {
   createComment(input: CreateCommentInput!): CreateCommentOutput!
   createCommentReply(input: CreateCommentReplyInput!): CreateCommentReplyOutput!
   createEpisode(input: CreateEpisodeInput!): CreateEpisodeOutput!
+  createPurchase(input: CreatePurchaseInput!): CreatePurchaseOutput!
   createSaga(input: CreateSagaInput!): CreateSagaOutput!
   createSmallTalk(input: CreateSmallTalkInput!): CreateSmallTalkOutput!
   deleteComment(input: DeleteCommentInput!): DeleteCommentOutput!
@@ -444,6 +458,24 @@ type Mutation {
   setSmallTalkLike(input: LikeSmallTalkInput!): LikeSmallTalkOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   verifyPhone(input: VerifyEmailInput!): CoreOutput!
+}
+
+type Purchase {
+  category: PurchaseCategory!
+  createdAt: DateTime!
+  episode: Episode
+  expiresAt: DateTime!
+  id: Float!
+  pointsSpent: Float!
+  relatedItemId: Float!
+  smallTalk: SmallTalk
+  updatedAt: DateTime!
+  user: User!
+}
+
+enum PurchaseCategory {
+  Episode
+  SmallTalk
 }
 
 type Query {
@@ -489,6 +521,7 @@ type SmallTalk {
   interests: [Interest!]!
   likes: [Like!]!
   point: Float!
+  purchases: [Purchase!]!
   thumbnailUrl: String!
   title: String!
   updatedAt: DateTime!
@@ -505,10 +538,11 @@ type User {
   nickname: String!
   password: String!
   point: Float!
+  purchases: [Purchase!]!
   sagas: [Saga!]!
   smallTalks: [SmallTalk!]!
   updatedAt: DateTime!
-  userId: String!
+  username: String!
   verified: Boolean!
 }
 

@@ -4,6 +4,7 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Purchase } from 'src/purchase/entities/purchase.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -61,4 +62,10 @@ export class SmallTalk extends CoreEntity {
     onDelete: 'CASCADE',
   })
   comments: Comment[];
+
+  @Field(() => [Purchase])
+  @OneToMany(() => Purchase, (purchase) => purchase.smallTalk, {
+    onDelete: 'CASCADE',
+  })
+  purchases: Purchase[];
 }

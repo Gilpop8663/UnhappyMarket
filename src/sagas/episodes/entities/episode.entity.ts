@@ -4,6 +4,7 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Purchase } from 'src/purchase/entities/purchase.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -54,4 +55,10 @@ export class Episode extends CoreEntity {
     onDelete: 'CASCADE',
   })
   comments: Comment[];
+
+  @Field(() => [Purchase])
+  @OneToMany(() => Purchase, (purchase) => purchase.episode, {
+    onDelete: 'CASCADE',
+  })
+  purchases: Purchase[];
 }
