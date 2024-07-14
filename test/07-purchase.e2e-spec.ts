@@ -192,3 +192,50 @@ test('에피소드를 구매한다. 포인트가 부족하다면 구매되지 �
       expect(createPurchase.error).toBe('포인트가 부족합니다.');
     });
 });
+
+test('구매 기간이 유효한 회차/스몰톡은 포인트가 차감되지 않는다.', async () => {
+  const [initialPurchase] = await purchaseRepository.find({
+    relations: ['user', 'episode', 'smallTalk'],
+  });
+
+  const relatedItemId =
+    initialPurchase.category === PurchaseCategory.Episode
+      ? initialPurchase.episode.id
+      : initialPurchase.smallTalk.id;
+
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+          mutation {
+            createPurchase(
+              input: {
+                relatedItemId: ${relatedItemId}
+                userId: ${initialPurchase.user.id}
+                category: ${initialPurchase.category}
+              }
+            ) {
+              ok
+              error
+              purchaseId
+            }
+          }
+        `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { createPurchase },
+        },
+      } = res;
+
+      expect(createPurchase.ok).toBe(false);
+      expect(createPurchase.error).toBe(null);
+    });
+});
+
+test.todo('구매한 회차/스몰톡은 포인트가 차감되지 않는다.');
+test.todo(
+  '구매한 회차/스몰톡이 만료 시간이 지나면 다시 포인트를 차감하고 구매한다.',
+);
