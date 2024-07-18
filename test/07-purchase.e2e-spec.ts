@@ -9,6 +9,7 @@ import {
 } from './jest.setup';
 import { LessThan, MoreThan } from 'typeorm';
 import { PurchaseCategory } from 'src/purchase/entities/purchase.entity';
+import test from 'node:test';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
