@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Purchase, PurchaseCategory } from './entities/purchase.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { IsNull, LessThan, MoreThan, Not, Repository } from 'typeorm';
 import {
   CreatePurchaseInput,
   CreatePurchaseOutput,
@@ -11,6 +11,7 @@ import { logErrorAndReturnFalse } from 'src/utils';
 import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Injectable()
 export class PurchaseService {
@@ -100,5 +101,17 @@ export class PurchaseService {
     const now = new Date();
 
     return purchase.expiresAt > now;
+  }
+
+  async findPurchasedEpisodes(userId: number) {
+    try {
+      return this.purchaseRepository.find({
+        where: { user: { id: userId }, episode: Not(IsNull()) },
+      });
+    } catch (error) {
+      console.error('구매한 에피소드 목록을 불러오는 데 실패했습니다.', error);
+
+      return [];
+    }
   }
 }

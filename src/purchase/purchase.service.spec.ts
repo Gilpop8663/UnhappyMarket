@@ -7,7 +7,9 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 const mockUserRepository = {};
 const mockEpisodeRepository = {};
 const mockSmallTalkRepository = {};
-const mockPurchaseRepository = {};
+const mockPurchaseRepository = {
+  find: jest.fn(),
+};
 describe('PurchaseService', () => {
   let service: PurchaseService;
 
@@ -50,9 +52,12 @@ describe('PurchaseService', () => {
     purchase.episode = episode;
     purchase2.user = user2;
 
-    const purchaseList = service.findPurchasedEpisodes(user.id);
+    mockPurchaseRepository.find.mockResolvedValue([purchase]);
+
+    const purchaseList = await service.findPurchasedEpisodes(user.id);
 
     expect(purchaseList.length).toBe(1);
+    expect(purchaseList[0].episode.id).toBe(episode.id);
   });
 
   it('유저 정보를 입력했을 때 구매한 에피소드 목록을 반환한다. 에피소드가 없다면 반환하지 않는다.', async () => {
@@ -60,8 +65,11 @@ describe('PurchaseService', () => {
     const user = new User();
     purchase.user = user;
 
-    const purchaseList = service.findPurchasedEpisodes(user.id);
+    mockPurchaseRepository.find.mockResolvedValue([]);
 
+    const purchaseList = await service.findPurchasedEpisodes(user.id);
+
+    expect(purchaseList).toEqual(expect.any(Array));
     expect(purchaseList.length).toBe(0);
   });
 });
