@@ -10,6 +10,7 @@ import {
 import { IsNull, LessThan, MoreThan, Not } from 'typeorm';
 import { PurchaseCategory } from 'src/purchase/entities/purchase.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
+import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -361,8 +362,79 @@ test('에피소드를 상세 정보를 불러올 때 구매 여부에 대한 정
           data: { getEpisodeDetail },
         },
       } = res;
-      console.log(getEpisodeDetail.episode);
 
       expect(getEpisodeDetail.episode.isPurchased).toBe(true);
+    });
+});
+
+test('스몰톡 목록을 불러올 때 구매 여부에 대한 정보를 준다.', async () => {
+  const [initialPurchase] = await purchaseRepository.find({
+    relations: ['user', 'smallTalk'],
+    where: { smallTalk: Not(IsNull()) },
+  });
+
+  return request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+        query {
+          getSmallTalkList (input: { userId: ${initialPurchase.user.id} }){
+            ok
+            error
+            data {
+              id
+              isPurchased
+            }
+          }
+        }
+      `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { getSmallTalkList },
+        },
+      } = res;
+
+      const purchasedSmallTalk: SmallTalk = getSmallTalkList.data.find(
+        (smallTalk: SmallTalk) => smallTalk.id === initialPurchase.smallTalk.id,
+      );
+
+      expect(purchasedSmallTalk.isPurchased).toBe(true);
+    });
+});
+
+test('스몰톡 상세 정보를 불러올 때 구매 여부에 대한 정보를 준다.', async () => {
+  const [initialPurchase] = await purchaseRepository.find({
+    relations: ['user', 'smallTalk'],
+    where: { smallTalk: Not(IsNull()) },
+  });
+
+  return request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+          query {
+            getSmallTalkDetail(input: { smallTalkId: ${initialPurchase.smallTalk.id}, userId: ${initialPurchase.user.id} }) {
+              ok
+              error
+              data {
+                id
+                isPurchased
+              }
+            }
+          }
+        `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { getSmallTalkDetail },
+        },
+      } = res;
+
+      expect(getSmallTalkDetail.data.isPurchased).toBe(true);
     });
 });

@@ -167,6 +167,7 @@ describe('회차 목록을 불러온다.', () => {
     'updatedAt',
     'interests',
     'likes',
+    'isPurchased',
   ];
 
   beforeAll(async () => {
@@ -206,25 +207,30 @@ describe('회차 목록을 불러온다.', () => {
         query: /* GraphQL */ `
           query {
             getSmallTalkList {
-              id
-              title
-              author {
+              ok
+              error
+              data {
                 id
-              }
-              thumbnailUrl
-              content
-              authorComment
-              createdAt
-              updatedAt
-              point
-              interests {
-                id
-              }
-              likes {
-                id
-              }
-              comments {
-                id
+                title
+                author {
+                  id
+                }
+                thumbnailUrl
+                content
+                authorComment
+                createdAt
+                updatedAt
+                point
+                isPurchased
+                interests {
+                  id
+                }
+                likes {
+                  id
+                }
+                comments {
+                  id
+                }
               }
             }
           }
@@ -269,6 +275,7 @@ describe('회차 목록을 불러온다.', () => {
                 createdAt
                 updatedAt
                 point
+                isPurchased
                 interests {
                   id
                 }
