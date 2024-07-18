@@ -31,6 +31,10 @@ import {
   LikeSmallTalkOutput,
 } from 'src/likes/dtos/like-small-talk.dto';
 import { LikesService } from 'src/likes/likes.service';
+import {
+  GetSmallTalkListInput,
+  GetSmallTalkListOutput,
+} from './dtos/get-small-talk-list.dto';
 
 @Resolver()
 export class SmallTalksResolver {
@@ -75,9 +79,9 @@ export class SmallTalksResolver {
     return this.likeService.likeSmallTalk(input);
   }
 
-  @Query(() => [SmallTalk])
-  getSmallTalkList() {
-    return this.smallTalkService.getSmallTalkList();
+  @Query(() => GetSmallTalkListOutput)
+  getSmallTalkList(@Args('input') input: GetSmallTalkListInput) {
+    return this.smallTalkService.getSmallTalkList(input);
   }
 
   @Query(() => GetSmallTalkDetailOutput)

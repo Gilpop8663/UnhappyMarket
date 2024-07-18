@@ -121,6 +121,28 @@ describe('시리즈를 삭제한다', () => {
   beforeAll(async () => {
     const [saga] = await sagasRepository.find();
     sagaId = saga.id;
+
+    await request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+        mutation {
+          createSaga(
+            input: {
+              title: "새로 생성"
+              category: Challenge
+              description: "sss"
+              thumbnailUrl: "ddd"
+              userId: ${userId}
+            }
+          ) {
+            ok
+            error
+            sagaId
+          }
+        }
+      `,
+      });
   });
 
   test('시리즈를 삭제한다.', async () => {
@@ -156,38 +178,15 @@ describe('시리즈를 삭제한다', () => {
 
 describe('시리즈를 수정한다', () => {
   test('시리즈를 수정한다.', async () => {
-    const res = await request(app.getHttpServer())
-      .post(GRAPHQL_ENDPOINT)
-      .send({
-        query: /* GraphQL */ `
-          mutation {
-            createSaga(
-              input: {
-                title: "새로 생성"
-                category: Challenge
-                description: "sss"
-                thumbnailUrl: "ddd"
-                userId: ${userId}
-              }
-            ) {
-              ok
-              error
-              sagaId
-            }
-          }
-        `,
-      })
-      .expect(200);
+    const [initialSaga] = await sagasRepository.find();
 
-    const {
-      body: {
-        data: { createSaga },
-      },
-    } = res;
+    const description = '수정1';
+    const thumbnailUrl = '수정2';
+    const title = '수정3';
 
-    const saga = await sagasRepository.findOne({
-      where: { id: createSaga.sagaId },
-    });
+    expect(initialSaga.description).not.toBe(description);
+    expect(initialSaga.thumbnailUrl).not.toBe(thumbnailUrl);
+    expect(initialSaga.title).not.toBe(title);
 
     await request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
@@ -196,10 +195,10 @@ describe('시리즈를 수정한다', () => {
             mutation {
               editSaga(
                 input: {
-                  sagaId: ${saga.id}
-                  description: "수정1"
-                  thumbnailUrl: "수정2"
-                  title: "수정3"
+                  sagaId: ${initialSaga.id}
+                  description: "${description}"
+                  thumbnailUrl: "${thumbnailUrl}"
+                  title: "${title}"
                 }
               ) {
                 ok
@@ -221,7 +220,7 @@ describe('시리즈를 수정한다', () => {
       });
 
     const updatedSaga = await sagasRepository.findOne({
-      where: { id: saga.id },
+      where: { id: initialSaga.id },
     });
 
     expect(updatedSaga.description).toBe('수정1');

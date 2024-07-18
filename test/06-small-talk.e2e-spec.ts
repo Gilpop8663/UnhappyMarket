@@ -206,7 +206,7 @@ describe('회차 목록을 불러온다.', () => {
       .send({
         query: /* GraphQL */ `
           query {
-            getSmallTalkList {
+            getSmallTalkList(input: {}) {
               ok
               error
               data {
@@ -244,10 +244,10 @@ describe('회차 목록을 불러온다.', () => {
           },
         } = res;
 
-        expect(getSmallTalkList.length).toBe(5);
+        expect(getSmallTalkList.data.length).toBe(5);
 
         requiredKeys.forEach((key) => {
-          expect(getSmallTalkList[0]).toHaveProperty(key);
+          expect(getSmallTalkList.data[0]).toHaveProperty(key);
         });
       });
   });

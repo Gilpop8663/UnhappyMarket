@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Episode } from './entities/episode.entity';
 import { Saga } from '../entities/saga.entity';
-import { IsNull, LessThan, MoreThan, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import {
   CreateEpisodeInput,
   CreateEpisodeOutput,
@@ -32,8 +32,6 @@ export class EpisodesService {
     private sagaRepository: Repository<Saga>,
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
     private readonly purchaseService: PurchaseService,
   ) {}
 

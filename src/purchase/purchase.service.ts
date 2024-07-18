@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Purchase, PurchaseCategory } from './entities/purchase.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, LessThan, MoreThan, Not, Repository } from 'typeorm';
+import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import {
   CreatePurchaseInput,
   CreatePurchaseOutput,
@@ -116,6 +116,25 @@ export class PurchaseService {
       return purchaseList.map((purchase) => purchase.episode.id);
     } catch (error) {
       console.error('구매한 에피소드 목록을 불러오는 데 실패했습니다.', error);
+
+      return [];
+    }
+  }
+
+  async findPurchasedSmallTalkList(userId: number) {
+    try {
+      const purchaseList = await this.purchaseRepository.find({
+        where: {
+          user: { id: userId },
+          smallTalk: Not(IsNull()),
+          expiresAt: MoreThan(new Date()),
+        },
+        relations: ['smallTalk'],
+      });
+
+      return purchaseList.map((purchase) => purchase.smallTalk.id);
+    } catch (error) {
+      console.error('구매한 스몰톡 목록을 불러오는 데 실패했습니다.', error);
 
       return [];
     }

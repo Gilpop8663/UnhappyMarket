@@ -295,10 +295,21 @@ type GetEpisodeListOutput {
 
 input GetSmallTalkDetailInput {
   smallTalkId: Float!
+  userId: Float
 }
 
 type GetSmallTalkDetailOutput {
   data: SmallTalk
+  error: String
+  ok: Boolean!
+}
+
+input GetSmallTalkListInput {
+  userId: Float
+}
+
+type GetSmallTalkListOutput {
+  data: [SmallTalk!]
   error: String
   ok: Boolean!
 }
@@ -497,7 +508,7 @@ type Query {
   getEpisodeList(input: GetEpisodeListInput!): GetEpisodeListOutput!
   getSagaList: [Saga!]!
   getSmallTalkDetail(input: GetSmallTalkDetailInput!): GetSmallTalkDetailOutput!
-  getSmallTalkList: [SmallTalk!]!
+  getSmallTalkList(input: GetSmallTalkListInput!): GetSmallTalkListOutput!
   getUserProfile(input: UserProfileInput!): UserProfileOutput!
   healthCheck: CoreOutput!
   me: User!
@@ -531,6 +542,7 @@ type SmallTalk {
   createdAt: DateTime!
   id: Float!
   interests: [Interest!]!
+  isPurchased: Boolean
   likes: [Like!]!
   point: Float!
   purchases: [Purchase!]!

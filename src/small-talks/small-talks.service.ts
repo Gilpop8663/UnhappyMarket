@@ -24,6 +24,11 @@ import {
   IncreaseSmallTalkViewCountInput,
   IncreaseSmallTalkViewCountOutput,
 } from './dtos/increase-small-talk-view-count.dto';
+import {
+  GetSmallTalkListInput,
+  GetSmallTalkListOutput,
+} from './dtos/get-small-talk-list.dto';
+import { PurchaseService } from 'src/purchase/purchase.service';
 
 @Injectable()
 export class SmallTalksService {
@@ -32,6 +37,7 @@ export class SmallTalksService {
     private smallTalkRepository: Repository<SmallTalk>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly purchaseService: PurchaseService,
   ) {}
 
   async createSmallTalk({
@@ -99,13 +105,25 @@ export class SmallTalksService {
     }
   }
 
-  async getSmallTalkList() {
+  async getSmallTalkList({
+    userId,
+  }: GetSmallTalkListInput): Promise<GetSmallTalkListOutput> {
     try {
       const smallTalkList = await this.smallTalkRepository.find({
         relations: ['interests', 'likes', 'author', 'comments'],
       });
 
-      return smallTalkList;
+      const purchasedSmallTalkIdList = userId
+        ? await this.purchaseService.findPurchasedSmallTalkList(userId)
+        : [];
+
+      return {
+        ok: true,
+        data: smallTalkList.map((smallTalk) => ({
+          ...smallTalk,
+          isPurchased: purchasedSmallTalkIdList.includes(smallTalk.id),
+        })),
+      };
     } catch (error) {
       return logErrorAndReturnFalse(error, '스몰톡 목록 조회에 실패했습니다.');
     }
@@ -113,6 +131,7 @@ export class SmallTalksService {
 
   async getSmallTalkDetail({
     smallTalkId,
+    userId,
   }: GetSmallTalkDetailInput): Promise<GetSmallTalkDetailOutput> {
     try {
       const smallTalk = await this.smallTalkRepository.findOne({
@@ -120,7 +139,17 @@ export class SmallTalksService {
         relations: ['interests', 'likes', 'author', 'comments'],
       });
 
-      return { ok: true, data: smallTalk };
+      const purchasedSmallTalkIdList = userId
+        ? await this.purchaseService.findPurchasedSmallTalkList(userId)
+        : [];
+
+      return {
+        ok: true,
+        data: {
+          ...smallTalk,
+          isPurchased: purchasedSmallTalkIdList.includes(smallTalk.id),
+        },
+      };
     } catch (error) {
       return logErrorAndReturnFalse(error, '스몰톡 상세 조회에 실패했습니다.');
     }

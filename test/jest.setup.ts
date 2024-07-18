@@ -20,6 +20,8 @@ let commentRepository: Repository<Comment>;
 let smallTalkRepository: Repository<SmallTalk>;
 let purchaseRepository: Repository<Purchase>;
 
+const originalError = console.error;
+
 beforeAll(async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
@@ -46,11 +48,24 @@ beforeAll(async () => {
   );
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
+
+  console.error = (...args) => {
+    const errorMessage = args[0] || '';
+    if (
+      errorMessage.includes('포인트가 부족합니다.') ||
+      errorMessage.includes('유효 기간이 남아 구매할 수 없습니다.')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
 });
 
 afterAll(async () => {
   await dataSource.dropDatabase();
   await dataSource.destroy();
+
+  console.error = originalError;
 });
 
 export {
