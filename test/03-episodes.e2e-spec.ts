@@ -155,6 +155,7 @@ describe('회차 목록을 불러온다.', () => {
     'updatedAt',
     'interests',
     'likes',
+    'isPurchased',
   ];
 
   beforeAll(async () => {
@@ -236,6 +237,7 @@ describe('회차 상세 정보를 불러온다.', () => {
     'interests',
     'likes',
     'saga',
+    'isPurchased',
   ];
 
   test('회차 상세 정보를 불러온다.', async () => {
