@@ -11,7 +11,6 @@ import { logErrorAndReturnFalse } from 'src/utils';
 import { User } from 'src/users/entities/user.entity';
 import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
-import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Injectable()
 export class PurchaseService {
@@ -103,11 +102,18 @@ export class PurchaseService {
     return purchase.expiresAt > now;
   }
 
-  async findPurchasedEpisodes(userId: number) {
+  async findPurchasedEpisodeList(userId: number) {
     try {
-      return this.purchaseRepository.find({
-        where: { user: { id: userId }, episode: Not(IsNull()) },
+      const purchaseList = await this.purchaseRepository.find({
+        where: {
+          user: { id: userId },
+          episode: Not(IsNull()),
+          expiresAt: MoreThan(new Date()),
+        },
+        relations: ['episode'],
       });
+
+      return purchaseList.map((purchase) => purchase.episode.id);
     } catch (error) {
       console.error('구매한 에피소드 목록을 불러오는 데 실패했습니다.', error);
 

@@ -4,7 +4,6 @@ import {
   CreateEpisodeInput,
   CreateEpisodeOutput,
 } from './dtos/create-episode.dto';
-import { Episode } from './entities/episode.entity';
 import {
   GetEpisodeDetailInput,
   GetEpisodeDetailOutput,
@@ -28,6 +27,10 @@ import {
   IncreaseEpisodeViewCountInput,
   IncreaseEpisodeViewCountOutput,
 } from './dtos/increase-episode-view-count.dto';
+import {
+  GetEpisodeListInput,
+  GetEpisodeListOutput,
+} from './dtos/get-episode-list.dto';
 
 @Resolver()
 export class EpisodesResolver {
@@ -73,9 +76,9 @@ export class EpisodesResolver {
     );
   }
 
-  @Query(() => [Episode])
-  getEpisodeList(@Args('sagaId') sagaId: number) {
-    return this.episodeService.getEpisodeList(sagaId);
+  @Query(() => GetEpisodeListOutput)
+  getEpisodeList(@Args('input') input: GetEpisodeListInput) {
+    return this.episodeService.getEpisodeList(input);
   }
 
   @Query(() => GetEpisodeDetailOutput)

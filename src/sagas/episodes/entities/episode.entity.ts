@@ -61,4 +61,7 @@ export class Episode extends CoreEntity {
     onDelete: 'CASCADE',
   })
   purchases: Purchase[];
+
+  @Field(() => Boolean, { nullable: true })
+  isPurchased?: boolean;
 }

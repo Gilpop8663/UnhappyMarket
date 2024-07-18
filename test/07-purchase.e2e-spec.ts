@@ -7,9 +7,9 @@ import {
   smallTalkRepository,
   usersRepository,
 } from './jest.setup';
-import { LessThan, MoreThan } from 'typeorm';
+import { IsNull, LessThan, MoreThan, Not } from 'typeorm';
 import { PurchaseCategory } from 'src/purchase/entities/purchase.entity';
-import test from 'node:test';
+import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -277,5 +277,92 @@ test('구매한 회차/스몰톡이 만료 시간이 지나면 다시 포인트�
 
       expect(createPurchase.ok).toBe(true);
       expect(createPurchase.error).toBe(null);
+    });
+});
+
+test('에피소드를 불러올 때 구매한 내역을 확인하고, 에피소드마다 구매한 정보를 준다.', async () => {
+  const [initialPurchase] = await purchaseRepository.find({
+    relations: ['user', 'episode', 'episode.saga', 'smallTalk'],
+    where: { episode: Not(IsNull()) },
+  });
+
+  return request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+      query {
+        getEpisodeList(input: { sagaId: ${initialPurchase.episode.saga.id},userId:${initialPurchase.user.id} }) {
+          data {
+            id
+            title
+            content
+            authorComment
+            createdAt
+            updatedAt
+            interests {
+              id
+            }
+            likes {
+              id
+            }
+            isPurchased
+          }
+          ok
+          error
+        }
+      }
+    `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { getEpisodeList },
+        },
+      } = res;
+
+      const purchasedEpisode: Episode = getEpisodeList.data.find(
+        (episode: Episode) => episode.id === initialPurchase.episode.id,
+      );
+
+      expect(purchasedEpisode.isPurchased).toBe(true);
+    });
+});
+
+test('에피소드를 상세 정보를 불러올 때 구매 여부에 대한 정보를 준다.', async () => {
+  const [initialPurchase] = await purchaseRepository.find({
+    relations: ['user', 'episode', 'smallTalk'],
+    where: { episode: Not(IsNull()) },
+  });
+
+  return request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+      query {
+        getEpisodeDetail(input: { episodeId: ${initialPurchase.episode.id},userId:${initialPurchase.user.id} }) {
+          ok
+          episode {
+            id
+            isPurchased
+            saga {
+              id
+              title
+            }
+          }
+        }
+      }
+    `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { getEpisodeDetail },
+        },
+      } = res;
+      console.log(getEpisodeDetail.episode);
+
+      expect(getEpisodeDetail.episode.isPurchased).toBe(true);
     });
 });

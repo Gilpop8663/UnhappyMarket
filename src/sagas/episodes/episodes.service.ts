@@ -22,6 +22,8 @@ import {
   IncreaseEpisodeViewCountOutput,
 } from './dtos/increase-episode-view-count.dto';
 import { User } from 'src/users/entities/user.entity';
+import { GetEpisodeListInput } from './dtos/get-episode-list.dto';
+import { PurchaseService } from 'src/purchase/purchase.service';
 
 @Injectable()
 export class EpisodesService {
@@ -32,6 +34,7 @@ export class EpisodesService {
     private episodeRepository: Repository<Episode>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly purchaseService: PurchaseService,
   ) {}
 
   async createEpisode({
@@ -123,11 +126,30 @@ export class EpisodesService {
     }
   }
 
-  async getEpisodeList(sagaId: number) {
-    return await this.episodeRepository.find({
-      where: { saga: { id: sagaId } },
-      relations: ['likes', 'interests'],
-    });
+  async getEpisodeList({ sagaId, userId }: GetEpisodeListInput) {
+    try {
+      const episodeList = await this.episodeRepository.find({
+        where: { saga: { id: sagaId } },
+        relations: ['likes', 'interests'],
+      });
+
+      const purchasedEpisodeIdList = userId
+        ? await this.purchaseService.findPurchasedEpisodeList(userId)
+        : [];
+
+      return {
+        ok: true,
+        data: episodeList.map((episode) => ({
+          ...episode,
+          isPurchased: purchasedEpisodeIdList.includes(episode.id),
+        })),
+      };
+    } catch (error) {
+      return logErrorAndReturnFalse(
+        error,
+        '에피소드 목록 불러오는데 실패했습니다.',
+      );
+    }
   }
 
   async getEpisodeDetail({
@@ -140,9 +162,9 @@ export class EpisodesService {
       order: { createdAt: 'ASC' },
     });
 
-    const user = await this.userRepository.findOne({
-      where: { id: userId ?? IsNull() },
-    });
+    const purchasedEpisodeIdList = userId
+      ? await this.purchaseService.findPurchasedEpisodeList(userId)
+      : [];
 
     const previousEpisode = await this.episodeRepository.findOne({
       where: {
@@ -162,30 +184,12 @@ export class EpisodesService {
       order: { createdAt: 'ASC' },
     });
 
-    if (episode.point === 0) {
-      return {
-        ok: true,
-        episode,
-        previousEpisode,
-        nextEpisode,
-      };
-    }
-
-    if (!userId) {
-      return { ok: false, error: '올바른 유저 정보를 입력해주세요.' };
-    }
-
-    if (episode.point > user.point) {
-      return { ok: false, error: '포인트가 부족합니다.' };
-    }
-
-    await this.userRepository.update(userId, {
-      point: user.point - episode.point,
-    });
-
     return {
       ok: true,
-      episode,
+      episode: {
+        ...episode,
+        isPurchased: purchasedEpisodeIdList.includes(episode.id),
+      },
       previousEpisode,
       nextEpisode,
     };

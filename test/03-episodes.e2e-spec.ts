@@ -190,20 +190,24 @@ describe('회차 목록을 불러온다.', () => {
       .send({
         query: /* GraphQL */ `
           query {
-            getEpisodeList(sagaId: ${sagaId}) {
-              id
-              title
-              content
-              authorComment
-              createdAt
-              updatedAt
-              point
-              interests{
+            getEpisodeList(input: { sagaId: ${sagaId} }) {
+              data {
+                id
+                title
+                content
+                authorComment
+                createdAt
+                updatedAt
+                interests {
                   id
                 }
-              likes{
-                id
+                likes {
+                  id
+                }
+                isPurchased
               }
+              ok
+              error
             }
           }
         `,
@@ -216,10 +220,10 @@ describe('회차 목록을 불러온다.', () => {
           },
         } = res;
 
-        expect(getEpisodeList.length).toBe(5);
+        expect(getEpisodeList.data.length).toBe(5);
 
         requiredKeys.forEach((key) => {
-          expect(getEpisodeList[0]).toHaveProperty(key);
+          expect(getEpisodeList.data[0]).toHaveProperty(key);
         });
       });
   });
@@ -259,6 +263,7 @@ describe('회차 상세 정보를 불러온다.', () => {
                 createdAt
                 updatedAt
                 point
+                isPurchased
                 interests{
                   id
                 }

@@ -248,6 +248,7 @@ type Episode {
   createdAt: DateTime!
   id: Float!
   interests: [Interest!]!
+  isPurchased: Boolean
   likes: [Like!]!
   point: Float!
   purchases: [Purchase!]!
@@ -279,6 +280,17 @@ type GetEpisodeDetailOutput {
   nextEpisode: Episode
   ok: Boolean!
   previousEpisode: Episode
+}
+
+input GetEpisodeListInput {
+  sagaId: Float!
+  userId: Float
+}
+
+type GetEpisodeListOutput {
+  data: [Episode!]
+  error: String
+  ok: Boolean!
 }
 
 input GetSmallTalkDetailInput {
@@ -482,7 +494,7 @@ type Query {
   editProfile(input: EditProfileInput!): EditProfileOutput!
   getCommentList(input: GetCommentListInput!): GetCommentListOutput!
   getEpisodeDetail(input: GetEpisodeDetailInput!): GetEpisodeDetailOutput!
-  getEpisodeList(sagaId: Float!): [Episode!]!
+  getEpisodeList(input: GetEpisodeListInput!): GetEpisodeListOutput!
   getSagaList: [Saga!]!
   getSmallTalkDetail(input: GetSmallTalkDetailInput!): GetSmallTalkDetailOutput!
   getSmallTalkList: [SmallTalk!]!
