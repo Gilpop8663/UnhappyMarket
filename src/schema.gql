@@ -249,12 +249,14 @@ type Episode {
   id: Float!
   interests: [Interest!]!
   isPurchased: Boolean
+  isViewed: Boolean
   likes: [Like!]!
   point: Float!
   purchases: [Purchase!]!
   saga: Saga!
   title: String!
   updatedAt: DateTime!
+  viewLogs: [ViewLog!]!
   views: Float!
 }
 
@@ -543,12 +545,14 @@ type SmallTalk {
   id: Float!
   interests: [Interest!]!
   isPurchased: Boolean
+  isViewed: Boolean
   likes: [Like!]!
   point: Float!
   purchases: [Purchase!]!
   thumbnailUrl: String!
   title: String!
   updatedAt: DateTime!
+  viewLogs: [ViewLog!]!
   views: Float!
 }
 
@@ -568,6 +572,7 @@ type User {
   updatedAt: DateTime!
   username: String!
   verified: Boolean!
+  viewLogs: [ViewLog!]!
 }
 
 input UserProfileInput {
@@ -587,4 +592,20 @@ input VerifyEmailInput {
 type VerifyEmailOutput {
   error: String
   ok: Boolean!
+}
+
+type ViewLog {
+  category: ViewLogCategory!
+  createdAt: DateTime!
+  episode: Episode
+  id: Float!
+  relatedItemId: Float!
+  smallTalk: SmallTalk
+  updatedAt: DateTime!
+  user: User!
+}
+
+enum ViewLogCategory {
+  Episode
+  SmallTalk
 }

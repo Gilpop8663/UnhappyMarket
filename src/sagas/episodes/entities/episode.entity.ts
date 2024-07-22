@@ -6,6 +6,7 @@ import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Purchase } from 'src/purchase/entities/purchase.entity';
 import { Saga } from 'src/sagas/entities/saga.entity';
+import { ViewLog } from 'src/view-logs/entites/view-log.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @InputType({ isAbstract: true })
@@ -62,6 +63,15 @@ export class Episode extends CoreEntity {
   })
   purchases: Purchase[];
 
+  @Field(() => [ViewLog])
+  @OneToMany(() => ViewLog, (viewLog) => viewLog.episode, {
+    onDelete: 'CASCADE',
+  })
+  viewLogs: ViewLog[];
+
   @Field(() => Boolean, { nullable: true })
   isPurchased?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  isViewed?: boolean;
 }

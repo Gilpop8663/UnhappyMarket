@@ -6,6 +6,7 @@ import { Interest } from 'src/interests/entities/interest.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Purchase } from 'src/purchase/entities/purchase.entity';
 import { User } from 'src/users/entities/user.entity';
+import { ViewLog } from 'src/view-logs/entites/view-log.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @InputType({ isAbstract: true })
@@ -69,6 +70,15 @@ export class SmallTalk extends CoreEntity {
   })
   purchases: Purchase[];
 
+  @Field(() => [ViewLog])
+  @OneToMany(() => ViewLog, (viewLog) => viewLog.smallTalk, {
+    onDelete: 'CASCADE',
+  })
+  viewLogs: ViewLog[];
+
   @Field(() => Boolean, { nullable: true })
   isPurchased?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  isViewed?: boolean;
 }

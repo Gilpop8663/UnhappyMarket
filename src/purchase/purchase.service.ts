@@ -96,12 +96,6 @@ export class PurchaseService {
     }
   }
 
-  isPurchaseValid(purchase: Purchase) {
-    const now = new Date();
-
-    return purchase.expiresAt > now;
-  }
-
   async findPurchasedEpisodeList(userId: number) {
     try {
       const purchaseList = await this.purchaseRepository.find({

@@ -21,9 +21,9 @@ import {
   IncreaseEpisodeViewCountInput,
   IncreaseEpisodeViewCountOutput,
 } from './dtos/increase-episode-view-count.dto';
-import { User } from 'src/users/entities/user.entity';
 import { GetEpisodeListInput } from './dtos/get-episode-list.dto';
 import { PurchaseService } from 'src/purchase/purchase.service';
+import { ViewLogsService } from 'src/view-logs/view-logs.service';
 
 @Injectable()
 export class EpisodesService {
@@ -33,6 +33,7 @@ export class EpisodesService {
     @InjectRepository(Episode)
     private episodeRepository: Repository<Episode>,
     private readonly purchaseService: PurchaseService,
+    private readonly viewLogService: ViewLogsService,
   ) {}
 
   async createEpisode({
@@ -135,11 +136,16 @@ export class EpisodesService {
         ? await this.purchaseService.findPurchasedEpisodeList(userId)
         : [];
 
+      const viewLogEpisodeIdList = userId
+        ? await this.viewLogService.getEpisodeIdsByUserViewLogs(userId)
+        : [];
+
       return {
         ok: true,
         data: episodeList.map((episode) => ({
           ...episode,
           isPurchased: purchasedEpisodeIdList.includes(episode.id),
+          isViewed: viewLogEpisodeIdList.includes(episode.id),
         })),
       };
     } catch (error) {
@@ -159,6 +165,10 @@ export class EpisodesService {
       relations: ['saga', 'likes', 'interests'],
       order: { createdAt: 'ASC' },
     });
+
+    if (userId) {
+      await this.viewLogService.createEpisodeViewLog({ episodeId, userId });
+    }
 
     const purchasedEpisodeIdList = userId
       ? await this.purchaseService.findPurchasedEpisodeList(userId)

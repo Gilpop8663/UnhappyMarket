@@ -17,6 +17,7 @@ import { Interest } from 'src/interests/entities/interest.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 import { Purchase } from 'src/purchase/entities/purchase.entity';
+import { ViewLog } from 'src/view-logs/entites/view-log.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -76,6 +77,10 @@ export class User extends CoreEntity {
   @Field(() => [Purchase])
   @OneToMany(() => Purchase, (purchase) => purchase.user)
   purchases: Purchase[];
+
+  @Field(() => [ViewLog])
+  @OneToMany(() => ViewLog, (viewLog) => viewLog.user)
+  viewLogs: ViewLog[];
 
   @BeforeInsert()
   @BeforeUpdate()
