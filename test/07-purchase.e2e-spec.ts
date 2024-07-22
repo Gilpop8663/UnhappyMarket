@@ -232,8 +232,9 @@ test('구매 기간이 유효한 회차/스몰톡은 포인트가 차감되지 �
         },
       } = res;
 
-      expect(createPurchase.ok).toBe(false);
-      expect(createPurchase.error).toBe('유효 기간이 남아 구매할 수 없습니다.');
+      expect(createPurchase.ok).toBe(true);
+      expect(createPurchase.error).toBe(null);
+      expect(createPurchase.purchaseId).toBe(initialPurchase.id);
     });
 });
 
