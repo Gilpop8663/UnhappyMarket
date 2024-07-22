@@ -29,6 +29,7 @@ import {
   GetSmallTalkListOutput,
 } from './dtos/get-small-talk-list.dto';
 import { PurchaseService } from 'src/purchase/purchase.service';
+import { ViewLogsService } from 'src/view-logs/view-logs.service';
 
 @Injectable()
 export class SmallTalksService {
@@ -38,6 +39,7 @@ export class SmallTalksService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly purchaseService: PurchaseService,
+    private readonly viewLogService: ViewLogsService,
   ) {}
 
   async createSmallTalk({
@@ -117,11 +119,16 @@ export class SmallTalksService {
         ? await this.purchaseService.findPurchasedSmallTalkList(userId)
         : [];
 
+      const viewLogSmallTalkIdList = userId
+        ? await this.viewLogService.getSmallTalkIdsByUserViewLogs(userId)
+        : [];
+
       return {
         ok: true,
         data: smallTalkList.map((smallTalk) => ({
           ...smallTalk,
           isPurchased: purchasedSmallTalkIdList.includes(smallTalk.id),
+          isViewed: viewLogSmallTalkIdList.includes(smallTalk.id),
         })),
       };
     } catch (error) {
@@ -138,6 +145,13 @@ export class SmallTalksService {
         where: { id: smallTalkId },
         relations: ['interests', 'likes', 'author', 'comments'],
       });
+
+      if (userId) {
+        await this.viewLogService.createSmallTalkViewLog({
+          smallTalkId,
+          userId,
+        });
+      }
 
       const purchasedSmallTalkIdList = userId
         ? await this.purchaseService.findPurchasedSmallTalkList(userId)

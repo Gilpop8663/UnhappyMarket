@@ -1,10 +1,5 @@
 import * as request from 'supertest';
-import {
-  app,
-  episodesRepository,
-  smallTalkRepository,
-  usersRepository,
-} from './jest.setup';
+import { app, episodesRepository, usersRepository } from './jest.setup';
 import { GetEpisodeListOutput } from 'src/sagas/episodes/dtos/get-episode-list.dto';
 import { GetSmallTalkListOutput } from 'src/small-talks/dtos/get-small-talk-list.dto';
 

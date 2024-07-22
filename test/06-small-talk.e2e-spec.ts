@@ -156,21 +156,6 @@ test('스몰톡을 삭제한다.', async () => {
 describe('회차 목록을 불러온다.', () => {
   const TEST_CONTENT_LIST = ['1', '2', '3', '4', '5'];
 
-  const requiredKeys = [
-    'id',
-    'title',
-    'content',
-    'authorComment',
-    'thumbnailUrl',
-    'author',
-    'createdAt',
-    'updatedAt',
-    'interests',
-    'likes',
-    'isPurchased',
-    'isViewed',
-  ];
-
   beforeAll(async () => {
     const [initialUser] = await usersRepository.find();
 
@@ -202,6 +187,21 @@ describe('회차 목록을 불러온다.', () => {
   });
 
   test('스몰톡 목록을 불러온다.', () => {
+    const requiredKeys = [
+      'id',
+      'title',
+      'content',
+      'authorComment',
+      'thumbnailUrl',
+      'author',
+      'createdAt',
+      'updatedAt',
+      'interests',
+      'likes',
+      'isPurchased',
+      'isViewed',
+    ];
+
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -255,6 +255,20 @@ describe('회차 목록을 불러온다.', () => {
   });
 
   test('스몰톡 상세 정보를 불러온다.', async () => {
+    const requiredKeys = [
+      'id',
+      'title',
+      'content',
+      'authorComment',
+      'thumbnailUrl',
+      'author',
+      'createdAt',
+      'updatedAt',
+      'interests',
+      'likes',
+      'isPurchased',
+    ];
+
     const [initialSmallTalk] = await smallTalkRepository.find();
 
     return request(app.getHttpServer())
