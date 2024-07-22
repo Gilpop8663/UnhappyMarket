@@ -41,10 +41,10 @@ export class PurchaseService {
       });
 
       if (existingPurchase) {
-        return logErrorAndReturnFalse(
-          '',
-          '유효 기간이 남아 구매할 수 없습니다.',
-        );
+        return {
+          ok: true,
+          purchaseId: existingPurchase.id,
+        };
       }
 
       const user = await this.userRepository.findOne({
