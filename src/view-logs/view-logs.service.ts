@@ -14,6 +14,7 @@ import {
   CreateSmallTalkViewLogInput,
   CreateSmallTalkViewLogOutput,
 } from './dtos/create-small-talk-view-log.dto';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Injectable()
 export class ViewLogsService {

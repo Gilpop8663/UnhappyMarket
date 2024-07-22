@@ -68,6 +68,7 @@ const getSmallTalkListFn = async (userId: number) => {
           data {
             id
             isViewed
+            views
           
           }
         }
@@ -95,6 +96,7 @@ const getSmallTalkDetail = async (smallTalkId: number, userId: number) => {
           error
           data {
             id
+            views
           }
         }
       }

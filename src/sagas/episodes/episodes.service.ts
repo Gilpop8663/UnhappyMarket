@@ -109,7 +109,7 @@ export class EpisodesService {
     try {
       const episodeList = await this.episodeRepository.find({
         where: { saga: { id: sagaId } },
-        relations: ['likes', 'interests'],
+        relations: ['likes', 'interests', 'viewLogs'],
       });
 
       const purchasedEpisodeIdList = userId
@@ -126,6 +126,7 @@ export class EpisodesService {
           ...episode,
           isPurchased: purchasedEpisodeIdList.includes(episode.id),
           isViewed: viewLogEpisodeIdList.includes(episode.id),
+          views: episode.viewLogs.length,
         })),
       };
     } catch (error) {
@@ -142,7 +143,7 @@ export class EpisodesService {
   }: GetEpisodeDetailInput): Promise<GetEpisodeDetailOutput> {
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
-      relations: ['saga', 'likes', 'interests'],
+      relations: ['saga', 'likes', 'interests', 'viewLogs'],
       order: { createdAt: 'ASC' },
     });
 
@@ -177,6 +178,7 @@ export class EpisodesService {
       episode: {
         ...episode,
         isPurchased: purchasedEpisodeIdList.includes(episode.id),
+        views: episode.viewLogs.length,
       },
       previousEpisode,
       nextEpisode,

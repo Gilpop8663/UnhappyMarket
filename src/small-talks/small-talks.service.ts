@@ -108,7 +108,7 @@ export class SmallTalksService {
   }: GetSmallTalkListInput): Promise<GetSmallTalkListOutput> {
     try {
       const smallTalkList = await this.smallTalkRepository.find({
-        relations: ['interests', 'likes', 'author', 'comments'],
+        relations: ['interests', 'likes', 'author', 'comments', 'viewLogs'],
       });
 
       const purchasedSmallTalkIdList = userId
@@ -125,6 +125,7 @@ export class SmallTalksService {
           ...smallTalk,
           isPurchased: purchasedSmallTalkIdList.includes(smallTalk.id),
           isViewed: viewLogSmallTalkIdList.includes(smallTalk.id),
+          views: smallTalk.viewLogs.length,
         })),
       };
     } catch (error) {
@@ -139,7 +140,7 @@ export class SmallTalksService {
     try {
       const smallTalk = await this.smallTalkRepository.findOne({
         where: { id: smallTalkId },
-        relations: ['interests', 'likes', 'author', 'comments'],
+        relations: ['interests', 'likes', 'author', 'comments', 'viewLogs'],
       });
 
       if (userId) {
@@ -158,6 +159,7 @@ export class SmallTalksService {
         data: {
           ...smallTalk,
           isPurchased: purchasedSmallTalkIdList.includes(smallTalk.id),
+          views: smallTalk.viewLogs.length,
         },
       };
     } catch (error) {

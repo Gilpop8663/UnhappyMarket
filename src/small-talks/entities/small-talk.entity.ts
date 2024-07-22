@@ -54,7 +54,6 @@ export class SmallTalk extends CoreEntity {
   })
   interests: Interest[];
 
-  @Column({ default: 0 })
   @Field(() => Number)
   views: number;
 
