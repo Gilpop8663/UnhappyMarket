@@ -316,24 +316,6 @@ type GetSmallTalkListOutput {
   ok: Boolean!
 }
 
-input IncreaseEpisodeViewCountInput {
-  episodeId: Float!
-}
-
-type IncreaseEpisodeViewCountOutput {
-  error: String
-  ok: Boolean!
-}
-
-input IncreaseSmallTalkViewCountInput {
-  smallTalkId: Float!
-}
-
-type IncreaseSmallTalkViewCountOutput {
-  error: String
-  ok: Boolean!
-}
-
 type Interest {
   createdAt: DateTime!
   episode: Episode
@@ -470,8 +452,6 @@ type Mutation {
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
   editSmallTalk(input: EditSmallTalkInput!): EditSmallTalkOutput!
-  increaseEpisodeViewCount(input: IncreaseEpisodeViewCountInput!): IncreaseEpisodeViewCountOutput!
-  increaseSmallTalkViewCount(input: IncreaseSmallTalkViewCountInput!): IncreaseSmallTalkViewCountOutput!
   login(input: LoginInput!): LoginOutput!
   setCommentDislike(input: LikeCommentInput!): LikeCommentOutput!
   setCommentLike(input: LikeCommentInput!): LikeCommentOutput!

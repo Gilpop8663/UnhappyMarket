@@ -326,41 +326,6 @@ describe('회차 목록을 불러온다.', () => {
   });
 });
 
-test('스몰톡을 조회하면 조회수가 증가한다.', async () => {
-  const [initialSmallTalk] = await smallTalkRepository.find();
-
-  // 초기 조회수 확인
-  const initialViewCount = initialSmallTalk.views;
-
-  const increaseViewCount = async () => {
-    return request(app.getHttpServer())
-      .post(GRAPHQL_ENDPOINT)
-      .send({
-        query: /* GraphQL */ `
-      mutation {
-        increaseSmallTalkViewCount(input: { smallTalkId: ${initialSmallTalk.id} }) {
-          ok
-          error
-        }
-      }
-    `,
-      })
-      .expect(200);
-  };
-
-  // 스몰톡 조회 요청
-  await increaseViewCount();
-
-  // 조회 후 조회수 확인
-  const updatedSmallTalk = await smallTalkRepository.findOne({
-    where: { id: initialSmallTalk.id },
-  });
-  const updatedViewCount = updatedSmallTalk.views;
-
-  // 조회수가 1 증가했는지 확인
-  expect(updatedViewCount).toBe(initialViewCount + 1);
-});
-
 test('스몰톡 관심 있어요를 누른다. 다시 한번 누르면 관심이 취소된다.', async () => {
   const [initialSmallTalk] = await smallTalkRepository.find();
   const [initialUser] = await usersRepository.find();

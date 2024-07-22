@@ -21,10 +21,6 @@ import {
   GetSmallTalkDetailOutput,
 } from './dtos/get-small-talk-detail.dto';
 import {
-  IncreaseSmallTalkViewCountInput,
-  IncreaseSmallTalkViewCountOutput,
-} from './dtos/increase-small-talk-view-count.dto';
-import {
   GetSmallTalkListInput,
   GetSmallTalkListOutput,
 } from './dtos/get-small-talk-list.dto';
@@ -166,22 +162,6 @@ export class SmallTalksService {
       };
     } catch (error) {
       return logErrorAndReturnFalse(error, '스몰톡 상세 조회에 실패했습니다.');
-    }
-  }
-
-  async increaseSmallTalkViewCount({
-    smallTalkId,
-  }: IncreaseSmallTalkViewCountInput): Promise<IncreaseSmallTalkViewCountOutput> {
-    try {
-      const smallTalk = await this.smallTalkRepository.findOne({
-        where: { id: smallTalkId },
-      });
-
-      await this.smallTalkRepository.update(smallTalkId, {
-        views: smallTalk.views + 1,
-      });
-    } catch (error) {
-      return logErrorAndReturnFalse(error, '조회수 증가에 실패했습니다.');
     }
   }
 }

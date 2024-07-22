@@ -12,15 +12,10 @@ import {
   DeleteSmallTalkInput,
   DeleteSmallTalkOutput,
 } from './dtos/delete-small-talk.dto';
-import { SmallTalk } from './entities/small-talk.entity';
 import {
   GetSmallTalkDetailInput,
   GetSmallTalkDetailOutput,
 } from './dtos/get-small-talk-detail.dto';
-import {
-  IncreaseSmallTalkViewCountInput,
-  IncreaseSmallTalkViewCountOutput,
-} from './dtos/increase-small-talk-view-count.dto';
 import {
   InterestSmallTalkInput,
   InterestSmallTalkOutput,
@@ -57,16 +52,6 @@ export class SmallTalksResolver {
   @Mutation(() => DeleteSmallTalkOutput)
   deleteSmallTalk(@Args('input') deleteSmallTalkInput: DeleteSmallTalkInput) {
     return this.smallTalkService.deleteSmallTalk(deleteSmallTalkInput);
-  }
-
-  @Mutation(() => IncreaseSmallTalkViewCountOutput)
-  increaseSmallTalkViewCount(
-    @Args('input')
-    increaseSmallTalkViewCountInput: IncreaseSmallTalkViewCountInput,
-  ) {
-    return this.smallTalkService.increaseSmallTalkViewCount(
-      increaseSmallTalkViewCountInput,
-    );
   }
 
   @Mutation(() => InterestSmallTalkOutput)
