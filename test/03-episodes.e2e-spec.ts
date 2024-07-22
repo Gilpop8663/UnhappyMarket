@@ -156,6 +156,7 @@ describe('회차 목록을 불러온다.', () => {
     'interests',
     'likes',
     'isPurchased',
+    'isViewed',
   ];
 
   beforeAll(async () => {
@@ -205,6 +206,7 @@ describe('회차 목록을 불러온다.', () => {
                   id
                 }
                 isPurchased
+                isViewed
               }
               ok
               error
