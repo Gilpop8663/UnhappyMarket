@@ -3,14 +3,14 @@ import { app, usersRepository } from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
-describe('AppController (e2e)', () => {
-  const TEST_USER = {
-    username: 'asdfqwer',
-    email: 'asdf1234@naver.com',
-    password: '12341234',
-    nickname: '우드',
-  };
+const TEST_USER = {
+  username: 'asdfqwer',
+  email: 'asdf1234@naver.com',
+  password: '12341234',
+  nickname: '우드',
+};
 
+describe('AppController (e2e)', () => {
   beforeAll(async () => {
     const createUser = ({ email, nickname, password, username }) => {
       return request(app.getHttpServer())
@@ -257,11 +257,101 @@ describe('AppController (e2e)', () => {
   });
 });
 
-test.todo('아이디 중복 확인을 한다.');
+test.each([
+  [`${TEST_USER.username}tes`, true],
+  [TEST_USER.username, false],
+])(
+  '아이디: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
+  (username, result) => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        checkUsername(input: { username: "${username}" }) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { checkUsername },
+          },
+        } = res;
 
-test.todo('닉네임 중복 확인을 한다.');
+        expect(checkUsername.ok).toBe(result);
+        expect(checkUsername.error).toBe(null);
+      });
+  },
+);
 
-test.todo('이메일 중복 확인을 한다.');
+test.each([
+  [`${TEST_USER.nickname}tes`, true],
+  [TEST_USER.nickname, false],
+])(
+  '닉네임: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
+  (nickname, result) => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        checkNickname(input: { nickname: "${nickname}" }) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { checkNickname },
+          },
+        } = res;
+
+        expect(checkNickname.ok).toBe(result);
+        expect(checkNickname.error).toBe(null);
+      });
+  },
+);
+
+test.each([
+  [`asd${TEST_USER.email}`, true],
+  [TEST_USER.email, false],
+])(
+  '이메일: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
+  (email, result) => {
+    return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .send({
+        query: /* GraphQL */ `
+      mutation {
+        checkEmail(input: { email: "${email}" }) {
+          ok
+          error
+        }
+      }
+    `,
+      })
+      .expect(200)
+      .expect((res) => {
+        const {
+          body: {
+            data: { checkEmail },
+          },
+        } = res;
+
+        expect(checkEmail.ok).toBe(result);
+        expect(checkEmail.error).toBe(null);
+      });
+  },
+);
 
 test.todo('아이디 찾기를 한다. 이메일로 아이디를 보내준다.');
 
