@@ -8,7 +8,6 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
-import { SolapiMessageService } from 'solapi';
 import { UserProfileInput } from './dtos/user-profile.dto';
 
 @Injectable()
@@ -55,10 +54,7 @@ export class UsersService {
         nickname,
       });
 
-      const user = await this.users.save(newUser);
-
-      const newVerification = this.verifications.create({ user });
-      const verification = await this.verifications.save(newVerification);
+      await this.users.save(newUser);
 
       return { ok: true };
     } catch (error) {
@@ -78,7 +74,7 @@ export class UsersService {
       if (!user) {
         return {
           ok: false,
-          error: '입력한 이메일이 존재하지 않습니다.',
+          error: '입력한 아이디가 존재하지 않습니다.',
         };
       }
 
@@ -91,7 +87,7 @@ export class UsersService {
         };
       }
 
-      const token = this.jwtService.sign(user.id);
+      const token = this.jwtService.sign({ id: user.id });
 
       return {
         ok: true,
@@ -129,7 +125,7 @@ export class UsersService {
 
   async editProfile(
     userId: number,
-    { email, password }: EditProfileInput,
+    { nickname, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOne({
@@ -138,12 +134,8 @@ export class UsersService {
         },
       });
 
-      if (email) {
-        user.email = email;
-        user.verified = false;
-
-        const newVerification = this.verifications.create({ user });
-        const verification = await this.verifications.save(newVerification);
+      if (nickname) {
+        user.nickname = nickname;
       }
 
       if (password) {
@@ -158,26 +150,6 @@ export class UsersService {
     }
   }
 
-  async verifyPhone(code: string): Promise<VerifyEmailOutput> {
-    try {
-      const messageService = new SolapiMessageService(
-        process.env.SOLAPI_API_KEY,
-        process.env.SOLAPI_API_SECRET_KEY,
-      );
-
-      //번호도용문자 차단 서비스 해지 (내 번호가 아니면 인증이 어려움)
-      messageService.send({
-        to: '01092355209',
-        from: '01057111519',
-        text: '[당신의불행을삽니다] 인증번호는 [$$$]를 입력해주세요.',
-      });
-
-      return { ok: false, error: '휴대폰 검증에 실패했습니다.' };
-    } catch (error) {
-      return { ok: false, error };
-    }
-  }
-
   async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       const verification = await this.verifications.findOne({
@@ -187,8 +159,9 @@ export class UsersService {
 
       if (verification) {
         verification.user.verified = true;
-        this.users.save(verification.user);
 
+        await this.users.update(verification.user.id, { verified: true });
+        await this.verifications.delete(verification.id);
         return { ok: true };
       }
 

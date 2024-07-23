@@ -10,7 +10,7 @@ import {
   Unique,
 } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsAlpha, IsEmail, IsNumber, Length } from 'class-validator';
+import { IsAlpha, IsBoolean, IsEmail, IsNumber, Length } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
@@ -40,7 +40,7 @@ export class User extends CoreEntity {
   @Length(8, 64)
   password: string;
 
-  @Column({ default: 3000 })
+  @Column({ default: 0 })
   @Field(() => Number)
   @IsNumber()
   point: number;
@@ -52,6 +52,7 @@ export class User extends CoreEntity {
 
   @Column({ default: false })
   @Field(() => Boolean)
+  @IsBoolean()
   verified: boolean;
 
   @Field(() => [Saga])
