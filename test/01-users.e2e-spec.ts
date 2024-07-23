@@ -258,11 +258,11 @@ describe('AppController (e2e)', () => {
 });
 
 test.each([
-  [`${TEST_USER.username}tes`, true],
-  [TEST_USER.username, false],
+  [`${TEST_USER.username}tes`, true, null],
+  [TEST_USER.username, false, '이미 사용 중인 아이디입니다.'],
 ])(
   '아이디: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
-  (username, result) => {
+  (username, result, errorResult) => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -284,17 +284,17 @@ test.each([
         } = res;
 
         expect(checkUsername.ok).toBe(result);
-        expect(checkUsername.error).toBe(null);
+        expect(checkUsername.error).toBe(errorResult);
       });
   },
 );
 
 test.each([
-  [`${TEST_USER.nickname}tes`, true],
-  [TEST_USER.nickname, false],
+  [`${TEST_USER.nickname}tes`, true, null],
+  [TEST_USER.nickname, false, '이미 사용 중인 닉네임입니다.'],
 ])(
   '닉네임: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
-  (nickname, result) => {
+  (nickname, result, errorResult) => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -316,17 +316,17 @@ test.each([
         } = res;
 
         expect(checkNickname.ok).toBe(result);
-        expect(checkNickname.error).toBe(null);
+        expect(checkNickname.error).toBe(errorResult);
       });
   },
 );
 
 test.each([
-  [`asd${TEST_USER.email}`, true],
-  [TEST_USER.email, false],
+  [`asd${TEST_USER.email}`, true, null],
+  [TEST_USER.email, false, '이미 사용 중인 이메일입니다.'],
 ])(
   '이메일: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
-  (email, result) => {
+  (email, result, errorResult) => {
     return request(app.getHttpServer())
       .post(GRAPHQL_ENDPOINT)
       .send({
@@ -348,7 +348,7 @@ test.each([
         } = res;
 
         expect(checkEmail.ok).toBe(result);
-        expect(checkEmail.error).toBe(null);
+        expect(checkEmail.error).toBe(errorResult);
       });
   },
 );

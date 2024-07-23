@@ -15,6 +15,15 @@ import {
   SendVerifyEmailInput,
   SendVerifyEmailOutput,
 } from './dtos/send-verify-email.dto';
+import { CheckEmailInput, CheckEmailOutput } from './dtos/check-email.dto';
+import {
+  CheckNicknameInput,
+  CheckNicknameOutput,
+} from './dtos/check-nickname.dto';
+import {
+  CheckUsernameInput,
+  CheckUsernameOutput,
+} from './dtos/check-username.dto';
 
 @Injectable()
 export class UsersService {
@@ -197,6 +206,52 @@ export class UsersService {
       return { ok: false, error: '이메일 검증에 실패했습니다.' };
     } catch (error) {
       return { ok: false, error };
+    }
+  }
+
+  async checkEmail({ email }: CheckEmailInput): Promise<CheckEmailOutput> {
+    try {
+      const user = await this.users.findOne({ where: { email } });
+
+      if (user) {
+        return { ok: false, error: '이미 사용 중인 이메일입니다.' };
+      }
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '이메일 중복 확인에 실패했습니다.');
+    }
+  }
+
+  async checkNickname({
+    nickname,
+  }: CheckNicknameInput): Promise<CheckNicknameOutput> {
+    try {
+      const user = await this.users.findOne({ where: { nickname } });
+
+      if (user) {
+        return { ok: false, error: '이미 사용 중인 닉네임입니다.' };
+      }
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '닉네임 중복 확인에 실패했습니다.');
+    }
+  }
+
+  async checkUsername({
+    username,
+  }: CheckUsernameInput): Promise<CheckUsernameOutput> {
+    try {
+      const user = await this.users.findOne({ where: { username } });
+
+      if (user) {
+        return { ok: false, error: '이미 사용 중인 아이디입니다.' };
+      }
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '아이디 중복 확인에 실패했습니다.');
     }
   }
 }
