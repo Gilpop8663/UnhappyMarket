@@ -33,6 +33,7 @@ import { PurchaseModule } from './purchase/purchase.module';
 import { Purchase } from './purchase/entities/purchase.entity';
 import { ViewLogsModule } from './view-logs/view-logs.module';
 import { ViewLog } from './view-logs/entites/view-log.entity';
+import { MailModule } from './mail/mail.module';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -63,6 +64,9 @@ const getEnvFilePath = () => {
         DB_DATABASE_NAME: Joi.string(),
         DB_PASSWORD: Joi.string(),
         JWT_SECRET_KEY: Joi.string(),
+        MAILGUN_API_KEY: Joi.string().required(),
+        MAILGUN_DOMAIN_NAME: Joi.string().required(),
+        MAILGUN_FROM_EMAIL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -114,6 +118,11 @@ const getEnvFilePath = () => {
     SmallTalksModule,
     PurchaseModule,
     ViewLogsModule,
+    MailModule.forRoot({
+      apiKey: process.env.MAILGUN_API_KEY,
+      domain: process.env.MAILGUN_DOMAIN_NAME,
+      fromEmail: process.env.MAILGUN_FROM_EMAIL,
+    }),
   ],
   controllers: [],
   providers: [],

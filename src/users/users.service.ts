@@ -9,6 +9,12 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
 import { UserProfileInput } from './dtos/user-profile.dto';
+import { MailService } from 'src/mail/mail.service';
+import { logErrorAndReturnFalse } from 'src/utils';
+import {
+  SendVerifyEmailInput,
+  SendVerifyEmailOutput,
+} from './dtos/send-verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +23,7 @@ export class UsersService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -147,6 +154,28 @@ export class UsersService {
       return { ok: true };
     } catch (error) {
       return { ok: false, error: '프로필 변경에 실패했습니다.' };
+    }
+  }
+
+  async sendVerifyEmail({
+    userId,
+  }: SendVerifyEmailInput): Promise<SendVerifyEmailOutput> {
+    try {
+      const user = await this.users.findOne({ where: { id: userId } });
+      const verification = this.verifications.create({ user });
+
+      await this.verifications.save(verification);
+      this.mailService.sendVerificationEmail({
+        email: user.email,
+        code: verification.code,
+      });
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(
+        error,
+        '이메일 인증 메일 보내기에 실패했습니다.',
+      );
     }
   }
 

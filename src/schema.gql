@@ -206,7 +206,7 @@ type EditEpisodeOutput {
 }
 
 input EditProfileInput {
-  email: String
+  nickname: String
   password: String
 }
 
@@ -453,6 +453,7 @@ type Mutation {
   editSaga(input: EditSagaInput!): EditSagaOutput!
   editSmallTalk(input: EditSmallTalkInput!): EditSmallTalkOutput!
   login(input: LoginInput!): LoginOutput!
+  sendVerifyEmail: SendVerifyEmailOutput!
   setCommentDislike(input: LikeCommentInput!): LikeCommentOutput!
   setCommentLike(input: LikeCommentInput!): LikeCommentOutput!
   setEpisodeInterest(input: InterestEpisodeInput!): InterestEpisodeOutput!
@@ -462,7 +463,6 @@ type Mutation {
   setSmallTalkInterest(input: InterestSmallTalkInput!): InterestSmallTalkOutput!
   setSmallTalkLike(input: LikeSmallTalkInput!): LikeSmallTalkOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
-  verifyPhone(input: VerifyEmailInput!): CoreOutput!
 }
 
 type Purchase {
@@ -514,6 +514,11 @@ type Saga {
 enum SagaCategory {
   Challenge
   Series
+}
+
+type SendVerifyEmailOutput {
+  error: String
+  ok: Boolean!
 }
 
 type SmallTalk {

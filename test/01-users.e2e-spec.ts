@@ -41,8 +41,8 @@ describe('AppController (e2e)', () => {
       });
     }
 
-    await usersRepository.update(1, { point: 0 });
-    await usersRepository.update(2, { point: 0 });
+    await usersRepository.update(1, { point: 3000 });
+    await usersRepository.update(2, { point: 3000 });
   });
 
   describe('아이디 생성', () => {
