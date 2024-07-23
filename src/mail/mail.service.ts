@@ -9,17 +9,7 @@ import { logErrorAndReturnFalse } from 'src/utils';
 export class MailService {
   constructor(
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions,
-  ) {
-    this.sendEmail({
-      to: 'wolfye0611@gmail.com',
-      subject: '제목',
-      template: 'verify-email',
-      emailVars: [
-        { key: 'username', value: 'test_user' },
-        { key: 'code', value: 'asdsad' },
-      ],
-    });
-  }
+  ) {}
 
   async sendEmail({
     to,
@@ -35,7 +25,7 @@ export class MailService {
     try {
       const form = new FormData();
 
-      form.append('from', `Excited User <mailgun@${this.options.domain}`);
+      form.append('from', `Excited User <mailgun@${this.options.domain}>`);
       form.append('to', `${to}`);
       form.append('subject', `${subject}`);
       form.append('template', template);
@@ -48,7 +38,9 @@ export class MailService {
         {
           method: 'POST',
           headers: {
-            Authorization: `Basic ${Buffer.from(`api:${this.options.apiKey}`).toString('base64')}`,
+            Authorization: `Basic ${Buffer.from(
+              `api:${this.options.apiKey}`,
+            ).toString('base64')}`,
           },
           body: form,
         },

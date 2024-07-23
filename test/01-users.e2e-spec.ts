@@ -257,6 +257,12 @@ describe('AppController (e2e)', () => {
   });
 });
 
+test.todo('아이디 중복 확인을 한다.');
+
+test.todo('닉네임 중복 확인을 한다.');
+
+test.todo('이메일 중복 확인을 한다.');
+
 test.todo('아이디 찾기를 한다. 이메일로 아이디를 보내준다.');
 
 test.todo(
