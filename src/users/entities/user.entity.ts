@@ -26,7 +26,7 @@ import { ViewLog } from 'src/view-logs/entites/view-log.entity';
 export class User extends CoreEntity {
   @Column()
   @Field(() => String)
-  @Length(2, 20)
+  @Length(5, 20)
   @IsAlpha()
   username: string;
 

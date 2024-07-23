@@ -198,7 +198,10 @@ export class UsersService {
       if (verification) {
         verification.user.verified = true;
 
-        await this.users.update(verification.user.id, { verified: true });
+        await this.users.update(verification.user.id, {
+          verified: true,
+          point: verification.user.point + 3000,
+        });
         await this.verifications.delete(verification.id);
         return { ok: true };
       }
