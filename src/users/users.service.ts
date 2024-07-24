@@ -24,6 +24,10 @@ import {
   CheckUsernameInput,
   CheckUsernameOutput,
 } from './dtos/check-username.dto';
+import {
+  DeleteAccountInput,
+  DeleteAccountOutput,
+} from './dtos/delete-account.dto';
 
 @Injectable()
 export class UsersService {
@@ -255,6 +259,24 @@ export class UsersService {
       return { ok: true };
     } catch (error) {
       return logErrorAndReturnFalse(error, '아이디 중복 확인에 실패했습니다.');
+    }
+  }
+
+  async deleteAccount({
+    userId,
+  }: DeleteAccountInput): Promise<DeleteAccountOutput> {
+    try {
+      const user = await this.users.findOne({ where: { id: userId } });
+
+      if (!user) {
+        return { ok: false, error: '존재하지 않는 사용자입니다.' };
+      }
+
+      await this.users.delete(userId);
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '회원 탈퇴에 실패했습니다.');
     }
   }
 }

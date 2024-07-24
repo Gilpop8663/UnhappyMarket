@@ -22,6 +22,10 @@ import {
   CheckNicknameOutput,
 } from './dtos/check-nickname.dto';
 import { CheckEmailInput, CheckEmailOutput } from './dtos/check-email.dto';
+import {
+  DeleteAccountInput,
+  DeleteAccountOutput,
+} from './dtos/delete-account.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -82,5 +86,10 @@ export class UsersResolver {
   @Mutation(() => CheckEmailOutput)
   checkEmail(@Args('input') input: CheckEmailInput) {
     return this.usersService.checkEmail(input);
+  }
+
+  @Mutation(() => DeleteAccountOutput)
+  deleteAccount(@Args('input') input: DeleteAccountInput) {
+    return this.usersService.deleteAccount(input);
   }
 }

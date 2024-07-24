@@ -360,13 +360,13 @@ test('회원이 탈퇴한다.', async () => {
     .post(GRAPHQL_ENDPOINT)
     .send({
       query: /* GraphQL */ `
-      mutation {
-        deleteAccount(input: { userId: "${initialUser.id}" }) {
-          ok
-          error
-        }
+    mutation {
+      deleteAccount(input: { userId: ${initialUser.id} }) {
+        ok
+        error
       }
-    `,
+    }
+  `,
     })
     .expect(200)
     .expect((res) => {
