@@ -353,6 +353,40 @@ test.each([
   },
 );
 
+test('회원이 탈퇴한다.', async () => {
+  const initialUser = await usersRepository.findOne({ where: { point: 0 } });
+
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+      mutation {
+        deleteAccount(input: { userId: "${initialUser.id}" }) {
+          ok
+          error
+        }
+      }
+    `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { deleteAccount },
+        },
+      } = res;
+
+      expect(deleteAccount.ok).toBe(true);
+      expect(deleteAccount.error).toBe(null);
+    });
+
+  const updatedUser = await usersRepository.findOne({
+    where: { id: initialUser.id },
+  });
+
+  expect(updatedUser).toBe(null);
+});
+
 test.todo('아이디 찾기를 한다. 이메일로 아이디를 보내준다.');
 
 test.todo(
