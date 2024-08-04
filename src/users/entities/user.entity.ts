@@ -22,14 +22,8 @@ import { ViewLog } from 'src/view-logs/entites/view-log.entity';
 @InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
-@Unique(['username', 'email', 'nickname'])
+@Unique(['email', 'nickname'])
 export class User extends CoreEntity {
-  @Column()
-  @Field(() => String)
-  @Length(5, 20)
-  @IsAlpha()
-  username: string;
-
   @Column()
   @Field(() => String)
   @IsEmail()

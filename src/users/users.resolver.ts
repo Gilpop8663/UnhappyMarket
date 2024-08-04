@@ -14,10 +14,6 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 import { SendVerifyEmailOutput } from './dtos/send-verify-email.dto';
 import {
-  CheckUsernameInput,
-  CheckUsernameOutput,
-} from './dtos/check-username.dto';
-import {
   CheckNicknameInput,
   CheckNicknameOutput,
 } from './dtos/check-nickname.dto';
@@ -71,11 +67,6 @@ export class UsersResolver {
   @Mutation(() => VerifyEmailOutput)
   verifyEmail(@Args('input') { code }: VerifyEmailInput) {
     return this.usersService.verifyEmail(code);
-  }
-
-  @Mutation(() => CheckUsernameOutput)
-  checkUsername(@Args('input') input: CheckUsernameInput) {
-    return this.usersService.checkUsername(input);
   }
 
   @Mutation(() => CheckNicknameOutput)

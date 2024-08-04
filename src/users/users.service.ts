@@ -21,10 +21,6 @@ import {
   CheckNicknameOutput,
 } from './dtos/check-nickname.dto';
 import {
-  CheckUsernameInput,
-  CheckUsernameOutput,
-} from './dtos/check-username.dto';
-import {
   DeleteAccountInput,
   DeleteAccountOutput,
 } from './dtos/delete-account.dto';
@@ -40,7 +36,6 @@ export class UsersService {
   ) {}
 
   async createAccount({
-    username,
     email,
     password,
     nickname,
@@ -50,17 +45,10 @@ export class UsersService {
   }> {
     try {
       const existEmail = await this.users.findOne({ where: { email } });
-      const existUserId = await this.users.findOne({
-        where: { username },
-      });
       const existNickname = await this.users.findOne({ where: { nickname } });
 
       if (existEmail) {
         return { ok: false, error: '이미 존재하는 이메일입니다.' };
-      }
-
-      if (existUserId) {
-        return { ok: false, error: '이미 존재하는 아이디입니다.' };
       }
 
       if (existNickname) {
@@ -68,7 +56,6 @@ export class UsersService {
       }
 
       const newUser = this.users.create({
-        username,
         email,
         password,
         nickname,
@@ -82,11 +69,11 @@ export class UsersService {
     }
   }
 
-  async login({ username, password }: LoginInput) {
+  async login({ email, password }: LoginInput) {
     try {
       const user = await this.users.findOne({
         where: {
-          username,
+          email,
         },
         select: ['password'],
       });
@@ -243,22 +230,6 @@ export class UsersService {
       return { ok: true };
     } catch (error) {
       return logErrorAndReturnFalse(error, '닉네임 중복 확인에 실패했습니다.');
-    }
-  }
-
-  async checkUsername({
-    username,
-  }: CheckUsernameInput): Promise<CheckUsernameOutput> {
-    try {
-      const user = await this.users.findOne({ where: { username } });
-
-      if (user) {
-        return { ok: false, error: '이미 사용 중인 아이디입니다.' };
-      }
-
-      return { ok: true };
-    } catch (error) {
-      return logErrorAndReturnFalse(error, '아이디 중복 확인에 실패했습니다.');
     }
   }
 

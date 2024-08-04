@@ -20,15 +20,6 @@ type CheckNicknameOutput {
   ok: Boolean!
 }
 
-input CheckUsernameInput {
-  username: String!
-}
-
-type CheckUsernameOutput {
-  error: String
-  ok: Boolean!
-}
-
 type Comment {
   category: CommentCategory!
   content: String!
@@ -71,7 +62,6 @@ input CreateAccountInput {
   email: String!
   nickname: String!
   password: String!
-  username: String!
 }
 
 type CreateAccountOutput {
@@ -461,8 +451,8 @@ enum LikeableType {
 }
 
 input LoginInput {
+  email: String!
   password: String!
-  username: String!
 }
 
 type LoginOutput {
@@ -474,7 +464,6 @@ type LoginOutput {
 type Mutation {
   checkEmail(input: CheckEmailInput!): CheckEmailOutput!
   checkNickname(input: CheckNicknameInput!): CheckNicknameOutput!
-  checkUsername(input: CheckUsernameInput!): CheckUsernameOutput!
   completeSaga(input: CompleteSagaInput!): CompleteSagaOutput!
   createAccount(input: CreateAccountInput!): CreateAccountOutput!
   createComment(input: CreateCommentInput!): CreateCommentOutput!
@@ -595,7 +584,6 @@ type User {
   sagas: [Saga!]!
   smallTalks: [SmallTalk!]!
   updatedAt: DateTime!
-  username: String!
   verified: Boolean!
   viewLogs: [ViewLog!]!
 }

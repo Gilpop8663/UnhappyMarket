@@ -73,37 +73,6 @@ describe('AppController (e2e)', () => {
         });
     });
 
-    test('중복된 아이디를 입력했을 때 생성되지 않는다.', () => {
-      return request(app.getHttpServer())
-        .post(GRAPHQL_ENDPOINT)
-        .send({
-          query: /* GraphQL */ `
-            mutation {
-              createAccount(
-                input: { email: "asdhh@naver.com",
-                 nickname: "바람",
-                  password: "${TEST_USER.password}", 
-             }
-              ) {
-                ok
-                error
-              }
-            }
-          `,
-        })
-        .expect(200)
-        .expect((res) => {
-          const {
-            body: {
-              data: { createAccount },
-            },
-          } = res;
-
-          expect(createAccount.ok).toBe(false);
-          expect(createAccount.error).toBe('이미 존재하는 아이디입니다.');
-        });
-    });
-
     test('중복된 이메일을 입력했을 때 생성되지 않는다.', () => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
