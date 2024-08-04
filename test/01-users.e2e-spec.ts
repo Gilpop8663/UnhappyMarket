@@ -1,5 +1,10 @@
 import * as request from 'supertest';
-import { app, usersRepository } from './jest.setup';
+import {
+  app,
+  mailService,
+  passwordResetTokenRepository,
+  usersRepository,
+} from './jest.setup';
 
 const GRAPHQL_ENDPOINT = '/graphql';
 
@@ -317,6 +322,96 @@ test('회원이 탈퇴한다.', async () => {
   expect(updatedUser).toBe(null);
 });
 
-test.todo(
-  '비밀번호 찾기를 한다. 이메일로 토큰이 담긴 링크를 보내 재설정할 수 있도록 한다.',
-);
+test('비밀번호 찾기를 한다. 이메일로 토큰이 담긴 링크를 보내 재설정할 수 있도록 한다.', async () => {
+  const [initialUser] = await usersRepository.find();
+
+  // 1. 비밀번호 찾기 요청을 보냅니다.
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+     mutation {
+       forgotPassword(input: { email: "${initialUser.email}" }) {
+         ok
+         error
+       }
+     }
+   `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { forgotPassword },
+        },
+      } = res;
+
+      expect(forgotPassword.ok).toBe(true);
+      expect(forgotPassword.error).toBe(null);
+    });
+
+  const [token] = await passwordResetTokenRepository.find();
+
+  // 2. 이메일로 토큰이 담긴 링크가 전송되었는지 확인합니다.
+  expect(mailService.sendResetPasswordEmail).toHaveBeenCalled();
+  expect(mailService.sendResetPasswordEmail).toHaveBeenCalledWith(
+    expect.objectContaining({
+      email: initialUser.email,
+      nickname: initialUser.nickname,
+      code: token.code,
+    }),
+  );
+
+  const newPassword = 'newPassword123';
+
+  //   // 3. 토큰을 사용하여 새 비밀번호를 설정합니다.
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+      mutation {
+        resetPassword(input: { code: "${token.code}", newPassword: "${newPassword}" }) {
+          ok
+          error
+        }
+      }
+    `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { resetPassword },
+        },
+      } = res;
+
+      expect(resetPassword.ok).toBe(true);
+      expect(resetPassword.error).toBe(null);
+    });
+
+  // 4. 새 비밀번호로 로그인하여 비밀번호가 제대로 변경되었는지 확인합니다.
+  await request(app.getHttpServer())
+    .post(GRAPHQL_ENDPOINT)
+    .send({
+      query: /* GraphQL */ `
+    mutation {
+      login(input: { email: "${initialUser.email}", password: "${newPassword}" }) {
+        ok
+        token
+        error
+      }
+    }
+  `,
+    })
+    .expect(200)
+    .expect((res) => {
+      const {
+        body: {
+          data: { login },
+        },
+      } = res;
+      expect(login.ok).toBe(true);
+      expect(login.token).toBeDefined();
+      expect(login.error).toBe(null);
+    });
+});
