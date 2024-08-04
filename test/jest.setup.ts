@@ -1,4 +1,3 @@
-import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource, Repository } from 'typeorm';
 import { INestApplication } from '@nestjs/common';
@@ -10,6 +9,8 @@ import { Episode } from 'src/sagas/episodes/entities/episode.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 import { Purchase } from 'src/purchase/entities/purchase.entity';
+import { PasswordResetToken } from 'src/users/entities/passwordResetToken.entity';
+import { MailService } from 'src/mail/mail.service';
 
 let app: INestApplication;
 let dataSource: DataSource;
@@ -19,13 +20,24 @@ let episodesRepository: Repository<Episode>;
 let commentRepository: Repository<Comment>;
 let smallTalkRepository: Repository<SmallTalk>;
 let purchaseRepository: Repository<Purchase>;
+let mailService: MailService;
+let passwordResetTokenRepository: Repository<PasswordResetToken>;
 
 const originalError = console.error;
+
+const mockMailService = {
+  sendEmail: jest.fn().mockReturnValue(true),
+  sendVerificationEmail: jest.fn().mockReturnValue(true),
+  sendResetPasswordEmail: jest.fn().mockReturnValue(true),
+};
 
 beforeAll(async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  })
+    .overrideProvider(MailService)
+    .useValue(mockMailService)
+    .compile();
 
   app = moduleFixture.createNestApplication();
   usersRepository = moduleFixture.get<Repository<User>>(
@@ -46,6 +58,12 @@ beforeAll(async () => {
   purchaseRepository = moduleFixture.get<Repository<Purchase>>(
     getRepositoryToken(Purchase),
   );
+  passwordResetTokenRepository = moduleFixture.get<
+    Repository<PasswordResetToken>
+  >(getRepositoryToken(PasswordResetToken));
+
+  mailService = moduleFixture.get<MailService>(MailService);
+
   dataSource = moduleFixture.get<DataSource>(DataSource);
   await app.init();
 
@@ -77,4 +95,6 @@ export {
   commentRepository,
   smallTalkRepository,
   purchaseRepository,
+  mailService,
+  passwordResetTokenRepository,
 };

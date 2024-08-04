@@ -10,7 +10,7 @@ import {
   Unique,
 } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsAlpha, IsBoolean, IsEmail, IsNumber, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsNumber, Length } from 'class-validator';
 import { Saga } from 'src/sagas/entities/saga.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Interest } from 'src/interests/entities/interest.entity';
@@ -18,6 +18,7 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { SmallTalk } from 'src/small-talks/entities/small-talk.entity';
 import { Purchase } from 'src/purchase/entities/purchase.entity';
 import { ViewLog } from 'src/view-logs/entites/view-log.entity';
+import { PasswordResetToken } from './passwordResetToken.entity';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -76,6 +77,9 @@ export class User extends CoreEntity {
   @Field(() => [ViewLog])
   @OneToMany(() => ViewLog, (viewLog) => viewLog.user)
   viewLogs: ViewLog[];
+
+  @OneToMany(() => PasswordResetToken, (token) => token.user)
+  passwordResetTokens: PasswordResetToken[];
 
   @BeforeInsert()
   @BeforeUpdate()

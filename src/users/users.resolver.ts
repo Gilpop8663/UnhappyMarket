@@ -22,6 +22,14 @@ import {
   DeleteAccountInput,
   DeleteAccountOutput,
 } from './dtos/delete-account.dto';
+import {
+  ForgotPasswordInput,
+  ForgotPasswordOutput,
+} from './dtos/forgot-password.dto';
+import {
+  ResetPasswordInput,
+  ResetPasswordOutput,
+} from './dtos/reset-password.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -82,5 +90,15 @@ export class UsersResolver {
   @Mutation(() => DeleteAccountOutput)
   deleteAccount(@Args('input') input: DeleteAccountInput) {
     return this.usersService.deleteAccount(input);
+  }
+
+  @Mutation(() => ForgotPasswordOutput)
+  forgotPassword(@Args('input') input: ForgotPasswordInput) {
+    return this.usersService.forgotPassword(input);
+  }
+
+  @Mutation(() => ResetPasswordOutput)
+  resetPassword(@Args('input') input: ResetPasswordInput) {
+    return this.usersService.resetPassword(input);
   }
 }

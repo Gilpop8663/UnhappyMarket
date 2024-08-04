@@ -286,6 +286,15 @@ type Episode {
   views: Float!
 }
 
+input ForgotPasswordInput {
+  email: String!
+}
+
+type ForgotPasswordOutput {
+  error: String
+  ok: Boolean!
+}
+
 input GetCommentListInput {
   category: CommentCategory!
   episodeId: Float
@@ -481,7 +490,9 @@ type Mutation {
   editEpisode(input: EditEpisodeInput!): EditEpisodeOutput!
   editSaga(input: EditSagaInput!): EditSagaOutput!
   editSmallTalk(input: EditSmallTalkInput!): EditSmallTalkOutput!
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordOutput!
   login(input: LoginInput!): LoginOutput!
+  resetPassword(input: ResetPasswordInput!): ResetPasswordOutput!
   sendVerifyEmail: SendVerifyEmailOutput!
   setCommentDislike(input: LikeCommentInput!): LikeCommentOutput!
   setCommentLike(input: LikeCommentInput!): LikeCommentOutput!
@@ -523,6 +534,16 @@ type Query {
   getUserProfile(input: UserProfileInput!): UserProfileOutput!
   healthCheck: CoreOutput!
   me: User!
+}
+
+input ResetPasswordInput {
+  code: String!
+  newPassword: String!
+}
+
+type ResetPasswordOutput {
+  error: String
+  ok: Boolean!
 }
 
 type Saga {

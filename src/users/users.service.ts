@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
@@ -24,6 +24,15 @@ import {
   DeleteAccountInput,
   DeleteAccountOutput,
 } from './dtos/delete-account.dto';
+import { PasswordResetToken } from './entities/passwordResetToken.entity';
+import {
+  ForgotPasswordInput,
+  ForgotPasswordOutput,
+} from './dtos/forgot-password.dto';
+import {
+  ResetPasswordInput,
+  ResetPasswordOutput,
+} from './dtos/reset-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -31,6 +40,8 @@ export class UsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
+    @InjectRepository(PasswordResetToken)
+    private readonly passwordResetToken: Repository<PasswordResetToken>,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
@@ -167,6 +178,7 @@ export class UsersService {
       await this.verifications.save(verification);
       this.mailService.sendVerificationEmail({
         email: user.email,
+        nickname: user.nickname,
         code: verification.code,
       });
 
@@ -248,6 +260,62 @@ export class UsersService {
       return { ok: true };
     } catch (error) {
       return logErrorAndReturnFalse(error, '회원 탈퇴에 실패했습니다.');
+    }
+  }
+
+  async forgotPassword({
+    email,
+  }: ForgotPasswordInput): Promise<ForgotPasswordOutput> {
+    try {
+      const user = await this.users.findOne({ where: { email } });
+
+      if (!user) {
+        return { ok: false, error: '유저가 존재하지 않습니다.' };
+      }
+
+      const token = this.passwordResetToken.create({ user });
+
+      await this.passwordResetToken.save(token);
+
+      this.mailService.sendResetPasswordEmail({
+        email: user.email,
+        nickname: user.nickname,
+        code: token.code,
+      });
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(
+        error,
+        '비밀번호 재설정 이메일 전송에 실패했습니다.',
+      );
+    }
+  }
+
+  async resetPassword({
+    newPassword,
+    code,
+  }: ResetPasswordInput): Promise<ResetPasswordOutput> {
+    try {
+      const token = await this.passwordResetToken.findOne({
+        where: { code, expiresAt: MoreThan(new Date()) },
+        relations: ['user'],
+      });
+
+      if (!token) {
+        return { ok: false, error: '토큰이 존재하지 않습니다.' };
+      }
+
+      const user = token.user;
+
+      user.password = newPassword;
+
+      await this.users.save(user);
+      await this.passwordResetToken.delete(token.id);
+
+      return { ok: true };
+    } catch (error) {
+      return logErrorAndReturnFalse(error, '비밀번호 재설정에 실패했습니다.');
     }
   }
 }

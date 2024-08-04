@@ -34,6 +34,7 @@ import { Purchase } from './purchase/entities/purchase.entity';
 import { ViewLogsModule } from './view-logs/view-logs.module';
 import { ViewLog } from './view-logs/entites/view-log.entity';
 import { MailModule } from './mail/mail.module';
+import { PasswordResetToken } from './users/entities/passwordResetToken.entity';
 
 const getEnvFilePath = () => {
   if (process.env.NODE_ENV === 'dev') {
@@ -93,6 +94,7 @@ const getEnvFilePath = () => {
         SmallTalk,
         Purchase,
         ViewLog,
+        PasswordResetToken,
       ],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
