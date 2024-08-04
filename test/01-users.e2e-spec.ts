@@ -4,7 +4,6 @@ import { app, usersRepository } from './jest.setup';
 const GRAPHQL_ENDPOINT = '/graphql';
 
 const TEST_USER = {
-  username: 'asdfqwer',
   email: 'asdf1234@naver.com',
   password: '12341234',
   nickname: '우드',
@@ -12,7 +11,7 @@ const TEST_USER = {
 
 describe('AppController (e2e)', () => {
   beforeAll(async () => {
-    const createUser = ({ email, nickname, password, username }) => {
+    const createUser = ({ email, nickname, password }) => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
         .send({
@@ -21,8 +20,7 @@ describe('AppController (e2e)', () => {
             createAccount(
               input: { email: "${email}",
                nickname: "${nickname}",
-                password: "${password}", 
-                username: "${username}" }
+                password: "${password}",  }
             ) {
               ok
               error
@@ -37,7 +35,6 @@ describe('AppController (e2e)', () => {
         email: index,
         nickname: index,
         password: index,
-        username: index,
       });
     }
 
@@ -55,8 +52,7 @@ describe('AppController (e2e)', () => {
               createAccount(
                 input: { email: "${TEST_USER.email}",
                  nickname: "${TEST_USER.nickname}",
-                  password: "${TEST_USER.password}", 
-                  username: "${TEST_USER.username}" }
+                  password: "${TEST_USER.password}",  }
               ) {
                 ok
                 error
@@ -87,7 +83,7 @@ describe('AppController (e2e)', () => {
                 input: { email: "asdhh@naver.com",
                  nickname: "바람",
                   password: "${TEST_USER.password}", 
-                  username: "${TEST_USER.username}" }
+             }
               ) {
                 ok
                 error
@@ -117,8 +113,7 @@ describe('AppController (e2e)', () => {
               createAccount(
                 input: { email: "${TEST_USER.email}",
                  nickname: "test닉네임",
-                  password: "${TEST_USER.password}", 
-                  username: "필명" }
+                  password: "${TEST_USER.password}",  }
               ) {
                 ok
                 error
@@ -148,8 +143,7 @@ describe('AppController (e2e)', () => {
               createAccount(
                 input: { email: "ggee@naver.com",
                  nickname: "${TEST_USER.nickname}",
-                  password: "${TEST_USER.password}", 
-                  username: "getTO" }
+                  password: "${TEST_USER.password}", }
               ) {
                 ok
                 error
@@ -178,7 +172,7 @@ describe('AppController (e2e)', () => {
         .send({
           query: /* GraphQL */ `
           mutation {
-            login(input: { password: "${TEST_USER.password}", username: "${TEST_USER.username}" }) {
+            login(input: { password: "${TEST_USER.password}", email: "${TEST_USER.email}" }) {
               ok
               error
               token
@@ -206,7 +200,7 @@ describe('AppController (e2e)', () => {
         .send({
           query: /* GraphQL */ `
           mutation {
-            login(input: { password: "test", username: "${TEST_USER.username}" }) {
+            login(input: { password: "test", email: "${TEST_USER.email}" }) {
               ok
               error
               token
@@ -237,7 +231,6 @@ describe('AppController (e2e)', () => {
 
     const requiredKeys = [
       'id',
-      'username',
       'createdAt',
       'updatedAt',
       'email',
@@ -256,38 +249,6 @@ describe('AppController (e2e)', () => {
     });
   });
 });
-
-test.each([
-  [`${TEST_USER.username}tes`, true, null],
-  [TEST_USER.username, false, '이미 사용 중인 아이디입니다.'],
-])(
-  '아이디: %s를 중복 확인 한다. 중복 확인에 결과는 %s를 반환한다.',
-  (username, result, errorResult) => {
-    return request(app.getHttpServer())
-      .post(GRAPHQL_ENDPOINT)
-      .send({
-        query: /* GraphQL */ `
-      mutation {
-        checkUsername(input: { username: "${username}" }) {
-          ok
-          error
-        }
-      }
-    `,
-      })
-      .expect(200)
-      .expect((res) => {
-        const {
-          body: {
-            data: { checkUsername },
-          },
-        } = res;
-
-        expect(checkUsername.ok).toBe(result);
-        expect(checkUsername.error).toBe(errorResult);
-      });
-  },
-);
 
 test.each([
   [`${TEST_USER.nickname}tes`, true, null],
@@ -386,8 +347,6 @@ test('회원이 탈퇴한다.', async () => {
 
   expect(updatedUser).toBe(null);
 });
-
-test.todo('아이디 찾기를 한다. 이메일로 아이디를 보내준다.');
 
 test.todo(
   '비밀번호 찾기를 한다. 이메일로 토큰이 담긴 링크를 보내 재설정할 수 있도록 한다.',
